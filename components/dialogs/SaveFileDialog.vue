@@ -58,10 +58,10 @@ defineExpose({
     isShow.value = true;
     isDetailForm.value = isDetail;
     validationErrors.value = {};
-
+    console.log("isDetail", isDetail);
     if (currentItem) {
       formData.value = currentItem;
-      modalTitle.value = isDetailForm
+      modalTitle.value = isDetail
         ? props.detailTitle || "Detail Item"
         : props.editTitle || "Edit Item";
       isEditing.value = true;

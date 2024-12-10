@@ -146,8 +146,6 @@ const handleInsertBulk = async () => {
   });
 
   if (success) tableRef.value.refresh();
-
-  console.log("handleInsertBulk", payload);
 };
 </script>
 
@@ -337,6 +335,40 @@ const handleInsertBulk = async () => {
             clear-icon="ri-close-line"
             @update:model-value="(value) => {}"
           />
+        </template>
+        <template #bottom>
+          <VDivider />
+          <div
+            v-if="mahasiswaByClass.length > 0"
+            class="d-flex justify-end flex-wrap gap-x-6 px-2 py-1"
+          >
+            <div
+              class="d-flex align-center gap-x-2 text-medium-emphasis text-base"
+            >
+              Total Data: <b>{{ pagination.totalItems }}</b>
+            </div>
+            <div class="d-flex gap-x-2 align-center me-2">
+              <VBtn
+                class="flip-in-rtl"
+                icon="ri-arrow-left-s-line"
+                variant="text"
+                density="comfortable"
+                color="high-emphasis"
+                :disabled="pagination.page === 1"
+                @click="goToPreviousPage"
+              />
+              Halaman: <b>{{ pagination.page }}</b>
+              <VBtn
+                class="flip-in-rtl"
+                icon="ri-arrow-right-s-line"
+                density="comfortable"
+                variant="text"
+                color="high-emphasis"
+                :disabled="pagination.page === pagination.totalPages"
+                @click="goToNextPage"
+              />
+            </div>
+          </div>
         </template>
       </VDataTable>
     </VCol>
