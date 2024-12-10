@@ -16,9 +16,9 @@ export function objectToFormData(
       value.forEach((item, index) => {
         const arrayKey = `${fullKey}[${index}]`; // Membuat key dengan notasi [index]
 
-        if (item instanceof File || item instanceof Blob)
+        if (item instanceof File || item instanceof Blob) {
           formData.append(arrayKey, item);
-        else if (typeof item === "object" && value !== null) {
+        } else if (typeof item === "object" && value !== null) {
           // Jika objek, rekursif untuk nested object
           objectToFormData(value, formData, fullKey);
         } else {
@@ -49,4 +49,13 @@ export const rupiahFormater = (value: number) => {
     currency: "IDR",
     minimumFractionDigits: 0,
   }).format(value);
+};
+
+export const openFileHandler = (file) => {
+  const fileUrl =
+    typeof file !== "string"
+      ? URL.createObjectURL(file)
+      : `https://apinestsiakad.sonisetiawan.my.id/assets/public/${file}`;
+
+  window.open(fileUrl, "_blank");
 };

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VCol, VTextarea, VTextField } from "vuetify/lib/components/index.mjs";
+import { VCol, VTextField, VTextarea } from "vuetify/lib/components/index.mjs";
 
 const { confirmDialog } = useCommonStore();
 
@@ -26,127 +26,139 @@ const form = {
   pengalaman_kursus: "",
   pengalaman_organisasi: "",
 };
-
 </script>
 
 <template>
   <SaveFileDialog
-    width="1200"
     v-if="tableRef"
+    v-slot="{ formData, validationErrors, isDetail }"
+    ref="dialogSave"
+    width="1200"
     path="ppdb"
     title="Tambah PMB Mahasiswa"
     edit-title="Edit PMB Mahasiswa"
-    v-slot="{ formData, validationErrors, isEditing }"
-    ref="dialogSave"
+    detail-title="Detail PMB Mahasiswa"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-
     <VCol cols="12" md="4">
       <VTextField
-        :error-messages="validationErrors.name"
         v-model="formData.name"
+        :error-messages="validationErrors.name"
         label="Nama"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="4">
       <VTextField
-        :error-messages="validationErrors.nik"
         v-model="formData.nik"
+        :error-messages="validationErrors.nik"
         label="NIK"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="4">
       <VLabel>Jenis Kelamin</VLabel>
       <VRadioGroup
-        inline
         v-model="formData.gender"
+        inline
         :error-messages="validationErrors.gender"
+        :disabled="isDetail"
       >
-        <VRadio label="Laki-laki" value="L"></VRadio>
-        <VRadio label="Perempuan" value="P"></VRadio>
+        <VRadio label="Laki-laki" value="L" />
+        <VRadio label="Perempuan" value="P" />
       </VRadioGroup>
     </VCol>
 
     <VCol cols="12" md="4">
       <VTextField
-        :error-messages="validationErrors.phone"
         v-model="formData.phone"
+        :error-messages="validationErrors.phone"
         label="No. Handphone"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="4">
       <VTextField
-        :error-messages="validationErrors.pekerjaan"
         v-model="formData.pekerjaan"
+        :error-messages="validationErrors.pekerjaan"
         label="Pekerjaan"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="4">
       <VLabel>Status Nikah</VLabel>
       <VRadioGroup
-        inline
         v-model="formData.mariage_status"
+        inline
         :error-messages="validationErrors.mariage_status"
+        :disabled="isDetail"
       >
-        <VRadio label="Belum Kawin" value="1"></VRadio>
-        <VRadio label="Menikah" value="2"></VRadio>
-        <VRadio label="Janda / Duda" value="3"></VRadio>
+        <VRadio label="Belum Kawin" value="1" />
+        <VRadio label="Menikah" value="2" />
+        <VRadio label="Janda / Duda" value="3" />
       </VRadioGroup>
     </VCol>
 
     <VCol cols="12" md="4">
       <VTextField
+        v-model="formData.email"
         type="email"
         :error-messages="validationErrors.email"
-        v-model="formData.email"
         label="Email"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="2">
       <VTextField
-        :error-messages="validationErrors.pendidikan_terakhir"
         v-model="formData.pendidikan_terakhir"
+        :error-messages="validationErrors.pendidikan_terakhir"
         label="Pendidikan Terakhir"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="2">
       <VTextField
-        :error-messages="validationErrors.pengalaman_kursus"
         v-model="formData.pengalaman_kursus"
+        :error-messages="validationErrors.pengalaman_kursus"
         label="Pengalaman Kursus"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="4">
       <VTextField
-        :error-messages="validationErrors.pengalaman_organisasi"
         v-model="formData.pengalaman_organisasi"
+        :error-messages="validationErrors.pengalaman_organisasi"
         label="Pengalaman Organisasi"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="12">
       <VTextarea
-        :error-messages="validationErrors.address"
         v-model="formData.address"
+        :error-messages="validationErrors.address"
         label="Alamat"
+        :disabled="isDetail"
       />
     </VCol>
 
-    <VCol cols="12" md="3">
+    <VCol cols="12" md="3" class="grid grid-cols-2">
       <FileInput
         v-model="formData.foto_1"
         accept="image/*"
         label="Upload Foto 1"
         small-chips
         chips
+        show-preview
+        :disabled="isDetail"
       />
     </VCol>
 
@@ -157,6 +169,8 @@ const form = {
         label="Upload Foto 2"
         small-chips
         chips
+        show-preview
+        :disabled="isDetail"
       />
     </VCol>
 
@@ -167,6 +181,8 @@ const form = {
         label="Upload Foto 3"
         small-chips
         chips
+        show-preview
+        :disabled="isDetail"
       />
     </VCol>
 
@@ -177,6 +193,8 @@ const form = {
         label="Foto Copy Ijazah"
         small-chips
         chips
+        show-preview
+        :disabled="isDetail"
       />
     </VCol>
 
@@ -187,6 +205,8 @@ const form = {
         label="Surat Rekomendasi"
         small-chips
         chips
+        show-preview
+        :disabled="isDetail"
       />
     </VCol>
 
@@ -197,6 +217,8 @@ const form = {
         label="Upload Bukti Infaq Pendaftaran"
         small-chips
         chips
+        show-preview
+        :disabled="isDetail"
       />
     </VCol>
 
@@ -207,6 +229,8 @@ const form = {
         label="Foto Copy KTP"
         small-chips
         chips
+        show-preview
+        :disabled="isDetail"
       />
     </VCol>
   </SaveFileDialog>
@@ -217,7 +241,7 @@ const form = {
         <VCardItem>
           <VRow>
             <VCol>
-              <VBtn @click="dialogSave.show()" color="primary">
+              <VBtn color="primary" @click="dialogSave.show()">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -279,12 +303,21 @@ const form = {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              @click="dialogSave.show({ ...item })"
               size="small"
+              title="Detail"
+              @click="
+                () => {
+                  dialogSave.show({ ...item }, true);
+                }
+              "
             >
+              <VIcon icon="ri-eye-line" />
+            </IconBtn>
+            <IconBtn size="small" @click="dialogSave.show({ ...item })">
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              size="small"
               @click="
                 confirmDialog.show({
                   title: 'Hapus PMB Mahasiswa',
@@ -294,7 +327,6 @@ const form = {
                   onConfirm: () => remove((item as any).id),
                 })
               "
-              size="small"
             >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>

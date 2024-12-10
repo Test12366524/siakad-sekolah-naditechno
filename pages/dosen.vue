@@ -19,112 +19,120 @@ const form = {
   join_date: "",
   profile_scopus: "",
 };
-
 </script>
 
 <template>
   <SaveDialog
     v-if="tableRef"
+    v-slot="{ formData, validationErrors, isDetail }"
+    ref="dialogSave"
     path="master/dosen"
     title="Tambah Dosen"
     edit-title="Edit Dosen"
-    v-slot="{ formData, validationErrors, isEditing }"
-    ref="dialogSave"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.name"
         v-model="formData.name"
+        :error-messages="validationErrors.name"
         label="Nama"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.nidn"
         v-model="formData.nidn"
+        :error-messages="validationErrors.nidn"
         label="NIDN"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.nip"
         v-model="formData.nip"
+        :error-messages="validationErrors.nip"
         label="NIP"
+        :disabled="isDetail"
       />
     </VCol>
-    
+
     <VCol cols="12" md="6">
       <VTextField
+        v-model="formData.join_date"
         type="date"
         :error-messages="validationErrors.join_date"
-        v-model="formData.join_date"
         label="Tanggal Masuk"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
+        v-model="formData.email_1"
         type="email"
         :error-messages="validationErrors.email_1"
-        v-model="formData.email_1"
         label="Email 1"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
+        v-model="formData.email_2"
         type="email"
         :error-messages="validationErrors.email_2"
-        v-model="formData.email_2"
         label="Email 2"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.phone_1"
         v-model="formData.phone_1"
+        :error-messages="validationErrors.phone_1"
         label="No. HP 1"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.phone_2"
         v-model="formData.phone_2"
+        :error-messages="validationErrors.phone_2"
         label="No. HP 2"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.profile_sinta"
         v-model="formData.profile_sinta"
+        :error-messages="validationErrors.profile_sinta"
         label="Profile Sinta"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.profilegoogle_scholar"
         v-model="formData.profilegoogle_scholar"
+        :error-messages="validationErrors.profilegoogle_scholar"
         label="Profile Google Scholar"
+        :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.profile_scopus"
         v-model="formData.profile_scopus"
+        :error-messages="validationErrors.profile_scopus"
         label="Profile Scopus"
+        :disabled="isDetail"
       />
     </VCol>
-    
   </SaveDialog>
 
   <VRow>
@@ -133,7 +141,7 @@ const form = {
         <VCardItem>
           <VRow>
             <VCol>
-              <VBtn @click="dialogSave.show()" color="primary">
+              <VBtn color="primary" @click="dialogSave.show()">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -185,12 +193,17 @@ const form = {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              @click="dialogSave.show({ ...item })"
               size="small"
+              title="Detail"
+              @click="dialogSave.show({ ...item }, true)"
             >
+              <VIcon icon="ri-eye-line" />
+            </IconBtn>
+            <IconBtn size="small" @click="dialogSave.show({ ...item })">
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              size="small"
               @click="
                 confirmDialog.show({
                   title: 'Hapus Dosen',
@@ -200,7 +213,6 @@ const form = {
                   onConfirm: () => remove((item as any).id),
                 })
               "
-              size="small"
             >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>

@@ -21,36 +21,42 @@ const isEditing = ref(false);
 const isDetailForm = ref(false);
 const isShow = ref(false);
 
+const bulkData = ref([]);
+
 const formData = ref({ ...props.defaultForm });
 const validationErrors = ref({});
 
 const save = async () => {
-  refVForm.value?.validate().then(async ({ valid }) => {
-    if (!valid) return;
+  console.log(props.defaultForm);
+  emits("saved");
+  isShow.value = false;
 
-    const url = isEditing.value
-      ? `${props.path}/${formData.value[props.itemKey || "id"]}`
-      : (props.path as string);
+  // refVForm.value?.validate().then(async ({ valid }) => {
+  //   if (!valid) return;
 
-    const { errors, success } = await useApi(url, {
-      withNotif: true,
-      method: isEditing.value ? "PUT" : "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      data: formData.value,
-    });
+  //   const url = isEditing.value
+  //     ? `${props.path}/${formData.value[props.itemKey || "id"]}`
+  //     : (props.path as string);
 
-    validationErrors.value = errors ?? {};
+  //   const { errors, success } = await useApi(url, {
+  //     withNotif: true,
+  //     method: isEditing.value ? "PUT" : "POST",
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //     },
+  //     data: formData.value,
+  //   });
 
-    if (success) {
-      isShow.value = false;
+  //   validationErrors.value = errors ?? {};
 
-      if (props.refreshCallback) props.refreshCallback();
+  //   if (success) {
+  //     isShow.value = false;
 
-      emits("saved", true);
-    }
-  });
+  //     if (props.refreshCallback) props.refreshCallback();
+
+  //     emits("saved", true);
+  //   }
+  // });
 };
 
 defineExpose({

@@ -1,24 +1,5 @@
-<template>
-  <div>
-    <VFileInput
-      v-model="files"
-      :accept="accept"
-      :label="label"
-      :rules="rules"
-      :multiple="multiple"
-      small-chips
-      chips
-      :error-messages="errorMessages"
-      @change="onFileChange"
-      @click:clear="() => emit('change', { previewImageUrl: null })"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { defineEmits, defineProps, ref, watchEffect } from "vue";
-
-const files = ref<File[]>([]);
 
 // Define props
 const props = defineProps({
@@ -29,6 +10,8 @@ const props = defineProps({
   multiple: Boolean, // Prop to determine if multiple files are allowed
   errorMessages: null,
   previewImage: String, // Parent will bind this for image preview URL
+  showPreview: Boolean,
+  disabled: Boolean,
 });
 
 // Define emits
@@ -37,6 +20,8 @@ const emit = defineEmits([
   "change",
   "update:previewImage",
 ]);
+
+const files = ref<File[]>([]);
 
 // Handle file change event
 function onFileChange() {
@@ -61,12 +46,45 @@ function onFileChange() {
   // }
 }
 
+const getLabel = computed(() =>
+  typeof props.modelValue === "string" ? props.modelValue : props.label
+);
+
 // Clean up object URLs to prevent memory leaks
 watchEffect(() => {
   return () => {
-    if (props.previewImage) {
-      URL.revokeObjectURL(props.previewImage);
-    }
+    if (props.previewImage) URL.revokeObjectURL(props.previewImage);
   };
 });
 </script>
+
+<template>
+  <div class="d-flex justify-center items-center gap-2">
+    <VFileInput
+      v-model="files"
+      :accept="accept"
+      :label="label"
+      :rules="rules"
+      :multiple="multiple"
+      :disabled="disabled"
+      small-chips
+      chips
+      :error-messages="errorMessages"
+      @change="onFileChange"
+      @click:clear="() => emit('change', { previewImageUrl: null })"
+    />
+    <VBtn
+      v-if="showPreview && props.modelValue"
+      size="small"
+      class="d-flex justify-center items-center mt-2"
+      @click="
+        () => {
+          console.log('files', files);
+          openFileHandler(props.modelValue);
+        }
+      "
+    >
+      <VIcon icon="ri-eye-line" class="mr-2" /> Lihat
+    </VBtn>
+  </div>
+</template>
