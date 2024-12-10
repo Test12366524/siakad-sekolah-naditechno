@@ -88,6 +88,11 @@ onMounted(() => {
       </div>
     </VCol>
   </VRow>
+  <VRow>
+    <VCol cols="12">
+      <DashboardAttendanceChart />
+    </VCol>
+  </VRow>
 </template>
 
 <style lang="scss">

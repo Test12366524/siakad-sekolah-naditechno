@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from 'vue';
+import { watch } from "vue";
 import { VDataTableServer } from "vuetify/lib/components/index.mjs";
 
 const props = defineProps<{
@@ -33,41 +33,48 @@ const appTable = useAppTable({
   kelas_id: props.kelas_id,
   gender: props.gender,
   mata_kuliah_id: props.mata_kuliah_id,
-  dosen_id: props.dosen_id
+  dosen_id: props.dosen_id,
 });
 
 // Watch for changes in prop and update the internal kelas_id
-watch(() => props.kelas_id, (newValue) => {
-  appTable.kelas_id.value = newValue ?? '';
-  if(newValue != null){
-    appTable.fetchItems(true);
-  }
-}, { immediate: true });
+watch(
+  () => props.kelas_id,
+  (newValue) => {
+    appTable.kelas_id.value = newValue ?? "";
+    if (newValue != null) appTable.fetchItems(true);
+  },
+  { immediate: true }
+);
 
+watch(
+  () => props.gender,
+  (newValue) => {
+    appTable.gender.value = newValue ?? "";
+    if (newValue != null) appTable.fetchItems(true);
+  },
+  { immediate: true }
+);
 
-watch(() => props.gender, (newValue) => {
-  appTable.gender.value = newValue ?? '';
-  if(newValue != null){
-    appTable.fetchItems(true);
-  }
-}, { immediate: true });
+watch(
+  () => props.dosen_id,
+  (newValue) => {
+    appTable.dosen_id.value = newValue ?? "";
+    if (newValue != null) appTable.fetchItems(true);
+  },
+  { immediate: true }
+);
 
-watch(() => props.dosen_id, (newValue) => {
-  appTable.dosen_id.value = newValue ?? '';
-  if(newValue != null){
-    appTable.fetchItems(true);
-  }
-}, { immediate: true });
-
-watch(() => props.mata_kuliah_id, (newValue) => {
-  appTable.mata_kuliah_id.value = newValue ?? '';
-  if(newValue != null){
-    appTable.fetchItems(true);
-  }
-}, { immediate: true });
+watch(
+  () => props.mata_kuliah_id,
+  (newValue) => {
+    appTable.mata_kuliah_id.value = newValue ?? "";
+    if (newValue != null) appTable.fetchItems(true);
+  },
+  { immediate: true }
+);
 
 defineExpose({
-  refresh: () => appTable.fetchItems(true)
+  refresh: () => appTable.fetchItems(true),
 });
 </script>
 
@@ -85,38 +92,41 @@ defineExpose({
             density="compact"
             placeholder="Search..."
             hide-details
-          ></VTextField>
+          />
         </VCol>
       </VRow>
     </VCardItem>
 
     <VDataTableServer
+      v-model:page="appTable.currentPage.value"
+      v-model:items-per-page="appTable.limit.value"
+      v-model:kelas_id="appTable.kelas_id.value"
       fixed-header
       width="100%"
       :items-length="appTable.total.value"
       :items="appTable.items.value"
-      v-model:page="appTable.currentPage.value"
-      v-model:items-per-page="appTable.limit.value"
-      v-model:kelas_id="appTable.kelas_id.value"
       :search="appTable.search.value"
       :loading="appTable.loading.value"
       loading-text="loading..."
-      @update:options="() => appTable.fetchItems()"
       :headers="[
         ...(headers as any),
         withActions ? {
-              title: 'actions',
-              key: 'actions',
-              sortable: false,
-              width: 10,
-            } : {},
+          title: 'actions',
+          key: 'actions',
+          sortable: false,
+          width: 10,
+        } : {},
       ] ?? []"
+      @update:options="() => appTable.fetchItems()"
     >
+      <template #item.join_date="{ item }">
+        {{ formatDate(item.join_date) }}
+      </template>
       <template #item.nominal="{ item }">
         {{ formatRupiah(item.nominal) }}
       </template>
       <template #item.actions="{ item }">
-        <slot name="actions" :item="item" :remove="appTable.removeRowBy"></slot>
+        <slot name="actions" :item="item" :remove="appTable.removeRowBy" />
       </template>
     </VDataTableServer>
   </VCard>
