@@ -16,14 +16,14 @@ const borderColor = "rgba(var(--v-border-color), var(--v-border-opacity))";
 
 const series = [
   {
-    name: "Shipment",
+    name: "Lulus",
     type: "column",
-    data: [38, 45, 33, 38, 32, 48, 45, 40, 42, 37],
+    data: [38, 45, 33, 38, 32, 48, 45, 40],
   },
   {
-    name: "Delivery",
+    name: "Tidak Lulus",
     type: "column",
-    data: [23, 28, 23, 32, 25, 42, 32, 32, 26, 24],
+    data: [23, 28, 23, 32, 25, 42, 32, 32],
   },
 ];
 
@@ -156,16 +156,14 @@ const shipmentConfig = {
   xaxis: {
     tickAmount: 10,
     categories: [
-      "1 Jan",
-      "2 Jan",
-      "3 Jan",
-      "4 Jan",
-      "5 Jan",
-      "6 Jan",
-      "7 Jan",
-      "8 Jan",
-      "9 Jan",
-      "10 Jan",
+      "Semester 1",
+      "Semester 2",
+      "Semester 3",
+      "Semester 4",
+      "Semester 5",
+      "Semester 6",
+      "Semester 7",
+      "Semester 8",
     ],
     labels: {
       style: {
@@ -194,7 +192,7 @@ const shipmentConfig = {
         fontWeight: 400,
       },
       formatter(val: string) {
-        return `${val}%`;
+        return `${val}`;
       },
     },
   },
@@ -263,17 +261,9 @@ const shipmentConfig = {
 <template>
   <VCard>
     <VCardItem
-      title="Shipment statistics"
-      subtitle="Total number of deliveries 23.8k"
-    >
-      <template #append>
-        <VBtnGroup density="compact" variant="outlined" divided>
-          <VBtn color="primary"> January </VBtn>
-
-          <VBtn icon="ri-arrow-down-s-line" color="primary" />
-        </VBtnGroup>
-      </template>
-    </VCardItem>
+      title="Statistik Kelulusan Tahun ini"
+      subtitle="Rata-rata kelulusan per semester adalah 70%"
+    />
 
     <VCardText>
       <VueApexCharts

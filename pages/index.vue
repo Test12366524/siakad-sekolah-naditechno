@@ -92,6 +92,9 @@ onMounted(() => {
     <VCol cols="12">
       <DashboardAttendanceChart />
     </VCol>
+    <VCol cols="12">
+      <DashboardPassedChart />
+    </VCol>
   </VRow>
 </template>
 
