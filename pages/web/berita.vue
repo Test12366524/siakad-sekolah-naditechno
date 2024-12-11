@@ -2,54 +2,127 @@
 import { VCol, VTextField } from "vuetify/lib/components/index.mjs";
 
 const { confirmDialog } = useCommonStore();
+const { user } = useAuthStore();
 
 const dialogSave = ref();
-
 const tableRef = ref();
+const baseUrl = "article";
+
+const headers = [
+  {
+    title: "Title",
+    key: "title",
+    sortable: false,
+  },
+  {
+    title: "Author",
+    key: "author_name",
+    sortable: false,
+  },
+  {
+    title: "Slug",
+    key: "slug",
+    sortable: false,
+  },
+  {
+    title: "Publish Date",
+    key: "publish_date",
+    sortable: false,
+  },
+  {
+    title: "Status",
+    key: "status_desc",
+    sortable: false,
+  },
+];
 
 const form = {
-  name: "",
-  code: "",
-  description: "",
+  title: "",
+  subtitle: "",
+  cover: "",
+  content: "",
+  publish_date: "",
+  author_id: user.id,
+  status: "",
 };
 </script>
 
 <template>
-  <SaveDialog
+  <SaveFileDialog
     v-if="tableRef"
-    path="master/fakultas"
-    title="Tambah Fakultas"
-    edit-title="Edit Fakultas"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
+    :path="baseUrl"
+    title="Tambah Berita"
+    edit-title="Edit Berita"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
+    :width="1000"
   >
     <VCol cols="12">
       <VTextField
-        :error-messages="validationErrors.code"
-        v-model="formData.code"
-        label="Kode"
+        v-model="formData.title"
+        :error-messages="validationErrors.title"
+        label="Title"
       />
     </VCol>
 
     <VCol cols="12">
       <VTextField
-        :error-messages="validationErrors.name"
-        v-model="formData.name"
-        label="Nama"
+        v-model="formData.subtitle"
+        :error-messages="validationErrors.subtitle"
+        label="Subtitle"
       />
     </VCol>
-    
+    <VCol cols="12" md="6">
+      <FileInput
+        v-model="formData.cover"
+        accept="image/*"
+        label="Cover"
+        small-chips
+        chips
+        show-preview
+      />
+    </VCol>
+    <VCol cols="12" md="3">
+      <VTextField
+        v-model="formData.publish_date"
+        :error-messages="validationErrors.publish_date"
+        label="Publish Date"
+        type="date"
+      />
+    </VCol>
+    <VCol cols="12" md="3">
+      <VAutocomplete
+        v-model="formData.status"
+        label="Status"
+        :error-messages="validationErrors.status"
+        placeholder="Pilih Status"
+        :items="[
+          {
+            id: 0,
+            text: 'Draft',
+          },
+          {
+            id: 1,
+            text: 'Published',
+          },
+        ]"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+      />
+    </VCol>
     <VCol cols="12">
       <VTextarea
-        :error-messages="validationErrors.description"
-        v-model="formData.description"
-        label="Deskripsi"
+        v-model="formData.content"
+        :error-messages="validationErrors.content"
+        label="Content"
       />
     </VCol>
-
-  </SaveDialog>
+  </SaveFileDialog>
 
   <VRow>
     <VCol cols="12">
@@ -57,7 +130,7 @@ const form = {
         <VCardItem>
           <VRow>
             <VCol>
-              <VBtn @click="dialogSave.show()" color="primary">
+              <VBtn color="primary" @click="dialogSave.show()">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -70,46 +143,38 @@ const form = {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Fakultas"
-        path="master/fakultas"
+        title="Berita"
+        :path="baseUrl"
         :with-actions="true"
-        :headers="[
-          {
-            title: 'Kode',
-            key: 'code',
-            sortable: false,
-          },
-          {
-            title: 'Nama',
-            key: 'name',
-            sortable: false,
-          },
-          {
-            title: 'Deskripsi',
-            key: 'description',
-            sortable: false,
-          },
-        ]"
+        :headers="headers"
       >
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              @click="dialogSave.show({ ...item, status_desc: undefined })"
               size="small"
+              @click="
+                () => {
+                  console.log(item);
+                  dialogSave.show({
+                    ...item,
+                    publish_date: new Date(item.publish_date)
+                      .toISOString()
+                      .split('T')[0],
+                  });
+                }
+              "
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Fakultas',
-                  message: `Anda yakin ingin menghapus Fakultas ${
-                    (item as any).name
-                  }?`,
+                  title: 'Hapus Berita',
+                  message: `Anda yakin ingin menghapus berita ini?`,
                   onConfirm: () => remove((item as any).id),
                 })
               "
-              size="small"
             >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>

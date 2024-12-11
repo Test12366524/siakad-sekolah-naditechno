@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatFullDate } from "@/composables/common";
 import { watch } from "vue";
 import { VDataTableServer } from "vuetify/lib/components/index.mjs";
 
@@ -120,7 +121,10 @@ defineExpose({
       @update:options="() => appTable.fetchItems()"
     >
       <template #item.join_date="{ item }">
-        {{ formatDate(item.join_date) }}
+        {{ formatFullDate(item.join_date)?.dateTime }}
+      </template>
+      <template #item.publish_date="{ item }">
+        {{ formatFullDate(item.publish_date)?.dateOnly }}
       </template>
       <template #item.nominal="{ item }">
         {{ formatRupiah(item.nominal) }}
