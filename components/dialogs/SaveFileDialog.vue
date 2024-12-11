@@ -8,8 +8,8 @@ const props = defineProps({
   detailTitle: String,
   refreshCallback: Function,
   defaultForm: Object,
-  width: null || Number,
-  itemKey: null || String,
+  width: Number,
+  itemKey: String,
 });
 
 const emits = defineEmits(["update:modelValue", "saved"]);
@@ -27,10 +27,23 @@ const validationErrors = ref({});
 const save = async () => {
   refVForm.value?.validate().then(async ({ valid }) => {
     if (!valid) return;
+    const payload = { ...formData.value };
 
     const url = isEditing.value
       ? `${props.path}/${formData.value[props.itemKey || "id"]}`
       : (props.path as string);
+
+    if (payload.image && typeof payload.image === "string")
+      payload.image = null;
+
+    if (payload.cover && typeof payload.cover === "string") {
+      console.log(
+        "formData.value.cover",
+        formData.value.cover,
+        typeof formData.value.cover
+      );
+      payload.cover = null;
+    }
 
     const { errors, success } = await useApi(url, {
       withNotif: true,
@@ -38,7 +51,7 @@ const save = async () => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-      data: formData.value,
+      data: payload,
     });
 
     validationErrors.value = errors ?? {};
@@ -58,7 +71,6 @@ defineExpose({
     isShow.value = true;
     isDetailForm.value = isDetail;
     validationErrors.value = {};
-    console.log("isDetail", isDetail);
     if (currentItem) {
       formData.value = currentItem;
       modalTitle.value = isDetail
