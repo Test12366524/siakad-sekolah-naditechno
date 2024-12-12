@@ -10,6 +10,7 @@ const props = defineProps({
   defaultForm: Object,
   width: null || Number,
   itemKey: null || String,
+  isDataNotValid: null || Boolean,
 });
 
 const emits = defineEmits(["update:modelValue", "saved"]);
@@ -20,16 +21,13 @@ const modalTitle = ref(props.title);
 const isEditing = ref(false);
 const isDetailForm = ref(false);
 const isShow = ref(false);
-
 const bulkData = ref([]);
 
 const formData = ref({ ...props.defaultForm });
 const validationErrors = ref({});
 
 const save = async () => {
-  console.log(props.defaultForm);
   emits("saved");
-  isShow.value = false;
 
   // refVForm.value?.validate().then(async ({ valid }) => {
   //   if (!valid) return;
@@ -59,23 +57,33 @@ const save = async () => {
   // });
 };
 
+const isDataNotValidComputed = computed(() => props.isDataNotValid);
+
+watch(isDataNotValidComputed, (val) => {
+  console.log("isDataNotValidComputed", val);
+});
+
 defineExpose({
   show(currentItem: typeof props.defaultForm, isDetail: boolean = false) {
     isShow.value = true;
     isDetailForm.value = isDetail;
     validationErrors.value = {};
+    formData.value = {};
 
-    if (currentItem) {
-      formData.value = currentItem;
-      modalTitle.value = isDetailForm
-        ? props.detailTitle || "Detail Item"
-        : props.editTitle || "Edit Item";
-      isEditing.value = true;
-    } else {
-      modalTitle.value = props.title || "Add Item";
-      formData.value = { ...props.defaultForm };
-      isEditing.value = false;
-    }
+    // if (currentItem) {
+    //   formData.value = currentItem;
+    //   modalTitle.value = isDetailForm
+    //     ? props.detailTitle || "Detail Item"
+    //     : props.editTitle || "Edit Item";
+    //   isEditing.value = true;
+    // } else {
+    //   modalTitle.value = props.title || "Add Item";
+    //   formData.value = { ...props.defaultForm };
+    //   isEditing.value = false;
+    // }
+  },
+  hide() {
+    isShow.value = false;
   },
 });
 </script>
@@ -112,7 +120,7 @@ defineExpose({
         <VDivider />
 
         <VCardText class="overflow-visible d-flex justify-end flex-wrap gap-4">
-          <VBtn type="submit">
+          <VBtn type="submit" :disabled="isDataNotValidComputed">
             {{ isEditing ? "Update" : "Create" }}
           </VBtn>
         </VCardText>

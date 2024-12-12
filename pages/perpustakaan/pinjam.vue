@@ -24,10 +24,10 @@ const form = {
 };
 
 const category_book = ref();
-useApi("master/category-book/all").then(({ data }) => {
-    category_book.value = data;
-});
 
+useApi("master/category-book/all").then(({ data }) => {
+  category_book.value = data;
+});
 </script>
 
 <template>
@@ -64,7 +64,7 @@ useApi("master/category-book/all").then(({ data }) => {
         v-model="formData.title"
         :error-messages="validationErrors.title"
         label="Judul"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -73,7 +73,7 @@ useApi("master/category-book/all").then(({ data }) => {
         v-model="formData.description"
         :error-messages="validationErrors.description"
         label="Deskripsi"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -82,7 +82,7 @@ useApi("master/category-book/all").then(({ data }) => {
         v-model="formData.author"
         :error-messages="validationErrors.author"
         label="Author"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -94,7 +94,7 @@ useApi("master/category-book/all").then(({ data }) => {
         small-chips
         chips
         show-preview
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -103,7 +103,7 @@ useApi("master/category-book/all").then(({ data }) => {
         v-model="formData.slug"
         :error-messages="validationErrors.slug"
         label="Slug"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -112,17 +112,17 @@ useApi("master/category-book/all").then(({ data }) => {
         v-model="formData.publisher"
         :error-messages="validationErrors.publisher"
         label="Publisher"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="4">
       <VTextField
-        type="date"
         v-model="formData.publish_date"
+        type="date"
         :error-messages="validationErrors.publish_date"
         label="Publish Date"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -131,7 +131,7 @@ useApi("master/category-book/all").then(({ data }) => {
         v-model="formData.bahasa"
         :error-messages="validationErrors.bahasa"
         label="Bahasa"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -140,7 +140,7 @@ useApi("master/category-book/all").then(({ data }) => {
         v-model="formData.halaman"
         :error-messages="validationErrors.halaman"
         label="Halaman"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -149,7 +149,7 @@ useApi("master/category-book/all").then(({ data }) => {
         v-model="formData.panjang"
         :error-messages="validationErrors.panjang"
         label="Panjang"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -158,7 +158,7 @@ useApi("master/category-book/all").then(({ data }) => {
         v-model="formData.lebar"
         :error-messages="validationErrors.lebar"
         label="Lebar"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -167,22 +167,21 @@ useApi("master/category-book/all").then(({ data }) => {
         v-model="formData.berat"
         :error-messages="validationErrors.berat"
         label="Berat"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="4">
       <VLabel>Status</VLabel>
       <VRadioGroup
-        inline
         v-model="formData.status"
+        inline
         :error-messages="validationErrors.status"
       >
-        <VRadio label="Aktif" :value="1"></VRadio>
-        <VRadio label="Nonaktif" :value="0"></VRadio>
+        <VRadio label="Aktif" :value="1" />
+        <VRadio label="Nonaktif" :value="0" />
       </VRadioGroup>
     </VCol>
-
   </SaveFileDialog>
 
   <VRow>

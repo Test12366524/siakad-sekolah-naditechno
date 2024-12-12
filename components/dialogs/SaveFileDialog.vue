@@ -38,6 +38,8 @@ const save = async () => {
 
     if (payload.cover && typeof payload.cover === "string")
       payload.cover = null;
+    if (payload.photo && typeof payload.photo === "string")
+      payload.photo = null;
 
     const { errors, success } = await useApi(url, {
       withNotif: true,

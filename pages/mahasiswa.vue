@@ -75,27 +75,26 @@ useApi("master/jurusan/all").then(({ data }) => {
 
 const role_id = ref();
 const status_action = ref();
+
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
     role_id.value = data.role_id;
-    if(data.role_id == 1 || data.role_id == 2){
-      status_action.value = true;
-    }else{
-      status_action.value = false;
-    }
+    if (data.role_id == 1 || data.role_id == 2) status_action.value = true;
+    else status_action.value = false;
   });
 });
 </script>
 
 <template>
   <SaveFileDialog
-    width="1200"
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isDetail }"
     ref="dialogSave"
+    width="1200"
     path="mahasiswa"
     title="Tambah Mahasiswa"
     edit-title="Edit Mahasiswa"
+    detail-title="Detail Mahasiswa"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
@@ -111,7 +110,7 @@ onMounted(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -127,7 +126,7 @@ onMounted(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="4">
@@ -142,7 +141,7 @@ onMounted(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="4">
@@ -157,7 +156,7 @@ onMounted(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -173,7 +172,7 @@ onMounted(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -182,7 +181,7 @@ onMounted(() => {
         v-model="formData.nim"
         :error-messages="validationErrors.nim"
         label="NIM"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -191,7 +190,7 @@ onMounted(() => {
         v-model="formData.name"
         :error-messages="validationErrors.name"
         label="Nama"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -207,7 +206,7 @@ onMounted(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -216,51 +215,49 @@ onMounted(() => {
         v-model="formData.nik"
         :error-messages="validationErrors.nik"
         label="NIK"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
-    <VCol cols="12" md="2">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.birth_date"
         type="date"
         :error-messages="validationErrors.birth_date"
         label="Tanggal Lahir"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
-    <VCol cols="12" md="2">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.place_of_birth"
         :error-messages="validationErrors.place_of_birth"
         label="Tempat Lahir"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VLabel>Jenis Kelamin</VLabel>
       <VRadioGroup
         v-model="formData.gender"
         inline
         :error-messages="validationErrors.gender"
-        :disabled="isDetail"
+        :readonly="isDetail"
       >
         <VRadio label="Laki-laki" value="L" />
         <VRadio label="Perempuan" value="P" />
       </VRadioGroup>
     </VCol>
 
-    
-
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.entrance_date"
         type="date"
         :error-messages="validationErrors.entrance_date"
         label="Tanggal Masuk"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -270,7 +267,7 @@ onMounted(() => {
         type="email"
         :error-messages="validationErrors.email"
         label="Email"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -280,7 +277,7 @@ onMounted(() => {
         :error-messages="validationErrors.phone_1"
         label="No. Handphone 1"
         type="number"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -292,7 +289,7 @@ onMounted(() => {
         small-chips
         chips
         show-preview
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -302,7 +299,7 @@ onMounted(() => {
         :error-messages="validationErrors.address"
         label="Alamat"
         rows="2"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
   </SaveFileDialog>
@@ -313,7 +310,11 @@ onMounted(() => {
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6">
-              <VBtn v-if="role_id == 1" color="primary" @click="dialogSave.show()">
+              <VBtn
+                v-if="role_id == 1"
+                color="primary"
+                @click="dialogSave.show()"
+              >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -415,7 +416,18 @@ onMounted(() => {
               v-if="role_id == 1 || role_id == 2"
               size="small"
               title="Detail"
-              @click="dialogSave.show({ ...item }, true)"
+              @click="
+                () => {
+                  const payload = { ...item };
+                  payload.entrance_date = new Date(payload.entrance_date)
+                    .toISOString()
+                    .substring(0, 10);
+                  payload.birth_date = new Date(payload.birth_date)
+                    .toISOString()
+                    .substring(0, 10);
+                  dialogSave.show(payload, true);
+                }
+              "
             >
               <VIcon icon="ri-eye-line" />
             </IconBtn>
@@ -423,7 +435,18 @@ onMounted(() => {
               v-if="role_id == 1"
               size="small"
               title="Edit"
-              @click="dialogSave.show({ ...item })"
+              @click="
+                () => {
+                  const payload = { ...item };
+                  payload.entrance_date = new Date(payload.entrance_date)
+                    .toISOString()
+                    .substring(0, 10);
+                  payload.birth_date = new Date(payload.birth_date)
+                    .toISOString()
+                    .substring(0, 10);
+                  dialogSave.show(payload);
+                }
+              "
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>

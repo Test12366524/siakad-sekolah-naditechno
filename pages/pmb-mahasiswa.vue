@@ -46,7 +46,7 @@ const form = {
         v-model="formData.name"
         :error-messages="validationErrors.name"
         label="Nama"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -55,7 +55,7 @@ const form = {
         v-model="formData.nik"
         :error-messages="validationErrors.nik"
         label="NIK"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -65,7 +65,7 @@ const form = {
         v-model="formData.gender"
         inline
         :error-messages="validationErrors.gender"
-        :disabled="isDetail"
+        :readonly="isDetail"
       >
         <VRadio label="Laki-laki" value="L" />
         <VRadio label="Perempuan" value="P" />
@@ -77,7 +77,7 @@ const form = {
         v-model="formData.phone"
         :error-messages="validationErrors.phone"
         label="No. Handphone"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -86,7 +86,7 @@ const form = {
         v-model="formData.pekerjaan"
         :error-messages="validationErrors.pekerjaan"
         label="Pekerjaan"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -96,7 +96,7 @@ const form = {
         v-model="formData.mariage_status"
         inline
         :error-messages="validationErrors.mariage_status"
-        :disabled="isDetail"
+        :readonly="isDetail"
       >
         <VRadio label="Belum Kawin" value="1" />
         <VRadio label="Menikah" value="2" />
@@ -110,7 +110,7 @@ const form = {
         type="email"
         :error-messages="validationErrors.email"
         label="Email"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -119,7 +119,7 @@ const form = {
         v-model="formData.pendidikan_terakhir"
         :error-messages="validationErrors.pendidikan_terakhir"
         label="Pendidikan Terakhir"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -128,7 +128,7 @@ const form = {
         v-model="formData.pengalaman_kursus"
         :error-messages="validationErrors.pengalaman_kursus"
         label="Pengalaman Kursus"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -137,7 +137,7 @@ const form = {
         v-model="formData.pengalaman_organisasi"
         :error-messages="validationErrors.pengalaman_organisasi"
         label="Pengalaman Organisasi"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -146,7 +146,7 @@ const form = {
         v-model="formData.address"
         :error-messages="validationErrors.address"
         label="Alamat"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -158,7 +158,7 @@ const form = {
         small-chips
         chips
         show-preview
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -170,7 +170,7 @@ const form = {
         small-chips
         chips
         show-preview
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -182,7 +182,7 @@ const form = {
         small-chips
         chips
         show-preview
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -194,7 +194,7 @@ const form = {
         small-chips
         chips
         show-preview
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -206,7 +206,7 @@ const form = {
         small-chips
         chips
         show-preview
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -218,7 +218,7 @@ const form = {
         small-chips
         chips
         show-preview
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -230,7 +230,7 @@ const form = {
         small-chips
         chips
         show-preview
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
   </SaveFileDialog>
