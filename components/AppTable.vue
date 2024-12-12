@@ -151,6 +151,21 @@ defineExpose({
       <template #item.nominal="{ item }">
         {{ formatRupiah(item.nominal) }}
       </template>
+      <template #item.file="{ item }">
+        <VBtn
+          v-if="item.file"
+          size="small"
+          class="d-flex justify-center items-center my-2"
+          @click="
+            () => {
+              openFileHandler(item.file);
+            }
+          "
+        >
+          <VIcon icon="ri-eye-line" class="mr-2" /> Buka File
+        </VBtn>
+        <p v-else>-</p>
+      </template>
       <template #item.actions="{ item }">
         <slot name="actions" :item="item" :remove="appTable.removeRowBy" />
       </template>

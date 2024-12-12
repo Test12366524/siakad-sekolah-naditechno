@@ -12,6 +12,7 @@ const props = defineProps({
   previewImage: String, // Parent will bind this for image preview URL
   showPreview: Boolean,
   disabled: Boolean,
+  readonly: Boolean,
 });
 
 // Define emits
@@ -67,6 +68,7 @@ watchEffect(() => {
       :rules="rules"
       :multiple="multiple"
       :disabled="disabled"
+      :readonly="readonly"
       small-chips
       chips
       :error-messages="errorMessages"
