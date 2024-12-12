@@ -20,16 +20,14 @@ const modalTitle = ref(props.title);
 const isEditing = ref(false);
 const isDetailForm = ref(false);
 const isShow = ref(false);
-
+const isDataValid = ref(true);
 const bulkData = ref([]);
 
 const formData = ref({ ...props.defaultForm });
 const validationErrors = ref({});
 
 const save = async () => {
-  console.log(props.defaultForm);
   emits("saved");
-  isShow.value = false;
 
   // refVForm.value?.validate().then(async ({ valid }) => {
   //   if (!valid) return;
@@ -64,18 +62,25 @@ defineExpose({
     isShow.value = true;
     isDetailForm.value = isDetail;
     validationErrors.value = {};
+    formData.value = {};
 
-    if (currentItem) {
-      formData.value = currentItem;
-      modalTitle.value = isDetailForm
-        ? props.detailTitle || "Detail Item"
-        : props.editTitle || "Edit Item";
-      isEditing.value = true;
-    } else {
-      modalTitle.value = props.title || "Add Item";
-      formData.value = { ...props.defaultForm };
-      isEditing.value = false;
-    }
+    // if (currentItem) {
+    //   formData.value = currentItem;
+    //   modalTitle.value = isDetailForm
+    //     ? props.detailTitle || "Detail Item"
+    //     : props.editTitle || "Edit Item";
+    //   isEditing.value = true;
+    // } else {
+    //   modalTitle.value = props.title || "Add Item";
+    //   formData.value = { ...props.defaultForm };
+    //   isEditing.value = false;
+    // }
+  },
+  hide() {
+    isShow.value = false;
+  },
+  setValidationData(state: boolean) {
+    isDataValid.value = state;
   },
 });
 </script>
@@ -112,7 +117,7 @@ defineExpose({
         <VDivider />
 
         <VCardText class="overflow-visible d-flex justify-end flex-wrap gap-4">
-          <VBtn type="submit">
+          <VBtn type="submit" :disabled="isDataValid">
             {{ isEditing ? "Update" : "Create" }}
           </VBtn>
         </VCardText>

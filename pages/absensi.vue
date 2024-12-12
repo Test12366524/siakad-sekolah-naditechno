@@ -15,14 +15,14 @@ const kelas = ref();
 const mata_kuliah = ref();
 const dosen = ref();
 
-const form = {
+const form = ref({
   kelas_id: "",
   jadwal_id: "",
   pertemuan_ke: "",
   mahasiswa_id: "",
   kehadiran: "Hadir",
   description: "",
-};
+});
 
 const pagination = reactive({
   totalItem: 1,
@@ -50,7 +50,7 @@ const bulkData = ref([
 const getMahasiswaByClass = (classId) => {
   const getParams = {
     ...params,
-    kelas_id: form.kelas_id || classId,
+    kelas_id: form.value.kelas_id || classId,
   };
 
   useApi(`mahasiswa${objectToParams(getParams)}`).then(({ data }) => {
@@ -58,14 +58,24 @@ const getMahasiswaByClass = (classId) => {
     pagination.pageTotal = data.pageTotal;
     pagination.page = Number.parseInt(data.currentPage);
     pagination.totalItem = data.total;
-    mahasiswaByClass.value = data.items;
-    bulkData.value = data.items.map((item) => {
+    mahasiswaByClass.value = data.items.map((item) => {
       return {
-        kelas_id: form.kelas_id || classId,
-        jadwal_id: form.jadwal_id,
+        ...item,
+        kelas_id: form.value.kelas_id || classId,
+        jadwal_id: form.value.jadwal_id,
         mahasiswa_id: item.id,
         kehadiran: "Hadir",
-        pertemuan_ke: form.pertemuan_ke,
+        pertemuan_ke: form.value.pertemuan_ke,
+        description: "-",
+      };
+    });
+    bulkData.value = data.items.map((item) => {
+      return {
+        kelas_id: form.value.kelas_id || classId,
+        jadwal_id: form.value.jadwal_id,
+        mahasiswa_id: item.id,
+        kehadiran: 1,
+        pertemuan_ke: form.value.pertemuan_ke,
         description: "-",
       };
     });
@@ -108,14 +118,12 @@ useApi("master/mata-kuliah/all").then(({ data }) => {
 
 const role_id = ref();
 const status_action = ref();
+
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
     role_id.value = data.role_id;
-    if(data.role_id == 1 || data.role_id == 2){
-      status_action.value = true;
-    }else{
-      status_action.value = false;
-    }
+    if (data.role_id == 1 || data.role_id == 2) status_action.value = true;
+    else status_action.value = false;
   });
 });
 
@@ -133,11 +141,11 @@ const headers = [
 const handleInsertBulk = async () => {
   const payload = mahasiswaByClass.value.map((item) => {
     return {
-      kelas_id: form.kelas_id,
-      jadwal_id: form.jadwal_id,
+      kelas_id: form.value.kelas_id,
+      jadwal_id: form.value.jadwal_id,
       mahasiswa_id: item.id,
       kehadiran: item.kehadiran,
-      pertemuan_ke: form.pertemuan_ke,
+      pertemuan_ke: form.value.pertemuan_ke,
       description: item.description,
     };
   });
@@ -154,21 +162,57 @@ const handleInsertBulk = async () => {
     data: request,
   });
 
-  if (success) tableRef.value.refresh();
+  if (success) {
+    tableRef.value.refresh();
+    bulkingDialog.value.hide();
+  }
 };
+
+const handleShowBulkDialog = () => {
+  form.value = {
+    kelas_id: "",
+    jadwal_id: "",
+    pertemuan_ke: "",
+    mahasiswa_id: "",
+    kehadiran: "Hadir",
+    description: "",
+  };
+  mahasiswaByClass.value = [];
+  bulkingDialog.value.show();
+};
+
+watch(
+  [form],
+  ([newValueForm]) => {
+    const isPertemuanValid =
+      newValueForm.pertemuan_ke !== "" &&
+      !isNaN(Number.parseInt(newValueForm.pertemuan_ke)) &&
+      Number.parseInt(newValueForm.pertemuan_ke) < 0;
+
+    const isValid =
+      newValueForm.kelas_id && newValueForm.jadwal_id && isPertemuanValid;
+
+    bulkingDialog.value.setValidationData(isValid);
+  },
+  {
+    deep: true,
+  }
+);
 </script>
 
 <template>
   <SaveFileDialog
     v-if="tableRef"
-    v-slot="{ formData, validationErrors, isEditing }"
+    v-slot="{ formData, validationErrors, isDetail }"
     ref="dialogSave"
     width="1200"
     path="absensi"
     title="Tambah Absensi"
     edit-title="Edit Absensi"
+    detail-title="Detail Absensi"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
+    :width="900"
   >
     <VCol cols="12" md="4">
       <VAutocomplete
@@ -183,6 +227,7 @@ const handleInsertBulk = async () => {
         required
         clearable
         clear-icon="ri-close-line"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="4">
@@ -198,6 +243,7 @@ const handleInsertBulk = async () => {
         required
         clearable
         clear-icon="ri-close-line"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="4">
@@ -207,6 +253,7 @@ const handleInsertBulk = async () => {
         :error-messages="validationErrors.pertemuan_ke"
         label="Pertemuan Ke"
         density="compact"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="12">
@@ -222,6 +269,7 @@ const handleInsertBulk = async () => {
         required
         clearable
         clear-icon="ri-close-line"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="12">
@@ -230,6 +278,7 @@ const handleInsertBulk = async () => {
         v-model="formData.kehadiran"
         inline
         :error-messages="validationErrors.kehadiran"
+        :readonly="isDetail"
       >
         <VRadio label="Hadir" value="Hadir" />
         <VRadio label="Izin" value="Izin" />
@@ -238,7 +287,11 @@ const handleInsertBulk = async () => {
       </VRadioGroup>
     </VCol>
     <VCol cols="12" md="12">
-      <VTextarea v-model="formData.description" label="Deskripsi" />
+      <VTextarea
+        v-model="formData.description"
+        :readonly="isDetail"
+        label="Deskripsi"
+      />
     </VCol>
   </SaveFileDialog>
 
@@ -273,7 +326,11 @@ const handleInsertBulk = async () => {
         clear-icon="ri-close-line"
         @update:model-value="
           (kelas_id) => {
-            getMahasiswaByClass(kelas_id);
+            if (kelas_id) {
+              getMahasiswaByClass(kelas_id);
+            } else {
+              mahasiswaByClass = [];
+            }
             form.kelas_id = kelas_id;
           }
         "
@@ -328,8 +385,8 @@ const handleInsertBulk = async () => {
               v-model="item.description"
               label="Keterangan"
               density="compact"
-              @update:model-value="(value) => {}"
               :value="item.description || '-'"
+              @update:model-value="(value) => {}"
             />
           </div>
         </template>
@@ -343,8 +400,8 @@ const handleInsertBulk = async () => {
             required
             clearable
             clear-icon="ri-close-line"
+            :value="item.kehadiran || 'Hadir'"
             @update:model-value="(value) => {}"
-             :value="item.kehadiran || 'Hadir'"
           />
         </template>
         <template #bottom>
@@ -391,11 +448,19 @@ const handleInsertBulk = async () => {
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6" class="d-flex gap-4">
-              <VBtn v-if="role_id == 1 || role_id == 2" color="primary" @click="dialogSave.show()">
+              <VBtn
+                v-if="role_id == 1 || role_id == 2"
+                color="primary"
+                @click="dialogSave.show()"
+              >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data Single
               </VBtn>
-              <VBtn v-if="role_id == 1 || role_id == 2" color="primary" @click="bulkingDialog.show()">
+              <VBtn
+                v-if="role_id == 1 || role_id == 2"
+                color="primary"
+                @click="handleShowBulkDialog"
+              >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data Multiple
               </VBtn>
@@ -506,6 +571,19 @@ const handleInsertBulk = async () => {
       >
         <template #actions="{ item, remove }">
           <div v-if="role_id == 1 || role_id == 2" class="d-flex gap-1">
+            <IconBtn
+              v-if="role_id == 1 || role_id == 2"
+              size="small"
+              title="Detail"
+              @click="
+                () => {
+                  const payload = { ...item };
+                  dialogSave.show(payload, true);
+                }
+              "
+            >
+              <VIcon icon="ri-eye-line" />
+            </IconBtn>
             <IconBtn size="small" @click="dialogSave.show({ ...item })">
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
