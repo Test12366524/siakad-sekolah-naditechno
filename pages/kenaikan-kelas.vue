@@ -495,13 +495,6 @@ const handleInsertBulk = async () => {
       >
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
-            <IconBtn
-              size="small"
-              title="Detail"
-              @click="dialogSave.show({ ...item }, true)"
-            >
-              <VIcon icon="ri-eye-line" />
-            </IconBtn>
             <IconBtn size="small" @click="dialogSave.show({ ...item })">
               <VIcon icon="ri-pencil-line" />
             </IconBtn>

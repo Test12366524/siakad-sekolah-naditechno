@@ -18,6 +18,8 @@ const props = defineProps<{
   gender?: string | number | null;
   dosen_id?: string | number | null;
   mata_kuliah_id?: string | number | null;
+  periode_id?: string | number | null;
+  semester_id?: string | number | null;
 }>();
 
 // Fungsi untuk format Rupiah
@@ -35,6 +37,8 @@ const appTable = useAppTable({
   gender: props.gender,
   mata_kuliah_id: props.mata_kuliah_id,
   dosen_id: props.dosen_id,
+  semester_id: props.semester_id,
+  periode_id: props.periode_id,
 });
 
 // Watch for changes in prop and update the internal kelas_id
@@ -69,6 +73,24 @@ watch(
   () => props.mata_kuliah_id,
   (newValue) => {
     appTable.mata_kuliah_id.value = newValue ?? "";
+    if (newValue != null) appTable.fetchItems(true);
+  },
+  { immediate: true }
+);
+
+watch(
+  () => props.semester_id,
+  (newValue) => {
+    appTable.semester_id.value = newValue ?? "";
+    if (newValue != null) appTable.fetchItems(true);
+  },
+  { immediate: true }
+);
+
+watch(
+  () => props.periode_id,
+  (newValue) => {
+    appTable.periode_id.value = newValue ?? "";
     if (newValue != null) appTable.fetchItems(true);
   },
   { immediate: true }

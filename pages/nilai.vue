@@ -12,6 +12,8 @@ const kelas = ref();
 const bulkingDialog = ref();
 const mahasiswaTableRef = ref();
 
+
+
 const form = {
   kelas_id: "",
   dosen_id: "",
@@ -41,8 +43,17 @@ useApi("master/mata-kuliah/all").then(({ data }) => {
   mata_kuliah.value = data;
 });
 
+const role_id = ref();
+const status_action = ref();
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {});
+  useApi("auth/me").then(({ data }) => {
+    role_id.value = data.role_id;
+    if(data.role_id == 1 || data.role_id == 2){
+      status_action.value = true;
+    }else{
+      status_action.value = false;
+    }
+  });
 });
 
 const mata_kuliah_id = ref<number | null>(null);
@@ -478,11 +489,11 @@ const handleInsertBulk = async () => {
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6" class="d-flex gap-4">
-              <VBtn color="primary" @click="dialogSave.show()">
+              <VBtn v-if="role_id == 1 || role_id == 2" color="primary" @click="dialogSave.show()">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data Single
               </VBtn>
-              <VBtn color="primary" @click="bulkingDialog.show()">
+              <VBtn v-if="role_id == 1 || role_id == 2" color="primary" @click="bulkingDialog.show()">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data Multiple
               </VBtn>
@@ -539,7 +550,7 @@ const handleInsertBulk = async () => {
         ref="tableRef"
         title="Data Nilai"
         path="nilai"
-        :with-actions="true"
+        :with-actions="status_action"
         :kelas_id="kelas_id"
         :dosen_id="dosen_id"
         :mata_kuliah_id="mata_kuliah_id"
@@ -603,17 +614,11 @@ const handleInsertBulk = async () => {
       >
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
-            <IconBtn
-              size="small"
-              title="Detail"
-              @click="dialogSave.show({ ...item }, true)"
-            >
-              <VIcon icon="ri-eye-line" />
-            </IconBtn>
-            <IconBtn size="small" @click="dialogSave.show({ ...item })">
+            <IconBtn v-if="role_id == 1 || role_id == 2" size="small" @click="dialogSave.show({ ...item })">
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              v-if="role_id == 1 || role_id == 2"
               size="small"
               @click="
                 confirmDialog.show({

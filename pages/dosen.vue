@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VCol, VTextField } from "vuetify/lib/components/index.mjs";
+import { VCol, VTextarea, VTextField } from "vuetify/lib/components/index.mjs";
 
 const { confirmDialog } = useCommonStore();
 
@@ -7,17 +7,16 @@ const dialogSave = ref();
 const tableRef = ref();
 
 const form = {
-  name: "",
   nidn: "",
   nip: "",
-  email_1: "",
-  email_2: "",
-  phone_1: "",
-  phone_2: "",
-  profile_sinta: "",
-  profilegoogle_scholar: "",
-  join_date: "",
-  profile_scopus: "",
+  name: "",
+  gender: "L",
+  birthdate: "",
+  place_of_birth: "",
+  email: "",
+  phone: "",
+  address: "",
+  photo: "",
 };
 </script>
 
@@ -32,15 +31,6 @@ const form = {
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.name"
-        :error-messages="validationErrors.name"
-        label="Nama"
-        :disabled="isDetail"
-      />
-    </VCol>
-
     <VCol cols="12" md="6">
       <VTextField
         v-model="formData.nidn"
@@ -61,78 +51,86 @@ const form = {
 
     <VCol cols="12" md="6">
       <VTextField
-        v-model="formData.join_date"
+        v-model="formData.name"
+        :error-messages="validationErrors.name"
+        label="Nama"
+        :disabled="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="6">
+      <VLabel>Jenis Kelamin</VLabel>
+      <VRadioGroup
+        v-model="formData.gender"
+        inline
+        :error-messages="validationErrors.gender"
+        :disabled="isDetail"
+      >
+        <VRadio label="Laki-laki" value="L" />
+        <VRadio label="Perempuan" value="P" />
+      </VRadioGroup>
+    </VCol>
+
+    <VCol cols="12" md="6">
+      <VTextField
+        v-model="formData.birth_date"
         type="date"
-        :error-messages="validationErrors.join_date"
-        label="Tanggal Masuk"
+        :error-messages="validationErrors.birth_date"
+        label="Tanggal Lahir"
         :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        v-model="formData.email_1"
+        v-model="formData.place_of_birth"
+        :error-messages="validationErrors.place_of_birth"
+        label="Tempat Lahir"
+        :disabled="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="6">
+      <VTextField
+        v-model="formData.email"
         type="email"
-        :error-messages="validationErrors.email_1"
-        label="Email 1"
+        :error-messages="validationErrors.email"
+        label="Email"
         :disabled="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        v-model="formData.email_2"
-        type="email"
-        :error-messages="validationErrors.email_2"
-        label="Email 2"
+        v-model="formData.phone"
+        :error-messages="validationErrors.phone"
+        label="No. Handphone"
         :disabled="isDetail"
       />
     </VCol>
 
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.phone_1"
-        :error-messages="validationErrors.phone_1"
-        label="No. HP 1"
+    <VCol cols="12" md="12">
+      <VTextarea
+        v-model="formData.address"
+        :error-messages="validationErrors.address"
+        label="Alamat"
         :disabled="isDetail"
       />
     </VCol>
+    
 
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.phone_2"
-        :error-messages="validationErrors.phone_2"
-        label="No. HP 2"
+    <VCol cols="12" md="12" class="grid grid-cols-2">
+      <FileInput
+        v-model="formData.photo"
+        accept="image/*"
+        label="Upload Foto"
+        small-chips
+        chips
+        show-preview
         :disabled="isDetail"
       />
     </VCol>
-
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.profile_sinta"
-        :error-messages="validationErrors.profile_sinta"
-        label="Profile Sinta"
-        :disabled="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.profilegoogle_scholar"
-        :error-messages="validationErrors.profilegoogle_scholar"
-        label="Profile Google Scholar"
-        :disabled="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.profile_scopus"
-        :error-messages="validationErrors.profile_scopus"
-        label="Profile Scopus"
-        :disabled="isDetail"
-      />
-    </VCol>
+    
   </SaveDialog>
 
   <VRow>

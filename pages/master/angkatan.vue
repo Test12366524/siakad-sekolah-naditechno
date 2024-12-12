@@ -9,8 +9,7 @@ const tableRef = ref();
 
 const form = {
   name: "",
-  start_date: "",
-  until_date: "",
+  angkatan: "",
   status: 1,
 };
 </script>
@@ -19,8 +18,8 @@ const form = {
   <SaveDialog
     v-if="tableRef"
     path="master/periode"
-    title="Tambah Periode"
-    edit-title="Edit Periode"
+    title="Tambah Angkatan"
+    edit-title="Edit Angkatan"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     :default-form="form"
@@ -35,21 +34,11 @@ const form = {
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol cols="12">
       <VTextField
-        type="date"
-        :error-messages="validationErrors.start_date"
-        v-model="formData.start_date"
-        label="Tanggal Mulai"
-      />
-    </VCol>
-
-    <VCol cols="12" md="6">
-      <VTextField
-        type="date"
-        :error-messages="validationErrors.until_date"
-        v-model="formData.until_date"
-        label="Tanggal Akhir"
+        :error-messages="validationErrors.angkatan"
+        v-model="formData.angkatan"
+        label="Angkatan"
       />
     </VCol>
 
@@ -86,23 +75,18 @@ const form = {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Periode"
+        title="Data Angkatan"
         path="master/periode"
         :with-actions="true"
         :headers="[
           {
-            title: 'Nama',
+            title: 'Tahun Ajaran',
             key: 'name',
             sortable: false,
           },
           {
-            title: 'Tanggal Mulai',
-            key: 'start_date',
-            sortable: false,
-          },
-          {
-            title: 'Tanggal Akhir',
-            key: 'until_date',
+            title: 'Angkatan',
+            key: 'angkatan',
             sortable: false,
           },
           {
@@ -123,8 +107,8 @@ const form = {
             <IconBtn
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Periode',
-                  message: `Anda yakin ingin menghapus Periode ${
+                  title: 'Hapus Angkatan',
+                  message: `Anda yakin ingin menghapus Angkatan ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

@@ -32,9 +32,16 @@ useApi("master/mata-kuliah/all").then(({ data }) => {
     mata_kuliah.value = data;
 });
 
+const role_id = ref();
+const status_action = ref();
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
-    console.log(data);
+    role_id.value = data.role_id;
+    if(data.role_id == 1 || data.role_id == 2){
+      status_action.value = true;
+    }else{
+      status_action.value = false;
+    }
   });
 });
 
@@ -178,7 +185,7 @@ const dosen_id = ref<number | null>(null);
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6">
-              <VBtn @click="dialogSave.show()" color="primary">
+              <VBtn v-if="role_id == 1 || role_id == 2" @click="dialogSave.show()" color="primary">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -223,7 +230,7 @@ const dosen_id = ref<number | null>(null);
         path="lms"
         :dosen_id = "dosen_id"
         :mata_kuliah_id = "mata_kuliah_id"
-        :with-actions="true"
+        :with-actions="status_action"
         :headers="[
           {
             title: 'Dosen',
@@ -260,12 +267,14 @@ const dosen_id = ref<number | null>(null);
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
+              v-if="role_id == 1 || role_id == 2"
               @click="dialogSave.show({ ...item })"
               size="small"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              v-if="role_id == 1 || role_id == 2"
               @click="
                 confirmDialog.show({
                   title: 'Hapus LMS',

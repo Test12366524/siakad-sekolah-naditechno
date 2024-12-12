@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { VCol, VTextField } from "vuetify/lib/components/index.mjs";
+import { VCol, VTextarea, VTextField } from "vuetify/lib/components/index.mjs";
 
 const { confirmDialog } = useCommonStore();
 
@@ -8,64 +8,41 @@ const dialogSave = ref();
 const tableRef = ref();
 const dosen = ref();
 const mata_kuliah = ref();
-const semester = ref();
-
-const days = ref([
-  { id: '0', text: "Senin" },
-  { id: '1', text: "Selasa" },
-  { id: '2', text: "Rabu" },
-  { id: '3', text: "Kamis" },
-  { id: '4', text: "Jumat" },
-  { id: '5', text: "Sabtu" },
-  { id: '6', text: "Minggu" },
-]);
 
 const form = {
-  dosen_id: undefined,
-  mata_kuliah_id: undefined,
-  semester_id: undefined,
-  hari: "",
-  dari_jam: "",
-  ke_jam: "",
-  status: 1,
+  mata_kuliah_id: "",
+  dosen_id: "",
+  title: "",
+  description: "",
+  file_pdf: "",
 };
 
 useApi("master/dosen/all").then(({ data }) => {
-  dosen.value = data;
-});
-
-useApi("master/semester/all").then(({ data }) => {
-  semester.value = data;
+    dosen.value = data;
 });
 
 useApi("master/mata-kuliah/all").then(({ data }) => {
-  mata_kuliah.value = data;
+    mata_kuliah.value = data;
 });
 
-const role_id = ref();
-const status_action = ref();
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
-    role_id.value = data.role_id;
-    if(data.role_id == 1){
-      status_action.value = true;
-    }else{
-      status_action.value = false;
-    }
+    console.log(data);
   });
 });
 
 const mata_kuliah_id = ref<number | null>(null);
 const dosen_id = ref<number | null>(null);
-const semester_id = ref<number | null>(null);
+
 </script>
 
 <template>
-  <SaveDialog
+  <SaveFileDialog
+    width="1200"
     v-if="tableRef"
-    path="jadwal-mata-kuliah"
-    title="Tambah Jadwal"
-    edit-title="Edit Jadwal"
+    path="silabus"
+    title="Tambah Silabus"
+    edit-title="Edit Silabus"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     :default-form="form"
@@ -86,7 +63,6 @@ const semester_id = ref<number | null>(null);
         clear-icon="ri-close-line"
       />
     </VCol>
-    
     <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.mata_kuliah_id"
@@ -102,70 +78,32 @@ const semester_id = ref<number | null>(null);
         clear-icon="ri-close-line"
       />
     </VCol>
-
-    <VCol cols="12" md="6">
-      <VAutocomplete
-        v-model="formData.semester_id"
-        label="Semester"
-        density="compact"
-        :error-messages="validationErrors.semester_id"
-        placeholder="Pilih Semester"
-        :items="semester"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
-      />
-    </VCol>
-
-    <VCol cols="12" md="6">
-      <VAutocomplete
-        v-model="formData.hari"
-        label="Hari"
-        density="compact"
-        :error-messages="validationErrors.hari"
-        placeholder="Pilih Hari"
-        :items="days"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
-      />
-    </VCol>
-
-    <VCol cols="6">
+    <VCol cols="12" md="12">
       <VTextField
-        type="time"
-        :error-messages="validationErrors.dari_jam"
-        v-model="formData.dari_jam"
-        label="Dari Jam"
+        :error-messages="validationErrors.title"
+        v-model="formData.title"
+        label="Judul"
       />
     </VCol>
 
-    <VCol cols="6">
-      <VTextField
-        type="time"
-        :error-messages="validationErrors.ke_jam"
-        v-model="formData.ke_jam"
-        label="Ke Jam"
+    <VCol cols="12" md="12">
+      <VTextarea
+        v-model="formData.description"
+        label="Deskripsi"
       />
     </VCol>
 
-    <VCol cols="12" md="6">
-      <VLabel>Status</VLabel>
-      <VRadioGroup
-        inline
-        v-model="formData.status"
-        :error-messages="validationErrors.status"
-      >
-        <VRadio label="Aktif" :value="1"></VRadio>
-        <VRadio label="Nonaktif" :value="0"></VRadio>
-      </VRadioGroup>
+    <VCol cols="12" md="12">
+      <FileInput
+        v-model="formData.file_pdf"
+        accept="pdf/*"
+        label="Foto PDF"
+        small-chips
+        chips
+      />
     </VCol>
 
-  </SaveDialog>
+  </SaveFileDialog>
 
   <VRow>
     <VCol cols="12">
@@ -173,12 +111,12 @@ const semester_id = ref<number | null>(null);
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6">
-              <VBtn v-if="role_id == 1" @click="dialogSave.show()" color="primary">
+              <VBtn @click="dialogSave.show()" color="primary">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
             </VCol>
-            <VCol cols="12" md="2" style="margin-top: 5px;">
+            <VCol cols="12" md="3" style="margin-top: 5px;">
               <VAutocomplete
                 v-model="dosen_id"
                 label="Dosen"
@@ -192,27 +130,13 @@ const semester_id = ref<number | null>(null);
                 clear-icon="ri-close-line"
               />
             </VCol>
-            <VCol cols="12" md="2" style="margin-top: 5px;">
+            <VCol cols="12" md="3" style="margin-top: 5px;">
               <VAutocomplete
                 v-model="mata_kuliah_id"
                 label="Mata Kuliah"
                 density="compact"
                 placeholder="Pilih Mata Kuliah"
                 :items="mata_kuliah"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="2" style="margin-block-start: 5px">
-              <VAutocomplete
-                v-model="semester_id"
-                label="Semester"
-                density="compact"
-                placeholder="Pilih Semester"
-                :items="semester"
                 item-title="text"
                 item-value="id"
                 required
@@ -228,12 +152,11 @@ const semester_id = ref<number | null>(null);
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Jadwal"
-        path="jadwal-mata-kuliah"
-        :with-actions="status_action"
-        :dosen_id="dosen_id"
-        :mata_kuliah_id="mata_kuliah_id"
-        :semester_id="semester_id"
+        title="Data Silabus"
+        path="silabus"
+        :dosen_id = "dosen_id"
+        :mata_kuliah_id = "mata_kuliah_id"
+        :with-actions="true"
         :headers="[
           {
             title: 'Dosen',
@@ -246,23 +169,18 @@ const semester_id = ref<number | null>(null);
             sortable: false,
           },
           {
-            title: 'Hari',
-            key: 'hari_desc',
+            title: 'Judul',
+            key: 'title',
             sortable: false,
           },
           {
-            title: 'Mulai Dari',
-            key: 'dari_jam',
+            title: 'Deskripsi',
+            key: 'description',
             sortable: false,
           },
           {
-            title: 'Sampai',
-            key: 'ke_jam',
-            sortable: false,
-          },
-          {
-            title: 'Semester',
-            key: 'semester_name',
+            title: 'File PDF',
+            key: 'title',
             sortable: false,
           },
         ]"
@@ -270,18 +188,16 @@ const semester_id = ref<number | null>(null);
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              v-if="role_id == 1"
-              @click="dialogSave.show({ ...item, status_desc: undefined, hari_desc: undefined })"
+              @click="dialogSave.show({ ...item })"
               size="small"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
-              v-if="role_id == 1"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Jadwal',
-                  message: `Anda yakin ingin menghapus Jadwal ${
+                  title: 'Hapus Silabus',
+                  message: `Anda yakin ingin menghapus Silabus ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

@@ -8,6 +8,8 @@ const dialogSave = ref();
 const tableRef = ref();
 const fakultas = ref();
 const kelas = ref();
+const semester = ref();
+const periode = ref();
 
 const jurusans = ref();
 
@@ -26,13 +28,16 @@ const genders = ref([
 ]);
 
 const kelas_id = ref<number | null>(null);
+const semester_id = ref<number | null>(null);
+const periode_id = ref<number | null>(null);
 const gender = ref("");
 
 const form = {
   fakultas_id: undefined,
   jurusan_id: undefined,
   kelas_id: undefined,
-  education_level: "",
+  semester_id: undefined,
+  periode_id: undefined,
   name: "",
   birth_date: "",
   place_of_birth: "",
@@ -45,6 +50,7 @@ const form = {
   phone_1: "",
   phone_2: "",
   address: "",
+  photo: "",
 };
 
 useApi("master/fakultas/all").then(({ data }) => {
@@ -55,13 +61,35 @@ useApi("master/kelas/all").then(({ data }) => {
   kelas.value = data;
 });
 
+useApi("master/semester/all").then(({ data }) => {
+  semester.value = data;
+});
+
+useApi("master/periode/all").then(({ data }) => {
+  periode.value = data;
+});
+
 useApi("master/jurusan/all").then(({ data }) => {
   jurusans.value = data;
+});
+
+const role_id = ref();
+const status_action = ref();
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    role_id.value = data.role_id;
+    if(data.role_id == 1 || data.role_id == 2){
+      status_action.value = true;
+    }else{
+      status_action.value = false;
+    }
+  });
 });
 </script>
 
 <template>
   <SaveDialog
+    width="1200"
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isDetail }"
     ref="dialogSave"
@@ -71,7 +99,38 @@ useApi("master/jurusan/all").then(({ data }) => {
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
+      <VAutocomplete
+        v-model="formData.semester_id"
+        label="Semester"
+        :error-messages="validationErrors.semester_id"
+        placeholder="Pilih Semester"
+        :items="semester"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :disabled="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="4">
+      <VAutocomplete
+        v-model="formData.periode_id"
+        label="Periode"
+        :error-messages="validationErrors.periode_id"
+        placeholder="Pilih Periode"
+        :items="periode"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :disabled="isDetail"
+      />
+    </VCol>
+    <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.fakultas_id"
         label="Fakultas"
@@ -86,7 +145,7 @@ useApi("master/jurusan/all").then(({ data }) => {
         :disabled="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.jurusan_id"
         label="Jurusan"
@@ -102,16 +161,7 @@ useApi("master/jurusan/all").then(({ data }) => {
       />
     </VCol>
 
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.education_level"
-        :error-messages="validationErrors.education_level"
-        label="Edukasi Level"
-        :disabled="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.kelas_id"
         label="Kelas"
@@ -127,7 +177,16 @@ useApi("master/jurusan/all").then(({ data }) => {
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
+      <VTextField
+        v-model="formData.nim"
+        :error-messages="validationErrors.nim"
+        label="NIM"
+        :disabled="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="4">
       <VTextField
         v-model="formData.name"
         :error-messages="validationErrors.name"
@@ -136,7 +195,7 @@ useApi("master/jurusan/all").then(({ data }) => {
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.religion"
         label="Agama"
@@ -152,7 +211,16 @@ useApi("master/jurusan/all").then(({ data }) => {
       />
     </VCol>
 
-    <VCol cols="12" md="3">
+    <VCol cols="12" md="4">
+      <VTextField
+        v-model="formData.nik"
+        :error-messages="validationErrors.nik"
+        label="NIK"
+        :disabled="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="2">
       <VTextField
         v-model="formData.birth_date"
         type="date"
@@ -162,7 +230,7 @@ useApi("master/jurusan/all").then(({ data }) => {
       />
     </VCol>
 
-    <VCol cols="12" md="3">
+    <VCol cols="12" md="2">
       <VTextField
         v-model="formData.place_of_birth"
         :error-messages="validationErrors.place_of_birth"
@@ -171,7 +239,7 @@ useApi("master/jurusan/all").then(({ data }) => {
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VLabel>Jenis Kelamin</VLabel>
       <VRadioGroup
         v-model="formData.gender"
@@ -184,16 +252,9 @@ useApi("master/jurusan/all").then(({ data }) => {
       </VRadioGroup>
     </VCol>
 
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.nik"
-        :error-messages="validationErrors.nik"
-        label="NIK"
-        :disabled="isDetail"
-      />
-    </VCol>
+    
 
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VTextField
         v-model="formData.entrance_date"
         type="date"
@@ -203,7 +264,7 @@ useApi("master/jurusan/all").then(({ data }) => {
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VTextField
         v-model="formData.email"
         type="email"
@@ -213,7 +274,7 @@ useApi("master/jurusan/all").then(({ data }) => {
       />
     </VCol>
 
-    <VCol cols="12" md="3">
+    <VCol cols="12" md="4">
       <VTextField
         v-model="formData.phone_1"
         :error-messages="validationErrors.phone_1"
@@ -223,12 +284,14 @@ useApi("master/jurusan/all").then(({ data }) => {
       />
     </VCol>
 
-    <VCol cols="12" md="3">
-      <VTextField
-        v-model="formData.phone_2"
-        :error-messages="validationErrors.phone_2"
-        label="No. Handphone 2"
-        type="number"
+    <VCol cols="12" md="4" class="grid grid-cols-2">
+      <FileInput
+        v-model="formData.foto"
+        accept="image/*"
+        label="Upload Foto"
+        small-chips
+        chips
+        show-preview
         :disabled="isDetail"
       />
     </VCol>
@@ -250,12 +313,12 @@ useApi("master/jurusan/all").then(({ data }) => {
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6">
-              <VBtn color="primary" @click="dialogSave.show()">
+              <VBtn v-if="role_id == 1" color="primary" @click="dialogSave.show()">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
             </VCol>
-            <VCol cols="12" md="3" style="margin-block-start: 5px">
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="kelas_id"
                 label="Kelas"
@@ -268,12 +331,25 @@ useApi("master/jurusan/all").then(({ data }) => {
                 clear-icon="ri-close-line"
               />
             </VCol>
-            <VCol cols="12" md="3" style="margin-block-start: 5px">
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
-                v-model="gender"
-                label="Jenis Kelamin"
-                placeholder="Pilih Jenis Kelamin"
-                :items="genders"
+                v-model="periode_id"
+                label="Tahun Ajaran"
+                placeholder="Pilih Tahun Ajaran"
+                :items="periode"
+                item-title="text"
+                item-value="id"
+                required
+                clearable
+                clear-icon="ri-close-line"
+              />
+            </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
+              <VAutocomplete
+                v-model="semester_id"
+                label="Semester"
+                placeholder="Pilih Semester"
+                :items="semester"
                 item-title="text"
                 item-value="id"
                 required
@@ -291,10 +367,26 @@ useApi("master/jurusan/all").then(({ data }) => {
         ref="tableRef"
         title="Data Mahasiswa"
         path="mahasiswa"
-        :with-actions="true"
+        :with-actions="status_action"
         :kelas_id="kelas_id"
-        :gender="gender"
+        :periode_id="periode_id"
+        :semester_id="semester_id"
         :headers="[
+          {
+            title: 'Tahun Ajaran',
+            key: 'periode_name',
+            sortable: false,
+          },
+          {
+            title: 'Angkatan',
+            key: 'periode_angkatan',
+            sortable: false,
+          },
+          {
+            title: 'Semester',
+            key: 'semester_name',
+            sortable: false,
+          },
           {
             title: 'Kelas',
             key: 'kelas_name',
@@ -311,11 +403,6 @@ useApi("master/jurusan/all").then(({ data }) => {
             sortable: false,
           },
           {
-            title: 'Agama',
-            key: 'religion',
-            sortable: false,
-          },
-          {
             title: 'Jenis Kelamin',
             key: 'gender',
             sortable: false,
@@ -325,6 +412,7 @@ useApi("master/jurusan/all").then(({ data }) => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
+              v-if="role_id == 1 || role_id == 2"
               size="small"
               title="Detail"
               @click="dialogSave.show({ ...item }, true)"
@@ -332,6 +420,7 @@ useApi("master/jurusan/all").then(({ data }) => {
               <VIcon icon="ri-eye-line" />
             </IconBtn>
             <IconBtn
+              v-if="role_id == 1"
               size="small"
               title="Edit"
               @click="dialogSave.show({ ...item })"
@@ -339,6 +428,7 @@ useApi("master/jurusan/all").then(({ data }) => {
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              v-if="role_id == 1"
               size="small"
               title="Hapus"
               @click="

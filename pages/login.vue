@@ -134,15 +134,12 @@ const onSubmit = () => {
                 <div
                   class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2"
                 >
-                  <NuxtLink
+                  <!-- <NuxtLink
                     class="text-primary"
                     :to="{ name: 'forgot-password' }"
                   >
                     Lupa password?
-                  </NuxtLink>
-                  <NuxtLink class="text-primary" :to="{ name: 'register' }">
-                    Tidak memiliki akun?
-                  </NuxtLink>
+                  </NuxtLink> -->
                 </div>
 
                 <VBtn block type="submit"> Login </VBtn>

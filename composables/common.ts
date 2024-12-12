@@ -5,6 +5,8 @@ export function useAppTable(conf: {
   gender?: string | number | null;
   dosen_id?: string | number | null;
   mata_kuliah_id?: string | number | null;
+  periode_id?: string | number | null;
+  semester_id?: string | number | null;
 }) {
   const loading = ref(false);
   const limit = ref(conf.limit || 15);
@@ -16,6 +18,8 @@ export function useAppTable(conf: {
   const gender = ref(conf.gender || "");
   const dosen_id = ref(conf.dosen_id || "");
   const mata_kuliah_id = ref(conf.mata_kuliah_id || "");
+  const periode_id = ref(conf.periode_id || "");
+  const semester_id = ref(conf.semester_id || "");
 
   const { snackbar } = useCommonStore();
 
@@ -56,6 +60,14 @@ export function useAppTable(conf: {
       params.dosen_id = dosen_id.value;
 
     // Only add kelas_id if it has a valid value
+    if (periode_id.value && periode_id.value !== "" && Number(periode_id.value) > 0)
+      params.periode_id = periode_id.value;
+
+    // Only add kelas_id if it has a valid value
+    if (semester_id.value && semester_id.value !== "" && Number(semester_id.value) > 0)
+      params.semester_id = semester_id.value;
+
+    // Only add kelas_id if it has a valid value
     if (
       mata_kuliah_id.value &&
       mata_kuliah_id.value !== "" &&
@@ -88,6 +100,8 @@ export function useAppTable(conf: {
     gender,
     dosen_id,
     mata_kuliah_id,
+    periode_id,
+    semester_id,
   };
 }
 

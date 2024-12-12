@@ -48,9 +48,23 @@ useApi("master/kelas/all").then(({ data }) => {
   kelas.value = data;
 });
 
+const role_id = ref();
+const status_action = ref();
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    role_id.value = data.role_id;
+    if(data.role_id == 1){
+      status_action.value = true;
+    }else{
+      status_action.value = false;
+    }
+  });
+});
+
 const mata_kuliah_id = ref<number | null>(null);
 const dosen_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
+const semester_id = ref<number | null>(null);
 </script>
 
 <template>
@@ -118,8 +132,8 @@ const kelas_id = ref<number | null>(null);
       <VCard>
         <VCardItem>
           <VRow>
-            <VCol cols="12" md="6">
-              <VBtn @click="dialogSave.show()" color="primary">
+            <VCol cols="12" md="4">
+              <VBtn v-if="role_id == 1" @click="dialogSave.show()" color="primary">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -166,6 +180,20 @@ const kelas_id = ref<number | null>(null);
                 clear-icon="ri-close-line"
               />
             </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
+              <VAutocomplete
+                v-model="semester_id"
+                density="compact"
+                label="Semester"
+                placeholder="Pilih Semester"
+                :items="semester"
+                item-title="text"
+                item-value="id"
+                required
+                clearable
+                clear-icon="ri-close-line"
+              />
+            </VCol>
           </VRow>
         </VCardItem>
       </VCard>
@@ -176,10 +204,11 @@ const kelas_id = ref<number | null>(null);
         ref="tableRef"
         title="Data Kelas Jadwal"
         path="kelas-jadwal"
-        :with-actions="true"
+        :with-actions="status_action"
         :kelas_id="kelas_id"
         :dosen_id="dosen_id"
         :mata_kuliah_id="mata_kuliah_id"
+        :semester_id="semester_id"
         :headers="[
           {
             title: 'Kelas',
@@ -211,12 +240,14 @@ const kelas_id = ref<number | null>(null);
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
+              v-if="role_id == 1"
               @click="dialogSave.show({ ...item })"
               size="small"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              v-if="role_id == 1"
               @click="
                 confirmDialog.show({
                   title: 'Hapus Kelas Jadwal',
