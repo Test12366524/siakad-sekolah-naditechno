@@ -88,7 +88,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <SaveDialog
+  <SaveFileDialog
     width="1200"
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isDetail }"
@@ -286,7 +286,7 @@ onMounted(() => {
 
     <VCol cols="12" md="4" class="grid grid-cols-2">
       <FileInput
-        v-model="formData.foto"
+        v-model="formData.photo"
         accept="image/*"
         label="Upload Foto"
         small-chips
@@ -305,7 +305,7 @@ onMounted(() => {
         :disabled="isDetail"
       />
     </VCol>
-  </SaveDialog>
+  </SaveFileDialog>
 
   <VRow>
     <VCol cols="12">

@@ -66,7 +66,7 @@ const getMahasiswaByClass = (classId) => {
         mahasiswa_id: item.id,
         kehadiran: "Hadir",
         pertemuan_ke: form.pertemuan_ke,
-        description: "",
+        description: "-",
       };
     });
   });
@@ -126,8 +126,8 @@ const kelas_id = ref<number | null>(null);
 const headers = [
   { title: "Nama", key: "name", sortable: false },
   { title: "NIM", key: "nim", sortable: false },
-  { title: "Keterangan", key: "keterangan", sortable: false },
-  { title: "Kehadiran", key: "kehadiran", sortable: false },
+  { title: "Keterangan", key: "keterangan", sortable: false, value: "-" },
+  { title: "Kehadiran", key: "kehadiran", sortable: false, value: "Hadir" },
 ];
 
 const handleInsertBulk = async () => {
@@ -329,6 +329,7 @@ const handleInsertBulk = async () => {
               label="Keterangan"
               density="compact"
               @update:model-value="(value) => {}"
+              :value="item.description || '-'"
             />
           </div>
         </template>
@@ -343,6 +344,7 @@ const handleInsertBulk = async () => {
             clearable
             clear-icon="ri-close-line"
             @update:model-value="(value) => {}"
+             :value="item.kehadiran || 'Hadir'"
           />
         </template>
         <template #bottom>

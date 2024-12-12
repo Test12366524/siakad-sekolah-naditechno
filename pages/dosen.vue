@@ -21,7 +21,7 @@ const form = {
 </script>
 
 <template>
-  <SaveDialog
+  <SaveFileDialog
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isDetail }"
     ref="dialogSave"
@@ -131,7 +131,7 @@ const form = {
       />
     </VCol>
     
-  </SaveDialog>
+  </SaveFileDialog>
 
   <VRow>
     <VCol cols="12">
@@ -173,12 +173,12 @@ const form = {
           },
           {
             title: 'Email',
-            key: 'email_1',
+            key: 'email',
             sortable: false,
           },
           {
             title: 'No. Handphone',
-            key: 'phone_1',
+            key: 'phone',
             sortable: false,
           },
           {

@@ -7,6 +7,7 @@ const dialogSave = ref();
 const tableRef = ref();
 const mahasiswa = ref();
 const dosen = ref();
+const semester = ref();
 const mata_kuliah = ref();
 const kelas = ref();
 const bulkingDialog = ref();
@@ -35,6 +36,10 @@ useApi("master/dosen/all").then(({ data }) => {
   dosen.value = data;
 });
 
+useApi("master/semester/all").then(({ data }) => {
+  semester.value = data;
+});
+
 useApi("master/kelas/all").then(({ data }) => {
   kelas.value = data;
 });
@@ -59,6 +64,7 @@ onMounted(() => {
 const mata_kuliah_id = ref<number | null>(null);
 const dosen_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
+const semester_id = ref<number | null>(null);
 const mahasiswaByClass = ref([]);
 
 const pagination = reactive({
@@ -488,14 +494,14 @@ const handleInsertBulk = async () => {
       <VCard>
         <VCardItem>
           <VRow>
-            <VCol cols="12" md="6" class="d-flex gap-4">
+            <VCol cols="12" md="4" class="d-flex gap-4" style="margin-top: 5px;">
               <VBtn v-if="role_id == 1 || role_id == 2" color="primary" @click="dialogSave.show()">
                 <VIcon end icon="ri-add-fill" />
-                Tambah Data Single
+                Nilai Single
               </VBtn>
               <VBtn v-if="role_id == 1 || role_id == 2" color="primary" @click="bulkingDialog.show()">
                 <VIcon end icon="ri-add-fill" />
-                Tambah Data Multiple
+                Nilai Multiple
               </VBtn>
             </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">
@@ -540,6 +546,20 @@ const handleInsertBulk = async () => {
                 clear-icon="ri-close-line"
               />
             </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
+              <VAutocomplete
+                v-model="semester_id"
+                label="Semester"
+                density="compact"
+                placeholder="Pilih Semester"
+                :items="semester"
+                item-title="text"
+                item-value="id"
+                required
+                clearable
+                clear-icon="ri-close-line"
+              />
+            </VCol>
           </VRow>
         </VCardItem>
       </VCard>
@@ -554,6 +574,7 @@ const handleInsertBulk = async () => {
         :kelas_id="kelas_id"
         :dosen_id="dosen_id"
         :mata_kuliah_id="mata_kuliah_id"
+        :semester_id="semester_id"
         :headers="[
           {
             title: 'Kelas',
@@ -578,6 +599,11 @@ const handleInsertBulk = async () => {
           {
             title: 'Nama',
             key: 'mahasiswa_name',
+            sortable: false,
+          },
+          {
+            title: 'Semester',
+            key: 'semester_name',
             sortable: false,
           },
           {

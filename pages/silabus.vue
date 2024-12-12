@@ -14,7 +14,7 @@ const form = {
   dosen_id: "",
   title: "",
   description: "",
-  file_pdf: "",
+  file: "",
 };
 
 useApi("master/dosen/all").then(({ data }) => {
@@ -95,9 +95,9 @@ const dosen_id = ref<number | null>(null);
 
     <VCol cols="12" md="12">
       <FileInput
-        v-model="formData.file_pdf"
+        v-model="formData.file"
         accept="pdf/*"
-        label="Foto PDF"
+        label="File PDF"
         small-chips
         chips
       />
