@@ -195,7 +195,14 @@ const dosen_id = ref<number | null>(null);
             >
               <VIcon icon="ri-eye-line" />
             </IconBtn>
-            <IconBtn size="small" @click="dialogSave.show({ ...item })">
+            <IconBtn
+              size="small"
+              @click="
+                () => {
+                  dialogSave.show({ ...item });
+                }
+              "
+            >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
