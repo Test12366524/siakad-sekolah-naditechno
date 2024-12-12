@@ -60,11 +60,19 @@ export function useAppTable(conf: {
       params.dosen_id = dosen_id.value;
 
     // Only add kelas_id if it has a valid value
-    if (periode_id.value && periode_id.value !== "" && Number(periode_id.value) > 0)
+    if (
+      periode_id.value &&
+      periode_id.value !== "" &&
+      Number(periode_id.value) > 0
+    )
       params.periode_id = periode_id.value;
 
     // Only add kelas_id if it has a valid value
-    if (semester_id.value && semester_id.value !== "" && Number(semester_id.value) > 0)
+    if (
+      semester_id.value &&
+      semester_id.value !== "" &&
+      Number(semester_id.value) > 0
+    )
       params.semester_id = semester_id.value;
 
     // Only add kelas_id if it has a valid value
@@ -188,7 +196,10 @@ export const formatFullDate = (date) => {
 
   // Example: "15-11-2024"
 
+  const simpleDate = dateObj.toISOString().substring(0, 10);
+
   return {
+    simpleDate,
     dateOnly,
     dateWithDay,
     dateShort,

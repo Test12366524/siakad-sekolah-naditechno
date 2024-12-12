@@ -416,7 +416,18 @@ onMounted(() => {
               v-if="role_id == 1 || role_id == 2"
               size="small"
               title="Detail"
-              @click="dialogSave.show({ ...item }, true)"
+              @click="
+                () => {
+                  const payload = { ...item };
+                  payload.entrance_date = new Date(payload.entrance_date)
+                    .toISOString()
+                    .substring(0, 10);
+                  payload.birth_date = new Date(payload.birth_date)
+                    .toISOString()
+                    .substring(0, 10);
+                  dialogSave.show(payload, true);
+                }
+              "
             >
               <VIcon icon="ri-eye-line" />
             </IconBtn>
@@ -434,7 +445,6 @@ onMounted(() => {
                     .toISOString()
                     .substring(0, 10);
                   dialogSave.show(payload);
-                  console.log(payload);
                 }
               "
             >

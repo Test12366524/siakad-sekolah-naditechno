@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VCol, VTextarea, VTextField } from "vuetify/lib/components/index.mjs";
+import { VCol, VTextField, VTextarea } from "vuetify/lib/components/index.mjs";
 
 const { confirmDialog } = useCommonStore();
 
@@ -27,6 +27,7 @@ const form = {
     ref="dialogSave"
     path="master/dosen"
     title="Tambah Dosen"
+    detail-title="Detail Dosen"
     edit-title="Edit Dosen"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
@@ -36,7 +37,7 @@ const form = {
         v-model="formData.nidn"
         :error-messages="validationErrors.nidn"
         label="NIDN"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -45,7 +46,7 @@ const form = {
         v-model="formData.nip"
         :error-messages="validationErrors.nip"
         label="NIP"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -54,7 +55,7 @@ const form = {
         v-model="formData.name"
         :error-messages="validationErrors.name"
         label="Nama"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -64,7 +65,7 @@ const form = {
         v-model="formData.gender"
         inline
         :error-messages="validationErrors.gender"
-        :disabled="isDetail"
+        :readonly="isDetail"
       >
         <VRadio label="Laki-laki" value="L" />
         <VRadio label="Perempuan" value="P" />
@@ -77,7 +78,7 @@ const form = {
         type="date"
         :error-messages="validationErrors.birth_date"
         label="Tanggal Lahir"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -86,7 +87,7 @@ const form = {
         v-model="formData.place_of_birth"
         :error-messages="validationErrors.place_of_birth"
         label="Tempat Lahir"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -96,7 +97,7 @@ const form = {
         type="email"
         :error-messages="validationErrors.email"
         label="Email"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -105,7 +106,7 @@ const form = {
         v-model="formData.phone"
         :error-messages="validationErrors.phone"
         label="No. Handphone"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -114,10 +115,9 @@ const form = {
         v-model="formData.address"
         :error-messages="validationErrors.address"
         label="Alamat"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
-    
 
     <VCol cols="12" md="12" class="grid grid-cols-2">
       <FileInput
@@ -127,10 +127,9 @@ const form = {
         small-chips
         chips
         show-preview
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
-    
   </SaveFileDialog>
 
   <VRow>
@@ -193,11 +192,30 @@ const form = {
             <IconBtn
               size="small"
               title="Detail"
-              @click="dialogSave.show({ ...item }, true)"
+              @click="
+                () => {
+                  const payload = { ...item };
+                  payload.birth_date = formatFullDate(
+                    payload.birth_date
+                  ).simpleDate;
+                  dialogSave.show(payload, true);
+                }
+              "
             >
               <VIcon icon="ri-eye-line" />
             </IconBtn>
-            <IconBtn size="small" @click="dialogSave.show({ ...item })">
+            <IconBtn
+              size="small"
+              @click="
+                () => {
+                  const payload = { ...item };
+                  payload.birth_date = formatFullDate(
+                    payload.birth_date
+                  ).simpleDate;
+                  dialogSave.show(payload);
+                }
+              "
+            >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
