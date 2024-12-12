@@ -181,23 +181,11 @@ const handleShowBulkDialog = () => {
   bulkingDialog.value.show();
 };
 
-watch(
-  [form],
-  ([newValueForm]) => {
-    const isPertemuanValid =
-      newValueForm.pertemuan_ke !== "" &&
-      !isNaN(Number.parseInt(newValueForm.pertemuan_ke)) &&
-      Number.parseInt(newValueForm.pertemuan_ke) < 0;
-
-    const isValid =
-      newValueForm.kelas_id && newValueForm.jadwal_id && isPertemuanValid;
-
-    bulkingDialog.value.setValidationData(isValid);
-  },
-  {
-    deep: true,
-  }
-);
+const isDataNotValid = computed(() => {
+  return (
+    !form.value.kelas_id || !form.value.jadwal_id || !form.value.pertemuan_ke
+  );
+});
 </script>
 
 <template>
@@ -305,6 +293,8 @@ watch(
     edit-title="Edit Data Absensi"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
+    :width="900"
+    :is-data-not-valid="isDataNotValid"
     @saved="
       () => {
         handleInsertBulk();

@@ -10,6 +10,7 @@ const props = defineProps({
   defaultForm: Object,
   width: null || Number,
   itemKey: null || String,
+  isDataNotValid: null || Boolean,
 });
 
 const emits = defineEmits(["update:modelValue", "saved"]);
@@ -20,7 +21,6 @@ const modalTitle = ref(props.title);
 const isEditing = ref(false);
 const isDetailForm = ref(false);
 const isShow = ref(false);
-const isDataValid = ref(true);
 const bulkData = ref([]);
 
 const formData = ref({ ...props.defaultForm });
@@ -57,6 +57,12 @@ const save = async () => {
   // });
 };
 
+const isDataNotValidComputed = computed(() => props.isDataNotValid);
+
+watch(isDataNotValidComputed, (val) => {
+  console.log("isDataNotValidComputed", val);
+});
+
 defineExpose({
   show(currentItem: typeof props.defaultForm, isDetail: boolean = false) {
     isShow.value = true;
@@ -78,9 +84,6 @@ defineExpose({
   },
   hide() {
     isShow.value = false;
-  },
-  setValidationData(state: boolean) {
-    isDataValid.value = state;
   },
 });
 </script>
@@ -117,7 +120,7 @@ defineExpose({
         <VDivider />
 
         <VCardText class="overflow-visible d-flex justify-end flex-wrap gap-4">
-          <VBtn type="submit" :disabled="isDataValid">
+          <VBtn type="submit" :disabled="isDataNotValidComputed">
             {{ isEditing ? "Update" : "Create" }}
           </VBtn>
         </VCardText>
