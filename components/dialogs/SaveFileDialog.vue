@@ -36,14 +36,8 @@ const save = async () => {
     if (payload.image && typeof payload.image === "string")
       payload.image = null;
 
-    if (payload.cover && typeof payload.cover === "string") {
-      console.log(
-        "formData.value.cover",
-        formData.value.cover,
-        typeof formData.value.cover
-      );
+    if (payload.cover && typeof payload.cover === "string")
       payload.cover = null;
-    }
 
     const { errors, success } = await useApi(url, {
       withNotif: true,
@@ -82,6 +76,7 @@ defineExpose({
       formData.value = { ...props.defaultForm };
       isEditing.value = false;
     }
+    console.log("isDetailFORM", isDetailForm.value);
   },
 });
 </script>
@@ -117,7 +112,10 @@ defineExpose({
 
         <VDivider />
 
-        <VCardText class="overflow-visible d-flex justify-end flex-wrap gap-4">
+        <VCardText
+          v-if="!isDetailForm"
+          class="overflow-visible d-flex justify-end flex-wrap gap-4"
+        >
           <VBtn type="submit">
             {{ isEditing ? "Update" : "Create" }}
           </VBtn>
