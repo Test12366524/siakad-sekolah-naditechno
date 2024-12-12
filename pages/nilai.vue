@@ -225,7 +225,7 @@ const isDataNotValid = computed(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="4">
@@ -241,7 +241,7 @@ const isDataNotValid = computed(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="4">
@@ -257,7 +257,7 @@ const isDataNotValid = computed(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -274,7 +274,7 @@ const isDataNotValid = computed(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -283,7 +283,7 @@ const isDataNotValid = computed(() => {
         v-model="formData.kehadiran"
         label="Absensi"
         type="number"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="2">
@@ -291,7 +291,7 @@ const isDataNotValid = computed(() => {
         v-model="formData.tugas"
         label="Tugas"
         type="number"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="2">
@@ -299,7 +299,7 @@ const isDataNotValid = computed(() => {
         v-model="formData.uts"
         label="UTS"
         type="number"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="2">
@@ -307,7 +307,7 @@ const isDataNotValid = computed(() => {
         v-model="formData.uas"
         label="UAS"
         type="number"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="2">
@@ -315,14 +315,14 @@ const isDataNotValid = computed(() => {
         v-model="formData.total"
         label="Total"
         type="number"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
     <VCol cols="12" md="2">
       <VTextField
         v-model="formData.predikat"
         label="Predikat"
-        :disabled="isDetail"
+        :readonly="isDetail"
       />
     </VCol>
   </SaveDialog>
@@ -441,7 +441,7 @@ const isDataNotValid = computed(() => {
             <VTextField
               :model-value="getTotal(item)"
               density="compact"
-              disabled
+              readonly
             />
           </div>
         </template>
@@ -450,7 +450,7 @@ const isDataNotValid = computed(() => {
             <VTextField
               :model-value="getPredikat(item)"
               density="compact"
-              disabled
+              readonly
             />
           </div>
         </template>
@@ -472,7 +472,7 @@ const isDataNotValid = computed(() => {
                 variant="text"
                 density="comfortable"
                 color="high-emphasis"
-                :disabled="pagination.page === 1"
+                :readonly="pagination.page === 1"
                 @click="goToPreviousPage"
               />
               Halaman: <b>{{ pagination.page }}</b>
@@ -482,7 +482,7 @@ const isDataNotValid = computed(() => {
                 density="comfortable"
                 variant="text"
                 color="high-emphasis"
-                :disabled="pagination.page === pagination.totalPages"
+                :readonly="pagination.page === pagination.totalPages"
                 @click="goToNextPage"
               />
             </div>
