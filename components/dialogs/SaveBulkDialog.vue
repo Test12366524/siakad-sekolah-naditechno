@@ -13,7 +13,7 @@ const props = defineProps({
   isDataNotValid: null || Boolean,
 });
 
-const emits = defineEmits(["update:modelValue", "saved"]);
+const emits = defineEmits(["update:modelValue", "saved", "save-single"]);
 
 const refVForm = ref<VForm>();
 
@@ -21,47 +21,14 @@ const modalTitle = ref(props.title);
 const isEditing = ref(false);
 const isDetailForm = ref(false);
 const isShow = ref(false);
-const bulkData = ref([]);
-
 const formData = ref({ ...props.defaultForm });
 const validationErrors = ref({});
 
-const save = async () => {
-  emits("saved");
-
-  // refVForm.value?.validate().then(async ({ valid }) => {
-  //   if (!valid) return;
-
-  //   const url = isEditing.value
-  //     ? `${props.path}/${formData.value[props.itemKey || "id"]}`
-  //     : (props.path as string);
-
-  //   const { errors, success } = await useApi(url, {
-  //     withNotif: true,
-  //     method: isEditing.value ? "PUT" : "POST",
-  //     headers: {
-  //       "Content-Type": "multipart/form-data",
-  //     },
-  //     data: formData.value,
-  //   });
-
-  //   validationErrors.value = errors ?? {};
-
-  //   if (success) {
-  //     isShow.value = false;
-
-  //     if (props.refreshCallback) props.refreshCallback();
-
-  //     emits("saved", true);
-  //   }
-  // });
+const save = () => {
+  isEditing.value ? emits("saved") : emits("save-single", formData.id);
 };
 
 const isDataNotValidComputed = computed(() => props.isDataNotValid);
-
-watch(isDataNotValidComputed, (val) => {
-  console.log("isDataNotValidComputed", val);
-});
 
 defineExpose({
   show(currentItem: typeof props.defaultForm, isDetail: boolean = false) {
@@ -69,18 +36,15 @@ defineExpose({
     isDetailForm.value = isDetail;
     validationErrors.value = {};
     formData.value = {};
-
-    // if (currentItem) {
-    //   formData.value = currentItem;
-    //   modalTitle.value = isDetailForm
-    //     ? props.detailTitle || "Detail Item"
-    //     : props.editTitle || "Edit Item";
-    //   isEditing.value = true;
-    // } else {
-    //   modalTitle.value = props.title || "Add Item";
-    //   formData.value = { ...props.defaultForm };
-    //   isEditing.value = false;
-    // }
+    if (currentItem) {
+      isEditing.value = true;
+      modalTitle.value = props.editTitle;
+      formData.value = currentItem;
+    } else {
+      isEditing.value = false;
+      modalTitle.value = props.title;
+      formData.value = { ...props.defaultForm };
+    }
   },
   hide() {
     isShow.value = false;
