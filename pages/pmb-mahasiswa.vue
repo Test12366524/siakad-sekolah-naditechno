@@ -259,6 +259,11 @@ const form = {
         :with-actions="true"
         :headers="[
           {
+            title: 'Kode',
+            key: 'registration_code',
+            sortable: false,
+          },
+          {
             title: 'Nama',
             key: 'name',
             sortable: false,
@@ -274,11 +279,6 @@ const form = {
             sortable: false,
           },
           {
-            title: 'Status Menikah',
-            key: 'mariage_desc',
-            sortable: false,
-          },
-          {
             title: 'No. Handphone',
             key: 'phone',
             sortable: false,
@@ -289,19 +289,56 @@ const form = {
             sortable: false,
           },
           {
-            title: 'Pekerjaan',
-            key: 'pekerjaan',
-            sortable: false,
-          },
-          {
-            title: 'Alamat',
-            key: 'address',
+            title: 'Status',
+            key: 'pendidikan_terakhir',
             sortable: false,
           },
         ]"
       >
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
+            <VBtn v-if="item.tripay_status_transaction == 0" size="x-small" style="border-radius: 0.375rem!important;">
+              <VIcon
+                start
+                icon="ri-checkbox-circle-line"
+              />
+              Payment Diterima
+            </VBtn>
+            <VBtn v-if="item.tripay_status_transaction == 0" size="x-small" style="border-radius: 0.375rem!important;" color="secondary">
+              <VIcon
+                start
+                icon="ri-subtract-line"
+              />
+              Payment Ditolak
+            </VBtn>
+            <VBtn v-if="item.status == 0 && item.tripay_status_transaction == 1" size="x-small" style="border-radius: 0.375rem!important;">
+              <VIcon
+                start
+                icon="ri-checkbox-circle-line"
+              />
+              Verifikasi Data Diterima
+            </VBtn>
+            <VBtn v-if="item.status == 0 && item.tripay_status_transaction == 1" size="x-small" style="border-radius: 0.375rem!important;" color="secondary">
+              <VIcon
+                start
+                icon="ri-subtract-line"
+              />
+              Verifikasi Data Ditolak
+            </VBtn>
+            <VBtn v-if="item.status_test == 0 && item.status == 1" size="x-small" style="border-radius: 0.375rem!important;">
+              <VIcon
+                start
+                icon="ri-checkbox-circle-line"
+              />
+              Lulus
+            </VBtn>
+            <VBtn v-if="item.status_test == 0 && item.status == 1" size="x-small" style="border-radius: 0.375rem!important;" color="secondary">
+              <VIcon
+                start
+                icon="ri-subtract-line"
+              />
+              Tidak Lulus
+            </VBtn>
             <IconBtn
               size="small"
               title="Detail"

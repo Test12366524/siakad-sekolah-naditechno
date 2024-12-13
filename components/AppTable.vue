@@ -148,6 +148,18 @@ defineExpose({
       <template #item.publish_date="{ item }">
         {{ formatFullDate(item.publish_date)?.dateOnly }}
       </template>
+      <template #item.from_date="{ item }">
+        {{ formatFullDate(item.from_date)?.dateOnly }}
+      </template>
+      <template #item.to_date="{ item }">
+        {{ formatFullDate(item.to_date)?.dateOnly }}
+      </template>
+      <template #item.start_date="{ item }">
+        {{ formatFullDate(item.start_date)?.dateOnly }}
+      </template>
+      <template #item.until_date="{ item }">
+        {{ formatFullDate(item.until_date)?.dateOnly }}
+      </template>
       <template #item.nominal="{ item }">
         {{ formatRupiah(item.nominal) }}
       </template>

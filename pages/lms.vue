@@ -122,7 +122,7 @@ const dosen_id = ref<number | null>(null);
       <FileInput
         v-model="formData.file_pdf"
         accept="pdf/*"
-        label="Foto PDF"
+        label="File PDF"
         small-chips
         chips
       />
@@ -268,7 +268,18 @@ const dosen_id = ref<number | null>(null);
           <div class="d-flex gap-1">
             <IconBtn
               v-if="role_id == 1 || role_id == 2"
-              @click="dialogSave.show({ ...item })"
+              @click="
+                () => {
+                  const payload = { ...item };
+                  payload.start_date = new Date(payload.start_date)
+                    .toISOString()
+                    .substring(0, 10);
+                  payload.until_date = new Date(payload.until_date)
+                    .toISOString()
+                    .substring(0, 10);
+                  dialogSave.show(payload);
+                }
+              "
               size="small"
             >
               <VIcon icon="ri-pencil-line" />

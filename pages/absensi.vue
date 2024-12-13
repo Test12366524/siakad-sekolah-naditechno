@@ -16,7 +16,7 @@ const mata_kuliah = ref();
 const dosen = ref();
 
 const form = ref({
-  kelas_id: "",
+  kelas_id: null,
   jadwal_id: "",
   pertemuan_ke: "",
   mahasiswa_id: "",
@@ -38,27 +38,26 @@ const params = reactive({
 
 const bulkData = ref([
   {
-    kelas_id: "2",
-    jadwal_id: "4",
-    mahasiswa_id: "3",
+    kelas_id: 2,
+    jadwal_id: 4,
+    mahasiswa_id: 3,
     kehadiran: "Hadir", // Hadir, Izin, Sakit, Alpa
-    pertemuan_ke: "5",
+    pertemuan_ke: 5,
     description: "", // optional
   },
 ]);
 
-const getMahasiswaByClass = (classId) => {
+const getMahasiswaByClass = (classId: number) => {
   const getParams = {
     ...params,
     kelas_id: form.value.kelas_id || classId,
   };
 
   useApi(`mahasiswa${objectToParams(getParams)}`).then(({ data }) => {
-    console.log(data);
     pagination.pageTotal = data.pageTotal;
     pagination.page = Number.parseInt(data.currentPage);
     pagination.totalItem = data.total;
-    mahasiswaByClass.value = data.items.map((item) => {
+    mahasiswaByClass.value = data.items.map((item: any) => {
       return {
         ...item,
         kelas_id: form.value.kelas_id || classId,
@@ -69,7 +68,7 @@ const getMahasiswaByClass = (classId) => {
         description: "-",
       };
     });
-    bulkData.value = data.items.map((item) => {
+    bulkData.value = data.items.map((item: any) => {
       return {
         kelas_id: form.value.kelas_id || classId,
         jadwal_id: form.value.jadwal_id,
@@ -141,7 +140,7 @@ const headers = [
 const handleInsertBulk = async () => {
   const payload = mahasiswaByClass.value.map((item) => {
     return {
-      kelas_id: form.value.kelas_id,
+      kelas_id: Number(form.value.kelas_id),
       jadwal_id: form.value.jadwal_id,
       mahasiswa_id: item.id,
       kehadiran: item.kehadiran,
@@ -315,13 +314,13 @@ const isDataNotValid = computed(() => {
         clearable
         clear-icon="ri-close-line"
         @update:model-value="
-          (kelas_id) => {
+          (kelas_id: number) => {
             if (kelas_id) {
               getMahasiswaByClass(kelas_id);
             } else {
               mahasiswaByClass = [];
             }
-            form.kelas_id = kelas_id;
+            form.kelas_id = Number(kelas_id);
           }
         "
       />
