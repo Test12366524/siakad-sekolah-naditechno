@@ -45,8 +45,10 @@ const appTable = useAppTable({
 watch(
   () => props.kelas_id,
   (newValue) => {
-    appTable.kelas_id.value = newValue ?? "";
-    if (newValue != null) appTable.fetchItems(true);
+    if (props.kelas_id) {
+      appTable.kelas_id.value = newValue;
+      appTable.fetchItems(true);
+    }
   },
   { immediate: true }
 );
@@ -54,8 +56,8 @@ watch(
 watch(
   () => props.gender,
   (newValue) => {
-    appTable.gender.value = newValue ?? "";
-    if (newValue != null) appTable.fetchItems(true);
+    appTable.gender.value = newValue;
+    appTable.fetchItems(true);
   },
   { immediate: true }
 );
@@ -63,8 +65,8 @@ watch(
 watch(
   () => props.dosen_id,
   (newValue) => {
-    appTable.dosen_id.value = newValue ?? "";
-    if (newValue != null) appTable.fetchItems(true);
+    appTable.dosen_id.value = newValue;
+    appTable.fetchItems(true);
   },
   { immediate: true }
 );
@@ -72,8 +74,8 @@ watch(
 watch(
   () => props.mata_kuliah_id,
   (newValue) => {
-    appTable.mata_kuliah_id.value = newValue ?? "";
-    if (newValue != null) appTable.fetchItems(true);
+    appTable.mata_kuliah_id.value = newValue;
+    appTable.fetchItems(true);
   },
   { immediate: true }
 );
@@ -81,8 +83,8 @@ watch(
 watch(
   () => props.semester_id,
   (newValue) => {
-    appTable.semester_id.value = newValue ?? "";
-    if (newValue != null) appTable.fetchItems(true);
+    appTable.semester_id.value = newValue;
+    appTable.fetchItems(true);
   },
   { immediate: true }
 );
@@ -90,8 +92,8 @@ watch(
 watch(
   () => props.periode_id,
   (newValue) => {
-    appTable.periode_id.value = newValue ?? "";
-    if (newValue != null) appTable.fetchItems(true);
+    appTable.periode_id.value = newValue;
+    appTable.fetchItems(true);
   },
   { immediate: true }
 );
