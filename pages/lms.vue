@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { VCol, VTextarea, VTextField } from "vuetify/lib/components/index.mjs";
+import { ref } from "vue";
+import { VCol, VTextField, VTextarea } from "vuetify/lib/components/index.mjs";
 
 const { confirmDialog } = useCommonStore();
+const { user } = useAuthStore();
 
 const dialogSave = ref();
 const tableRef = ref();
@@ -25,40 +26,38 @@ const form = {
 };
 
 useApi("master/dosen/all").then(({ data }) => {
-    dosen.value = data;
+  dosen.value = data;
 });
 
 useApi("master/mata-kuliah/all").then(({ data }) => {
-    mata_kuliah.value = data;
+  mata_kuliah.value = data;
 });
 
-const role_id = ref();
+const role_id = computed(() => user.role_id);
+
+const isDosenOrAdmin = computed(
+  () => role_id.value === 1 || role_id.value === 3
+);
+
 const status_action = ref();
+
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    role_id.value = data.role_id;
-    if(data.role_id == 1 || data.role_id == 2){
-      status_action.value = true;
-    }else{
-      status_action.value = false;
-    }
-  });
+  console.log(user.role_id);
 });
 
 const mata_kuliah_id = ref<number | null>(null);
 const dosen_id = ref<number | null>(null);
-
 </script>
 
 <template>
   <SaveFileDialog
-    width="1200"
     v-if="tableRef"
+    v-slot="{ formData, validationErrors, isEditing }"
+    ref="dialogSave"
+    width="1200"
     path="lms"
     title="Tambah LMS"
     edit-title="Edit LMS"
-    v-slot="{ formData, validationErrors, isEditing }"
-    ref="dialogSave"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
@@ -94,16 +93,16 @@ const dosen_id = ref<number | null>(null);
     </VCol>
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.title"
         v-model="formData.title"
+        :error-messages="validationErrors.title"
         label="Judul"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.subtitle"
         v-model="formData.subtitle"
+        :error-messages="validationErrors.subtitle"
         label="Sub Judul"
       />
     </VCol>
@@ -114,6 +113,7 @@ const dosen_id = ref<number | null>(null);
         accept="image/*"
         label="File Gambar"
         small-chips
+        show-preview
         chips
       />
     </VCol>
@@ -124,57 +124,55 @@ const dosen_id = ref<number | null>(null);
         accept="pdf/*"
         label="File PDF"
         small-chips
+        show-preview
         chips
       />
     </VCol>
 
     <VCol cols="12" md="12">
       <VTextField
-        :error-messages="validationErrors.link"
         v-model="formData.link"
+        :error-messages="validationErrors.link"
         label="Link"
       />
     </VCol>
     <VCol cols="12" md="12">
-      <VTextarea
-        v-model="formData.description"
-        label="Deskripsi"
-      />
+      <VTextarea v-model="formData.description" label="Deskripsi" />
     </VCol>
     <VCol cols="12" md="3">
       <VTextField
+        v-model="formData.start_date"
         type="date"
         :error-messages="validationErrors.start_date"
-        v-model="formData.start_date"
         label="Tanggal Mulai"
       />
     </VCol>
     <VCol cols="12" md="3">
       <VTextField
+        v-model="formData.until_date"
         type="date"
         :error-messages="validationErrors.until_date"
-        v-model="formData.until_date"
         label="Tanggal Akhir"
       />
     </VCol>
     <VCol cols="12" md="3">
       <VTextField
+        v-model="formData.order"
         type="number"
         :error-messages="validationErrors.order"
-        v-model="formData.order"
         label="Urutan"
       />
     </VCol>
     <VCol cols="12" md="3">
       <VLabel>Status</VLabel>
       <VRadioGroup
-        inline
         v-model="formData.status"
+        inline
         :error-messages="validationErrors.status"
       >
-      <VRadio label="Draft" :value="0"></VRadio>
-      <VRadio label="Publish" :value="1"></VRadio>
-      <VRadio label="Unpublish" :value="2"></VRadio>
+        <VRadio label="Draft" :value="0" />
+        <VRadio label="Publish" :value="1" />
+        <VRadio label="Unpublish" :value="2" />
       </VRadioGroup>
     </VCol>
   </SaveFileDialog>
@@ -185,12 +183,16 @@ const dosen_id = ref<number | null>(null);
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6">
-              <VBtn v-if="role_id == 1 || role_id == 2" @click="dialogSave.show()" color="primary">
+              <VBtn
+                v-if="isDosenOrAdmin"
+                color="primary"
+                @click="dialogSave.show()"
+              >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
             </VCol>
-            <VCol cols="12" md="3" style="margin-top: 5px;">
+            <VCol cols="12" md="3" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="dosen_id"
                 label="Dosen"
@@ -204,7 +206,7 @@ const dosen_id = ref<number | null>(null);
                 clear-icon="ri-close-line"
               />
             </VCol>
-            <VCol cols="12" md="3" style="margin-top: 5px;">
+            <VCol cols="12" md="3" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="mata_kuliah_id"
                 label="Mata Kuliah"
@@ -228,9 +230,9 @@ const dosen_id = ref<number | null>(null);
         ref="tableRef"
         title="Data LMS"
         path="lms"
-        :dosen_id = "dosen_id"
-        :mata_kuliah_id = "mata_kuliah_id"
-        :with-actions="status_action"
+        :dosen_id="dosen_id"
+        :mata_kuliah_id="mata_kuliah_id"
+        :with-actions="isDosenOrAdmin"
         :headers="[
           {
             title: 'Dosen',
@@ -248,11 +250,6 @@ const dosen_id = ref<number | null>(null);
             sortable: false,
           },
           {
-            title: 'Sub Judul',
-            key: 'subtitle',
-            sortable: false,
-          },
-          {
             title: 'Tanggal Mulai',
             key: 'start_date',
             sortable: false,
@@ -267,7 +264,7 @@ const dosen_id = ref<number | null>(null);
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              v-if="role_id == 1 || role_id == 2"
+              size="small"
               @click="
                 () => {
                   const payload = { ...item };
@@ -280,12 +277,11 @@ const dosen_id = ref<number | null>(null);
                   dialogSave.show(payload);
                 }
               "
-              size="small"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
-              v-if="role_id == 1 || role_id == 2"
+              size="small"
               @click="
                 confirmDialog.show({
                   title: 'Hapus LMS',
@@ -295,7 +291,6 @@ const dosen_id = ref<number | null>(null);
                   onConfirm: () => remove((item as any).id),
                 })
               "
-              size="small"
             >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>
