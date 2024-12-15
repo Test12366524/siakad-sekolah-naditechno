@@ -437,22 +437,23 @@ const isDataNotValid = computed(() => {
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6" class="d-flex gap-4">
-              <VBtn
+              <!-- <VBtn
                 v-if="role_id == 1 || role_id == 2"
                 color="primary"
                 @click="dialogSave.show()"
               >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data Single
-              </VBtn>
+              </VBtn> -->
               <VBtn
                 v-if="role_id == 1 || role_id == 2"
                 color="primary"
                 @click="handleShowBulkDialog"
               >
                 <VIcon end icon="ri-add-fill" />
-                Tambah Data Multiple
+                Tambah Absensi
               </VBtn>
+              <ExportFileExcel path="absensi/export-excel"></ExportFileExcel>
             </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
