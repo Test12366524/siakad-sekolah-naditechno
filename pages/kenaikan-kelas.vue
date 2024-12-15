@@ -303,7 +303,15 @@ onMounted(() => {
         <VCardItem>
           <VRow justify="space-between" align="center">
             <VCol cols="12" md="6" class="d-flex gap-4">
-              <VBtn color="primary" @click="bulkingDialog.show()">
+              <VBtn
+                color="primary"
+                @click="
+                  () => {
+                    bulkingDialog.show();
+                    mahasiswaByClass = [];
+                  }
+                "
+              >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data Kenaikan Kelas
               </VBtn>
@@ -375,7 +383,7 @@ onMounted(() => {
                   payload.periode_id = null;
                   payload.semester_id = null;
                   payload.kelas_from_id = item.kelas_id;
-                  mahasiswaByClass.push(item);
+                  mahasiswaByClass = [item];
                   bulkingDialog.show(payload);
                 }
               "
