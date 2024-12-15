@@ -25,6 +25,7 @@ const formData = ref({ ...props.defaultForm });
 const validationErrors = ref({});
 
 const save = () => {
+  alert(1);
   isEditing.value ? emits("saved") : emits("save-single", formData.id);
 };
 

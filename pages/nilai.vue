@@ -502,14 +502,14 @@ const isDataNotValid = computed(() => {
               class="d-flex gap-4"
               style="margin-block-start: 5px"
             >
-              <!-- <VBtn
+              <VBtn
                 v-if="role_id == 1 || role_id == 2"
                 color="primary"
                 @click="dialogSave.show()"
               >
                 <VIcon end icon="ri-add-fill" />
                 Nilai Single
-              </VBtn> -->
+              </VBtn>
               <VBtn
                 v-if="role_id == 1 || role_id == 2"
                 color="primary"
