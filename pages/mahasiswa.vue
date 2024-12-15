@@ -413,7 +413,7 @@ onMounted(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              v-if="role_id == 1 || role_id == 2"
+              v-if="role_id == 1 || role_id == 3"
               size="small"
               title="Detail"
               @click="

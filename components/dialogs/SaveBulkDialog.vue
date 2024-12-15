@@ -23,9 +23,10 @@ const isDetailForm = ref(false);
 const isShow = ref(false);
 const formData = ref({ ...props.defaultForm });
 const validationErrors = ref({});
+const isSingleData = ref(false);
 
 const save = () => {
-  isEditing.value ? emits("saved") : emits("save-single", formData.id);
+  isSingleData.value ? emits("save-single", formData.id) : emits("saved");
 };
 
 const isDataNotValidComputed = computed(() => props.isDataNotValid);
@@ -35,15 +36,15 @@ defineExpose({
     isShow.value = true;
     isDetailForm.value = isDetail;
     validationErrors.value = {};
-    formData.value = {};
+
     if (currentItem) {
-      isEditing.value = true;
+      isSingleData.value = true;
       modalTitle.value = props.editTitle;
       formData.value = currentItem;
     } else {
-      isEditing.value = false;
+      isSingleData.value = false;
       modalTitle.value = props.title;
-      formData.value = { ...props.defaultForm };
+      formData.value = {};
     }
   },
   hide() {
