@@ -317,7 +317,8 @@ const isDataNotValid = computed(() => {
           (kelas_id: number) => {
             if (kelas_id) {
               getMahasiswaByClass(kelas_id);
-            } else {
+            }
+            else {
               mahasiswaByClass = [];
             }
             form.kelas_id = Number(kelas_id);
@@ -437,23 +438,25 @@ const isDataNotValid = computed(() => {
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6" class="d-flex gap-4">
-              <!-- <VBtn
-                v-if="role_id == 1 || role_id == 2"
+              <!--
+                <VBtn
+                v-if="role_id == 1 || role_id == 3"
                 color="primary"
                 @click="dialogSave.show()"
-              >
+                >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data Single
-              </VBtn> -->
+                </VBtn>
+              -->
               <VBtn
-                v-if="role_id == 1 || role_id == 2"
+                v-if="role_id == 1 || role_id == 3"
                 color="primary"
                 @click="handleShowBulkDialog"
               >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Absensi
               </VBtn>
-              <ExportFileExcel path="absensi/export-excel"></ExportFileExcel>
+              <ExportFileExcel path="absensi/export-excel" />
             </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
@@ -560,9 +563,9 @@ const isDataNotValid = computed(() => {
         ]"
       >
         <template #actions="{ item, remove }">
-          <div v-if="role_id == 1 || role_id == 2" class="d-flex gap-1">
+          <div v-if="role_id == 1 || role_id == 3" class="d-flex gap-1">
             <IconBtn
-              v-if="role_id == 1 || role_id == 2"
+              v-if="role_id == 1 || role_id == 3"
               size="small"
               title="Detail"
               @click="
@@ -578,7 +581,7 @@ const isDataNotValid = computed(() => {
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
-              v-if="role_id == 1 || role_id == 2"
+              v-if="role_id == 1 || role_id == 3"
               size="small"
               @click="
                 confirmDialog.show({
