@@ -52,7 +52,7 @@ const status_action = ref();
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
     role_id.value = data.role_id;
-    if (data.role_id == 1 || data.role_id == 2) status_action.value = true;
+    if (data.role_id == 1 || data.role_id == 3) status_action.value = true;
     else status_action.value = false;
   });
 });
@@ -75,20 +75,18 @@ const params = reactive({
   search: "",
 });
 
-const bulkData = ref([
-  {
-    kelas_id: "1",
-    dosen_id: "1",
-    mata_kuliah_id: "1",
-    mahasiswa_id: "1",
-    kehadiran: "10",
-    tugas: "10",
-    uts: "10",
-    uas: "10",
-    total: "30",
-    predikat: "C",
-  },
-]);
+const singleDataForm = ref({
+  kelas_id: "",
+  dosen_id: "",
+  mata_kuliah_id: "",
+  mahasiswa_id: "",
+  kehadiran: "",
+  tugas: "",
+  uts: "",
+  uas: "",
+  total: "",
+  predikat: "",
+});
 
 const headers = [
   { title: "Nama", key: "name", sortable: false },
@@ -201,14 +199,15 @@ const isDataNotValid = computed(() => {
 </script>
 
 <template>
-  <SaveDialog
+  <SaveFileDialog
     v-if="tableRef"
-    v-slot="{ formData, validationErrors, isDetail }"
+    v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     width="1200"
     path="nilai"
     title="Tambah Nilai"
     edit-title="Edit Nilai"
+    :request-form="singleDataForm"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
@@ -225,7 +224,7 @@ const isDataNotValid = computed(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :readonly="isDetail"
+        :readonly="isEditing"
       />
     </VCol>
     <VCol cols="12" md="4">
@@ -241,7 +240,7 @@ const isDataNotValid = computed(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :readonly="isDetail"
+        :readonly="isEditing"
       />
     </VCol>
     <VCol cols="12" md="4">
@@ -257,7 +256,7 @@ const isDataNotValid = computed(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :readonly="isDetail"
+        :readonly="isEditing"
       />
     </VCol>
 
@@ -274,58 +273,29 @@ const isDataNotValid = computed(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        :readonly="isDetail"
+        :readonly="isEditing"
       />
     </VCol>
 
     <VCol cols="12" md="2">
-      <VTextField
-        v-model="formData.kehadiran"
-        label="Absensi"
-        type="number"
-        :readonly="isDetail"
-      />
+      <VTextField v-model="formData.kehadiran" label="Absensi" type="number" />
     </VCol>
     <VCol cols="12" md="2">
-      <VTextField
-        v-model="formData.tugas"
-        label="Tugas"
-        type="number"
-        :readonly="isDetail"
-      />
+      <VTextField v-model="formData.tugas" label="Tugas" type="number" />
     </VCol>
     <VCol cols="12" md="2">
-      <VTextField
-        v-model="formData.uts"
-        label="UTS"
-        type="number"
-        :readonly="isDetail"
-      />
+      <VTextField v-model="formData.uts" label="UTS" type="number" />
     </VCol>
     <VCol cols="12" md="2">
-      <VTextField
-        v-model="formData.uas"
-        label="UAS"
-        type="number"
-        :readonly="isDetail"
-      />
+      <VTextField v-model="formData.uas" label="UAS" type="number" />
     </VCol>
     <VCol cols="12" md="2">
-      <VTextField
-        v-model="formData.total"
-        label="Total"
-        type="number"
-        :readonly="isDetail"
-      />
+      <VTextField v-model="formData.total" label="Total" type="number" />
     </VCol>
     <VCol cols="12" md="2">
-      <VTextField
-        v-model="formData.predikat"
-        label="Predikat"
-        :readonly="isDetail"
-      />
+      <VTextField v-model="formData.predikat" label="Predikat" />
     </VCol>
-  </SaveDialog>
+  </SaveFileDialog>
   <SaveBulkDialog
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
@@ -502,23 +472,30 @@ const isDataNotValid = computed(() => {
               class="d-flex gap-4"
               style="margin-block-start: 5px"
             >
-              <!-- <VBtn
-                v-if="role_id == 1 || role_id == 2"
+              <!--
+                <VBtn
+                v-if="role_id == 1 || role_id == 3"
                 color="primary"
                 @click="dialogSave.show()"
-              >
+                >
                 <VIcon end icon="ri-add-fill" />
                 Nilai Single
-              </VBtn> -->
+                </VBtn>
+              -->
               <VBtn
-                v-if="role_id == 1 || role_id == 2"
+                v-if="role_id == 1 || role_id == 3"
                 color="primary"
-                @click="bulkingDialog.show()"
+                @click="
+                  () => {
+                    bulkingDialog.show();
+                    mahasiswaByClass = [];
+                  }
+                "
               >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Nilai
               </VBtn>
-              <ExportFileExcel path="nilai/export-excel"></ExportFileExcel>
+              <ExportFileExcel path="nilai/export-excel" />
             </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
@@ -657,14 +634,14 @@ const isDataNotValid = computed(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              v-if="role_id == 1 || role_id == 2"
+              v-if="role_id == 1 || role_id == 3"
               size="small"
               @click="dialogSave.show({ ...item })"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
-              v-if="role_id == 1 || role_id == 2"
+              v-if="role_id == 1 || role_id == 3"
               size="small"
               @click="
                 confirmDialog.show({
