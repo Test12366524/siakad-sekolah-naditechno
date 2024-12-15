@@ -1,302 +1,48 @@
-<script setup lang="ts">
-import { ref } from "vue";
-import { VCol, VTextField, VTextarea } from "vuetify/lib/components/index.mjs";
+<script lang="ts" setup>
+const route = useRoute("pages-lms");
 
-const { confirmDialog } = useCommonStore();
-const { user } = useAuthStore();
-
-const dialogSave = ref();
-const tableRef = ref();
-const dosen = ref();
-const mata_kuliah = ref();
-
-const form = {
-  mata_kuliah_id: "",
-  dosen_id: "",
-  title: "",
-  subtitle: "",
-  file_pdf: "",
-  file_image: "",
-  link: "",
-  description: "",
-  start_date: "",
-  until_date: "",
-  order: "",
-  status: "",
-};
-
-useApi("master/dosen/all").then(({ data }) => {
-  dosen.value = data;
+definePageMeta({
+  navActiveLink: "pages-lms",
 });
 
-useApi("master/mata-kuliah/all").then(({ data }) => {
-  mata_kuliah.value = data;
+const activeTab = computed({
+  get: () => route.query.form || tabs[0].tab,
+  set: () => route.query.form,
 });
 
-const role_id = computed(() => user.role_id);
-
-const isDosenOrAdmin = computed(
-  () => role_id.value === 1 || role_id.value === 3
-);
-
-const status_action = ref();
-
-onMounted(() => {
-  console.log(user.role_id);
-});
-
-const mata_kuliah_id = ref<number | null>(null);
-const dosen_id = ref<number | null>(null);
+// tabs
+const tabs = [
+  { title: "Tugas", icon: "ri-task-line", tab: "tugas" },
+  { title: "Jawaban", icon: "ri-question-answer-line", tab: "jawaban" },
+];
 </script>
 
 <template>
-  <SaveFileDialog
-    v-if="tableRef"
-    v-slot="{ formData, validationErrors, isEditing }"
-    ref="dialogSave"
-    width="1200"
-    path="lms"
-    title="Tambah LMS"
-    edit-title="Edit LMS"
-    :default-form="form"
-    :refresh-callback="tableRef.refresh"
-  >
-    <VCol cols="12" md="6">
-      <VAutocomplete
-        v-model="formData.dosen_id"
-        label="Dosen"
-        density="compact"
-        :error-messages="validationErrors.dosen_id"
-        placeholder="Pilih Dosen"
-        :items="dosen"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
-      />
-    </VCol>
-    <VCol cols="12" md="6">
-      <VAutocomplete
-        v-model="formData.mata_kuliah_id"
-        label="Mata Kuliah"
-        density="compact"
-        :error-messages="validationErrors.mata_kuliah_id"
-        placeholder="Pilih Mata Kuliah"
-        :items="mata_kuliah"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
-      />
-    </VCol>
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.title"
-        :error-messages="validationErrors.title"
-        label="Judul"
-      />
-    </VCol>
-
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.subtitle"
-        :error-messages="validationErrors.subtitle"
-        label="Sub Judul"
-      />
-    </VCol>
-
-    <VCol cols="12" md="6">
-      <FileInput
-        v-model="formData.file_image"
-        accept="image/*"
-        label="File Gambar"
-        small-chips
-        show-preview
-        chips
-      />
-    </VCol>
-
-    <VCol cols="12" md="6">
-      <FileInput
-        v-model="formData.file_pdf"
-        accept="pdf/*"
-        label="File PDF"
-        small-chips
-        show-preview
-        chips
-      />
-    </VCol>
-
-    <VCol cols="12" md="12">
-      <VTextField
-        v-model="formData.link"
-        :error-messages="validationErrors.link"
-        label="Link"
-      />
-    </VCol>
-    <VCol cols="12" md="12">
-      <VTextarea v-model="formData.description" label="Deskripsi" />
-    </VCol>
-    <VCol cols="12" md="3">
-      <VTextField
-        v-model="formData.start_date"
-        type="date"
-        :error-messages="validationErrors.start_date"
-        label="Tanggal Mulai"
-      />
-    </VCol>
-    <VCol cols="12" md="3">
-      <VTextField
-        v-model="formData.until_date"
-        type="date"
-        :error-messages="validationErrors.until_date"
-        label="Tanggal Akhir"
-      />
-    </VCol>
-    <VCol cols="12" md="3">
-      <VTextField
-        v-model="formData.order"
-        type="number"
-        :error-messages="validationErrors.order"
-        label="Urutan"
-      />
-    </VCol>
-    <VCol cols="12" md="3">
-      <VLabel>Status</VLabel>
-      <VRadioGroup
-        v-model="formData.status"
-        inline
-        :error-messages="validationErrors.status"
+  <div>
+    <VTabs v-model="activeTab" class="v-tabs-pill">
+      <VTab
+        v-for="item in tabs"
+        :key="item.icon"
+        :value="item.tab"
+        :to="{
+          path: '/lms',
+          query: { form: item.tab },
+        }"
       >
-        <VRadio label="Draft" :value="0" />
-        <VRadio label="Publish" :value="1" />
-        <VRadio label="Unpublish" :value="2" />
-      </VRadioGroup>
-    </VCol>
-  </SaveFileDialog>
-
-  <VRow>
-    <VCol cols="12">
-      <VCard>
-        <VCardItem>
-          <VRow>
-            <VCol cols="12" md="6">
-              <VBtn
-                v-if="isDosenOrAdmin"
-                color="primary"
-                @click="dialogSave.show()"
-              >
-                <VIcon end icon="ri-add-fill" />
-                Tambah Data
-              </VBtn>
-            </VCol>
-            <VCol cols="12" md="3" style="margin-block-start: 5px">
-              <VAutocomplete
-                v-model="dosen_id"
-                label="Dosen"
-                density="compact"
-                placeholder="Pilih Dosen"
-                :items="dosen"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="3" style="margin-block-start: 5px">
-              <VAutocomplete
-                v-model="mata_kuliah_id"
-                label="Mata Kuliah"
-                density="compact"
-                placeholder="Pilih Mata Kuliah"
-                :items="mata_kuliah"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-          </VRow>
-        </VCardItem>
-      </VCard>
-    </VCol>
-
-    <VCol cols="12">
-      <AppTable
-        ref="tableRef"
-        title="Data LMS"
-        path="lms"
-        :dosen_id="dosen_id"
-        :mata_kuliah_id="mata_kuliah_id"
-        :with-actions="isDosenOrAdmin"
-        :headers="[
-          {
-            title: 'Dosen',
-            key: 'dosen_name',
-            sortable: false,
-          },
-          {
-            title: 'Mata Kuliah',
-            key: 'mata_kuliah_name',
-            sortable: false,
-          },
-          {
-            title: 'Judul',
-            key: 'title',
-            sortable: false,
-          },
-          {
-            title: 'Tanggal Mulai',
-            key: 'start_date',
-            sortable: false,
-          },
-          {
-            title: 'Tanggal Selesai',
-            key: 'until_date',
-            sortable: false,
-          },
-        ]"
-      >
-        <template #actions="{ item, remove }">
-          <div class="d-flex gap-1">
-            <IconBtn
-              size="small"
-              @click="
-                () => {
-                  const payload = { ...item };
-                  payload.start_date = new Date(payload.start_date)
-                    .toISOString()
-                    .substring(0, 10);
-                  payload.until_date = new Date(payload.until_date)
-                    .toISOString()
-                    .substring(0, 10);
-                  dialogSave.show(payload);
-                }
-              "
-            >
-              <VIcon icon="ri-pencil-line" />
-            </IconBtn>
-            <IconBtn
-              size="small"
-              @click="
-                confirmDialog.show({
-                  title: 'Hapus LMS',
-                  message: `Anda yakin ingin menghapus LMS ${
-                    (item as any).name
-                  }?`,
-                  onConfirm: () => remove((item as any).id),
-                })
-              "
-            >
-              <VIcon icon="ri-delete-bin-line" />
-            </IconBtn>
-          </div>
-        </template>
-      </AppTable>
-    </VCol>
-  </VRow>
+        <VIcon start :icon="item.icon" />
+        {{ item.title }}
+      </VTab>
+    </VTabs>
+    <VDivider class="my-4" />
+    <ClientOnly>
+      <VWindow v-model="activeTab" class="mt-6" :touch="false">
+        <VWindowItem value="tugas">
+          <LmsTugas />
+        </VWindowItem>
+        <VWindowItem value="jawaban">
+          <LmsJawaban />
+        </VWindowItem>
+      </VWindow>
+    </ClientOnly>
+  </div>
 </template>

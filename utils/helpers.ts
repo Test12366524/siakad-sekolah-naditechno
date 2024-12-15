@@ -59,3 +59,11 @@ export const openFileHandler = (file) => {
 
   window.open(fileUrl, "_blank");
 };
+
+export const extractNeededData = (rawData, template) => {
+  return Object.keys(template).reduce((acc, key) => {
+    acc[key] = rawData[key] ?? template[key];
+
+    return acc;
+  }, {});
+};
