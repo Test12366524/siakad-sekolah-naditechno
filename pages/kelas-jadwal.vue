@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { VCol } from "vuetify/lib/components/index.mjs";
 
-const { confirmDialog } = useCommonStore();
+const { snackbar, confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
 const tableRef = ref();
@@ -65,6 +65,45 @@ const mata_kuliah_id = ref<number | null>(null);
 const dosen_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
 const semester_id = ref<number | null>(null);
+
+const value_kelas_id = ref<number | null>(null);
+const value_jadwal_id = ref<number | null>(null);
+const value_semester_id = ref<number | null>(null);
+
+const setKelas = (kelas_id: number) => {
+  value_kelas_id.value = kelas_id;
+};
+
+const setJadwal = (jadwal_id: number) => {
+  value_jadwal_id.value = jadwal_id;
+};
+
+const setSemester = (semester_id: number) => {
+  value_semester_id.value = semester_id;
+  if (value_kelas_id.value && value_jadwal_id.value && value_semester_id.value) {
+    checkingData(value_kelas_id.value, value_jadwal_id.value, value_semester_id.value);
+  }
+};
+
+const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) => {
+  useApi(`/kelas-jadwal/${kelas_id}/${jadwal_id}/${semester_id}`)
+    .then(({ data }) => {
+      if (data && data.length > 0) {
+        snackbar.show({
+          message: "Kelas Jadwal Mata Kuliah sudah ada.",
+          color: "error",
+        });
+        // Process the data
+      } else {
+        console.log('No data found');
+        // Handle no data scenario
+      }
+    })
+    .catch((error) => {
+      console.error('Error checking data:', error);
+    });
+};
+
 </script>
 
 <template>
@@ -88,6 +127,11 @@ const semester_id = ref<number | null>(null);
         :items="kelas"
         item-title="text"
         item-value="id"
+        @update:model-value="
+          (kelas_id: number) => {
+            setKelas(kelas_id);
+          }
+        "
         required
         clearable
         clear-icon="ri-close-line"
@@ -104,6 +148,11 @@ const semester_id = ref<number | null>(null);
         :items="jadwal"
         item-title="text"
         item-value="id"
+        @update:model-value="
+          (jadwal_id: number) => {
+            setJadwal(jadwal_id);
+          }
+        "
         required
         clearable
         clear-icon="ri-close-line"
@@ -120,6 +169,11 @@ const semester_id = ref<number | null>(null);
         :items="semester"
         item-title="text"
         item-value="id"
+        @update:model-value="
+          (semester_id: number) => {
+            setSemester(semester_id);
+          }
+        "
         required
         clearable
         clear-icon="ri-close-line"
