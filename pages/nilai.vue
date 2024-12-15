@@ -518,6 +518,13 @@ const isDataNotValid = computed(() => {
                 <VIcon end icon="ri-add-fill" />
                 Nilai Multiple
               </VBtn>
+              <VBtn
+                color="primary"
+                @click="bulkingDialog.show()"
+              >
+                <VIcon start icon="ri-file-excel-2-line" />
+                Download
+              </VBtn>
             </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
