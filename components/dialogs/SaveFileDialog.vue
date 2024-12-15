@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { VForm } from "vuetify/lib/components/index.mjs";
-
 const props = defineProps({
   path: String,
   title: String,
@@ -10,6 +8,9 @@ const props = defineProps({
   defaultForm: Object,
   width: Number,
   itemKey: String,
+  requestForm: Object,
+  customButtonText: String,
+  customMethodApi: String,
 });
 
 const emits = defineEmits(["update:modelValue", "saved"]);
@@ -21,17 +22,26 @@ const isEditing = ref(false);
 const isDetailForm = ref(false);
 const isShow = ref(false);
 
+const apiMethod = computed(() =>
+  props.customMethodApi
+    ? props.customMethodApi
+    : isEditing.value
+    ? "PUT"
+    : "POST"
+);
+
 const formData = ref({ ...props.defaultForm });
 const validationErrors = ref({});
 
 const save = async () => {
   refVForm.value?.validate().then(async ({ valid }) => {
     if (!valid) return;
-    const payload = { ...formData.value };
+    let payload = { ...formData.value };
 
-    const url = isEditing.value
-      ? `${props.path}/${formData.value[props.itemKey || "id"]}`
-      : (props.path as string);
+    const url =
+      isEditing.value && !props.customMethodApi
+        ? `${props.path}/${formData.value[props.itemKey || "id"]}`
+        : (props.path as string);
 
     if (payload.image && typeof payload.image === "string")
       payload.image = null;
@@ -40,10 +50,14 @@ const save = async () => {
       payload.cover = null;
     if (payload.photo && typeof payload.photo === "string")
       payload.photo = null;
+    if (props.requestForm)
+      payload = extractNeededData(payload, props.requestForm);
+
+    console.log("payload", payload);
 
     const { errors, success } = await useApi(url, {
       withNotif: true,
-      method: isEditing.value ? "PUT" : "POST",
+      method: apiMethod.value,
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -119,7 +133,13 @@ defineExpose({
           class="overflow-visible d-flex justify-end flex-wrap gap-4"
         >
           <VBtn type="submit">
-            {{ isEditing ? "Update" : "Create" }}
+            {{
+              isEditing
+                ? props.customButtonText
+                  ? props.customButtonText
+                  : "Update"
+                : "Create"
+            }}
           </VBtn>
         </VCardText>
       </VCard>
