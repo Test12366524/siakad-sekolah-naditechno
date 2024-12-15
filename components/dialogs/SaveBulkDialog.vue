@@ -26,7 +26,7 @@ const validationErrors = ref({});
 const isSingleData = ref(false);
 
 const save = () => {
-  isSingleData.value ? emits("save-single", formData.id) : emits("saved");
+  isSingleData.value ? emits("save-single", formData.value.id) : emits("saved");
 };
 
 const isDataNotValidComputed = computed(() => props.isDataNotValid);
@@ -38,6 +38,7 @@ defineExpose({
     validationErrors.value = {};
 
     if (currentItem) {
+      console.log("currentItem", currentItem);
       isSingleData.value = true;
       modalTitle.value = props.editTitle;
       formData.value = currentItem;
@@ -78,6 +79,7 @@ defineExpose({
               :form-data="formData"
               :validation-errors="validationErrors"
               :is-detail="isDetailForm"
+              :is-single-data="isSingleData"
             />
           </VRow>
         </VCardText>
