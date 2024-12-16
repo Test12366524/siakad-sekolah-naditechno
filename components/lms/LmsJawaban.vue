@@ -22,7 +22,7 @@ useApi("master/mata-kuliah/all").then(({ data }) => {
 const role_id = computed(() => user.role_id);
 
 const isDosenOrAdmin = computed(
-  () => role_id.value === 1 || role_id.value === 3
+  () => role_id.value === 1 || role_id.value === 2
 );
 
 const getHeader = computed(() => {
