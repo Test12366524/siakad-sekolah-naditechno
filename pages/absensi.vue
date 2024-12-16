@@ -440,7 +440,7 @@ const isDataNotValid = computed(() => {
             <VCol cols="12" md="6" class="d-flex gap-4">
               <!--
                 <VBtn
-                v-if="role_id == 1 || role_id == 3"
+                v-if="role_id == 1 || role_id == 2"
                 color="primary"
                 @click="dialogSave.show()"
                 >
@@ -449,7 +449,7 @@ const isDataNotValid = computed(() => {
                 </VBtn>
               -->
               <VBtn
-                v-if="role_id == 1 || role_id == 3"
+                v-if="role_id == 1 || role_id == 2"
                 color="primary"
                 @click="handleShowBulkDialog"
               >
@@ -563,9 +563,9 @@ const isDataNotValid = computed(() => {
         ]"
       >
         <template #actions="{ item, remove }">
-          <div v-if="role_id == 1 || role_id == 3" class="d-flex gap-1">
+          <div class="d-flex gap-1">
             <IconBtn
-              v-if="role_id == 1 || role_id == 3"
+              v-if="role_id == 1 || role_id == 2"
               size="small"
               title="Detail"
               @click="
@@ -581,7 +581,7 @@ const isDataNotValid = computed(() => {
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
-              v-if="role_id == 1 || role_id == 3"
+              v-if="role_id == 1 || role_id == 2"
               size="small"
               @click="
                 confirmDialog.show({

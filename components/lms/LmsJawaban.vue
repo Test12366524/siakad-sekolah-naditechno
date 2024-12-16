@@ -110,7 +110,7 @@ const formNilaiTugas = ref({
 });
 
 onMounted(() => {
-  console.log(user.role_id);
+  tableRef.value.refresh();
 });
 
 const mata_kuliah_id = ref<number | null>(null);
@@ -174,7 +174,7 @@ const dosen_id = ref<number | null>(null);
           class="d-flex justify-center items-center"
           @click="
             () => {
-              window.open(formData.file, '_blank');
+              openFileHandler(formData.file);
             }
           "
         >
@@ -187,14 +187,6 @@ const dosen_id = ref<number | null>(null);
           type="number"
         />
       </div>
-    </VCol>
-
-    <VCol cols="12">
-      <VTextarea
-        v-model="formData.notes"
-        rows="3"
-        label="Catatan dari mahasiswa"
-      />
     </VCol>
     <VCol cols="12">
       <VTextarea
@@ -244,7 +236,7 @@ const dosen_id = ref<number | null>(null);
       <VTextField v-model="formData.lms_subtitle" label="Sub Judul" readonly />
     </VCol>
     <VCol cols="12">
-      <VTextarea v-model="formData.lms_description" label="Deskripsi Soal" />
+      <VTextarea v-model="formData.description" label="Deskripsi Soal" />
     </VCol>
     <VCol cols="12" md="7">
       <div class="d-flex justify-between items-center gap-4">
@@ -258,7 +250,7 @@ const dosen_id = ref<number | null>(null);
           "
         >
           <VIcon icon="ri-eye-line" class="mr-2" />{{
-            formData.lms_file_pdf ? "Soal 1" : "Soal 1 (Kosong)"
+            formData.lms_file_pdf ? "Soal 1 (PDF)" : "Soal 1 (Kosong)"
           }}
         </VBtn>
         <VBtn
@@ -271,7 +263,7 @@ const dosen_id = ref<number | null>(null);
           "
         >
           <VIcon icon="ri-eye-line" class="mr-2" />{{
-            formData.lms_file_image ? "Soal 2" : "Soal 2 (Kosong)"
+            formData.lms_file_image ? "Soal 2 (Image)" : "Soal 2 (Kosong)"
           }}
         </VBtn>
         <VBtn
@@ -297,9 +289,6 @@ const dosen_id = ref<number | null>(null);
         show-preview
         chips
       />
-    </VCol>
-    <VCol cols="12">
-      <VTextarea v-model="formData.description" rows="3" label="Keterangan" />
     </VCol>
   </SaveFileDialog>
 
@@ -382,8 +371,6 @@ const dosen_id = ref<number | null>(null);
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.notes = item.description;
-                  payload.description = '';
                   taskAssignmentDialog.show(payload);
                 }
               "
