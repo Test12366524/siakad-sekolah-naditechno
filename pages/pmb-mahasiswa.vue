@@ -16,13 +16,10 @@ const form = {
   address: "",
   phone: "",
   pendidikan_terakhir: "",
-  foto_1: "",
-  foto_2: "",
-  foto_3: "",
+  foto: "",
+  foto_copy_ktp: "",
   foto_copy_ijazah: "",
   surat_rekomendasi: "",
-  bukti_infaq_pendaftaran: "",
-  foto_copy_ktp: "",
   pengalaman_kursus: "",
   pengalaman_organisasi: "",
 };
@@ -172,31 +169,7 @@ const handleAction = async (status, type, data) => {
       <FileInput
         v-model="formData.foto_1"
         accept="image/*"
-        label="Upload Foto 1"
-        small-chips
-        chips
-        show-preview
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="3">
-      <FileInput
-        v-model="formData.foto_2"
-        accept="image/*"
-        label="Upload Foto 2"
-        small-chips
-        chips
-        show-preview
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="3">
-      <FileInput
-        v-model="formData.foto_3"
-        accept="image/*"
-        label="Upload Foto 3"
+        label="Upload Foto"
         small-chips
         chips
         show-preview
@@ -221,18 +194,6 @@ const handleAction = async (status, type, data) => {
         v-model="formData.surat_rekomendasi"
         accept="pdf/*"
         label="Surat Rekomendasi"
-        small-chips
-        chips
-        show-preview
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="3">
-      <FileInput
-        v-model="formData.bukti_infaq_pendaftaran"
-        accept="image/*"
-        label="Upload Bukti Infaq Pendaftaran"
         small-chips
         chips
         show-preview
@@ -301,14 +262,14 @@ const handleAction = async (status, type, data) => {
             key: 'phone',
             sortable: false,
           },
-          {
-            title: 'Pendidikan Terakhir',
-            key: 'pendidikan_terakhir',
-            sortable: false,
-          },
+          // {
+          //   title: 'Pendidikan Terakhir',
+          //   key: 'pendidikan_terakhir',
+          //   sortable: false,
+          // },
           {
             title: 'Status',
-            key: 'status_desc',
+            key: 'status_all',
             sortable: false,
           },
         ]"
