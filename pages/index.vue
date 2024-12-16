@@ -238,7 +238,7 @@ onMounted(() => {
       <DashboardAttendanceChart />
     </VCol>
     <VCol v-if="role_id == 1" cols="12">
-      <DashboardPassedChart />
+      <DashboardGenderChart />
     </VCol>
   </VRow>
 </template>
