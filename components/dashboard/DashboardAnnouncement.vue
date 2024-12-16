@@ -120,8 +120,8 @@ const form = {
 const announcements = ref([]);
 
 const fetchAnnouncement = () => {
-  useApi("/announcement").then(({ data }) => {
-    if (data) announcements.value = data.items;
+  useApi("dashboard/pengumuman").then(({ data }) => {
+    if (data) announcements.value = data;
   });
 };
 
