@@ -37,9 +37,11 @@ useApi("master/dosen/all").then(({ data }) => {
   dosen.value = data;
 });
 
-useApi("master/mata-kuliah/all").then(({ data }) => {
-  mata_kuliah.value = data;
-});
+const getMataKuliahByClass = (dosen_id: number) => {
+  useApi("master/mata-kuliah/all/" + dosen_id).then(({ data }) => {
+    mata_kuliah.value = data;
+  });
+}
 
 const role_id = computed(() => user.role_id);
 
@@ -63,14 +65,16 @@ const handleUploadTugas = (item) => {
 
 const getDosenDetails = () => {
   const url = `master/dosen?search=${user.email}`;
-
   useApi(url).then(({ data }) => {
-    if (data.items) form.dosen_id = data.items[0].id;
+    if (data.items){
+      form.dosen_id = data.items[0].id;
+    }  
   });
 };
 
 onMounted(() => {
   if (isDosen.value) getDosenDetails();
+  if (form.dosen_id > 0) getMataKuliahByClass(form.dosen_id)
   tableRef.value.refresh();
 });
 
@@ -194,6 +198,11 @@ const dosen_id = ref<number | null>(null);
         required
         :clearable="!isDosen"
         clear-icon="ri-close-line"
+        @update:model-value="
+          (dosen_id: number) => {
+            getMataKuliahByClass(dosen_id);
+          }
+        "
       />
     </VCol>
     <VCol cols="12" md="6">

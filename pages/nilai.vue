@@ -42,10 +42,6 @@ useApi("master/kelas/all").then(({ data }) => {
   kelas.value = data;
 });
 
-useApi("master/mata-kuliah/all").then(({ data }) => {
-  mata_kuliah.value = data;
-});
-
 const role_id = ref();
 const status_action = ref();
 
@@ -98,6 +94,15 @@ const headers = [
   { title: "Total", key: "total", sortable: false },
   { title: "Predikat", key: "predikat", sortable: false },
 ];
+
+
+
+const getMataKuliahByClass = (dosen_id: number) => {
+  useApi("master/mata-kuliah/all/" + dosen_id).then(({ data }) => {
+    mata_kuliah.value = data;
+  });
+}
+
 
 const getMahasiswaByClass = (classId) => {
   const getParams = {
@@ -176,8 +181,6 @@ const handleInsertBulk = async () => {
   };
 
   const url = "nilai/bulk-insert";
-
-  console.log("request", request);
 
   const { errors, success } = await useApi(url, {
     withNotif: true,
@@ -349,6 +352,7 @@ const isDataNotValid = computed(() => {
         @update:model-value="
           (dosen_id) => {
             form.dosen_id = dosen_id;
+            getMataKuliahByClass(dosen_id);
           }
         "
       />

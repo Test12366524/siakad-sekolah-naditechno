@@ -21,9 +21,11 @@ useApi("master/dosen/all").then(({ data }) => {
   dosen.value = data;
 });
 
-useApi("master/mata-kuliah/all").then(({ data }) => {
-  mata_kuliah.value = data;
-});
+const getMataKuliahByClass = (dosen_id: number) => {
+  useApi("master/mata-kuliah/all/" + dosen_id).then(({ data }) => {
+    mata_kuliah.value = data;
+  });
+}
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
@@ -62,6 +64,11 @@ const dosen_id = ref<number | null>(null);
         clearable
         clear-icon="ri-close-line"
         :readonly="isDetail"
+        @update:model-value="
+          (dosen_id: number) => {
+            getMataKuliahByClass(dosen_id);
+          }
+        "
       />
     </VCol>
     <VCol cols="12" md="6">
