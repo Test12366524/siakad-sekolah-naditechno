@@ -132,112 +132,112 @@ const role_id = ref(0);
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
     role_id.value = data.role_id;
-    if (data.role_id === 1) {
-      fetchingData();
-    } else if (data.role_id === 3) {
-      fetchingDataMahasiswa();
-    } else if (data.role_id === 2) {
-      fetchingDataDosen();
-    }
+    if (data.role_id === 1) fetchingData();
+    else if (data.role_id === 3) fetchingDataMahasiswa();
+    else if (data.role_id === 2) fetchingDataDosen();
   });
 });
 </script>
 
 <template>
-  <VRow class="match-height">
-    <VCol
-      v-if="role_id == 1"
-      v-for="item in dashboardData"
-      :key="`dashboard${item.title}`"
-      cols="12"
-      md="3"
-      sm="6"
-    >
-      <div>
-        <VCard
-          class="logistics-card-statistics cursor-pointer"
-          style="border-block-end-color: rgb(var(--v-theme-info))"
+  <VRow>
+    <VCol cols="8">
+      <VRow class="match-height">
+        <VCol
+          v-for="item in dashboardData"
+          v-if="role_id == 1"
+          :key="`dashboard${item.title}`"
+          cols="12"
+          md="6"
         >
-          <VCardText>
-            <div class="d-flex align-center gap-x-4 mb-2">
-              <VAvatar variant="tonal" :color="card_color" rounded="lg">
-                <VIcon :icon="item.icon" size="24" />
-              </VAvatar>
-              <h4 class="text-h4">
-                {{ item.value !== null ? item.value : "Loading..." }}
-              </h4>
-            </div>
-            <div class="text-body-1 text-high-emphasis">
-              {{ item.title }}
-            </div>
-          </VCardText>
-        </VCard>
-      </div>
+          <div>
+            <VCard
+              class="logistics-card-statistics cursor-pointer"
+              style="border-block-end-color: rgb(var(--v-theme-info))"
+            >
+              <VCardText>
+                <div class="d-flex align-center gap-x-4 mb-2">
+                  <VAvatar variant="tonal" :color="card_color" rounded="lg">
+                    <VIcon :icon="item.icon" size="24" />
+                  </VAvatar>
+                  <h4 class="text-h4">
+                    {{ item.value !== null ? item.value : "Loading..." }}
+                  </h4>
+                </div>
+                <div class="text-body-1 text-high-emphasis">
+                  {{ item.title }}
+                </div>
+              </VCardText>
+            </VCard>
+          </div>
+        </VCol>
+        <VCol
+          v-for="item in mahasiswaData"
+          v-if="role_id == 3"
+          :key="`dashboard${item.title}`"
+          cols="12"
+          md="4"
+        >
+          <div>
+            <VCard
+              class="logistics-card-statistics cursor-pointer"
+              style="border-block-end-color: rgb(var(--v-theme-info))"
+            >
+              <VCardText>
+                <div class="d-flex align-center gap-x-4 mb-2">
+                  <VAvatar variant="tonal" :color="card_color" rounded="lg">
+                    <VIcon :icon="item.icon" size="24" />
+                  </VAvatar>
+                  <h4 class="text-h4">
+                    {{ item.value !== null ? item.value : "Loading..." }}
+                  </h4>
+                </div>
+                <div class="text-body-1 text-high-emphasis">
+                  {{ item.title }}
+                </div>
+              </VCardText>
+            </VCard>
+          </div>
+        </VCol>
+        <VCol
+          v-for="item in dosenData"
+          v-if="role_id == 2"
+          :key="`dashboard${item.title}`"
+          cols="12"
+          md="6"
+        >
+          <div>
+            <VCard
+              class="logistics-card-statistics cursor-pointer"
+              style="border-block-end-color: rgb(var(--v-theme-info))"
+            >
+              <VCardText>
+                <div class="d-flex align-center gap-x-4 mb-2">
+                  <VAvatar variant="tonal" :color="card_color" rounded="lg">
+                    <VIcon :icon="item.icon" size="24" />
+                  </VAvatar>
+                  <h4 class="text-h4">
+                    {{ item.value !== null ? item.value : "Loading..." }}
+                  </h4>
+                </div>
+                <div class="text-body-1 text-high-emphasis">
+                  {{ item.title }}
+                </div>
+              </VCardText>
+            </VCard>
+          </div>
+        </VCol>
+      </VRow>
     </VCol>
-    <VCol
-      v-if="role_id == 3"
-      v-for="item in mahasiswaData"
-      :key="`dashboard${item.title}`"
-      cols="12"
-      md="4"
-      sm="6"
-    >
-      <div>
-        <VCard
-          class="logistics-card-statistics cursor-pointer"
-          style="border-block-end-color: rgb(var(--v-theme-info))"
-        >
-          <VCardText>
-            <div class="d-flex align-center gap-x-4 mb-2">
-              <VAvatar variant="tonal" :color="card_color" rounded="lg">
-                <VIcon :icon="item.icon" size="24" />
-              </VAvatar>
-              <h4 class="text-h4">
-                {{ item.value !== null ? item.value : "Loading..." }}
-              </h4>
-            </div>
-            <div class="text-body-1 text-high-emphasis">
-              {{ item.title }}
-            </div>
-          </VCardText>
-        </VCard>
-      </div>
-    </VCol>
-    <VCol
-      v-if="role_id == 2"
-      v-for="item in dosenData"
-      :key="`dashboard${item.title}`"
-      cols="12"
-      md="3"
-      sm="6"
-    >
-      <div>
-        <VCard
-          class="logistics-card-statistics cursor-pointer"
-          style="border-block-end-color: rgb(var(--v-theme-info))"
-        >
-          <VCardText>
-            <div class="d-flex align-center gap-x-4 mb-2">
-              <VAvatar variant="tonal" :color="card_color" rounded="lg">
-                <VIcon :icon="item.icon" size="24" />
-              </VAvatar>
-              <h4 class="text-h4">
-                {{ item.value !== null ? item.value : "Loading..." }}
-              </h4>
-            </div>
-            <div class="text-body-1 text-high-emphasis">
-              {{ item.title }}
-            </div>
-          </VCardText>
-        </VCard>
-      </div>
+    <VCol cols="4">
+      <DashboardAnnouncement />
     </VCol>
   </VRow>
   <VRow>
-    <VCol cols="12" v-if="role_id == 1 || role_id == 3">
+    <VCol v-if="role_id == 1 || role_id == 3" cols="12">
       <DashboardAttendanceChart />
     </VCol>
-    <VCol cols="12" v-if="role_id == 1">
+    <VCol v-if="role_id == 1" cols="12">
       <DashboardPassedChart />
     </VCol>
   </VRow>
