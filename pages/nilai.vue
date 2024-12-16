@@ -52,7 +52,7 @@ const status_action = ref();
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
     role_id.value = data.role_id;
-    if (data.role_id == 1 || data.role_id == 3) status_action.value = true;
+    if (data.role_id == 1 || data.role_id == 2) status_action.value = true;
     else status_action.value = false;
   });
 });
@@ -474,7 +474,7 @@ const isDataNotValid = computed(() => {
             >
               <!--
                 <VBtn
-                v-if="role_id == 1 || role_id == 3"
+                v-if="role_id == 1 || role_id == 2"
                 color="primary"
                 @click="dialogSave.show()"
                 >
@@ -483,7 +483,7 @@ const isDataNotValid = computed(() => {
                 </VBtn>
               -->
               <VBtn
-                v-if="role_id == 1 || role_id == 3"
+                v-if="role_id == 1 || role_id == 2"
                 color="primary"
                 @click="
                   () => {
@@ -634,14 +634,14 @@ const isDataNotValid = computed(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              v-if="role_id == 1 || role_id == 3"
+              v-if="role_id == 1 || role_id == 2"
               size="small"
               @click="dialogSave.show({ ...item })"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
-              v-if="role_id == 1 || role_id == 3"
+              v-if="role_id == 1 || role_id == 2"
               size="small"
               @click="
                 confirmDialog.show({

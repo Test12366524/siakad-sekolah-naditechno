@@ -5,15 +5,15 @@ import { VCol, VTextField, VTextarea } from "vuetify/lib/components/index.mjs";
 const { confirmDialog } = useCommonStore();
 const { user } = useAuthStore();
 
-const dialogSave = ref();
-const taskUploadDialog = ref();
+const taskFromDosenDialog = ref();
+const taskForMahasiswaDialog = ref();
 const tableRef = ref();
 const dosen = ref();
 const mata_kuliah = ref();
 
 const form = {
   mata_kuliah_id: "",
-  dosen_id: "",
+  dosen_id: 8,
   title: "",
   subtitle: "",
   file_pdf: "",
@@ -47,6 +47,8 @@ const isDosenOrAdmin = computed(
   () => role_id.value === 1 || role_id.value === 2
 );
 
+const isDosen = computed(() => role_id.value === 2);
+
 const isMahasiswa = computed(() => role_id.value === 3);
 
 const handleUploadTugas = (item) => {
@@ -56,14 +58,20 @@ const handleUploadTugas = (item) => {
   payload.lms_id = item.id;
   payload.description = "";
   payload.file = null;
-  payload.description_task = item.description;
-  payload.description = "";
-  taskUploadDialog.value.show(payload);
-  console.log("payload", payload);
+  taskForMahasiswaDialog.value.show(payload);
+};
+
+const getDosenDetails = () => {
+  const url = `master/dosen?search=${user.email}`;
+
+  useApi(url).then(({ data }) => {
+    if (data.items) form.dosen_id = data.items[0].id;
+  });
 };
 
 onMounted(() => {
-  console.log(user.role_id);
+  if (isDosen.value) getDosenDetails();
+  tableRef.value.refresh();
 });
 
 const mata_kuliah_id = ref<number | null>(null);
@@ -74,7 +82,7 @@ const dosen_id = ref<number | null>(null);
   <SaveFileDialog
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
-    ref="taskUploadDialog"
+    ref="taskForMahasiswaDialog"
     width="1200"
     path="lms-tugas"
     title="Upload Tugas"
@@ -108,7 +116,7 @@ const dosen_id = ref<number | null>(null);
       <VTextField v-model="formData.subtitle" label="Sub Judul" readonly />
     </VCol>
     <VCol cols="12">
-      <VTextarea v-model="formData.description_task" label="Deskripsi Soal" />
+      <VTextarea v-model="formData.description" label="Deskripsi" readonly />
     </VCol>
     <VCol cols="12" md="7">
       <div class="d-flex justify-between items-center gap-4">
@@ -122,7 +130,7 @@ const dosen_id = ref<number | null>(null);
           "
         >
           <VIcon icon="ri-eye-line" class="mr-2" />{{
-            formData.file_pdf ? "Soal 1" : "Soal 1 (Kosong)"
+            formData.file_pdf ? "Soal 1 (PDF)" : "Soal 1 (Kosong)"
           }}
         </VBtn>
         <VBtn
@@ -135,7 +143,7 @@ const dosen_id = ref<number | null>(null);
           "
         >
           <VIcon icon="ri-eye-line" class="mr-2" />{{
-            formData.file_image ? "Soal 2" : "Soal 2 (Kosong)"
+            formData.file_image ? "Soal 2 (Image)" : "Soal 2 (Kosong)"
           }}
         </VBtn>
         <VBtn
@@ -160,14 +168,11 @@ const dosen_id = ref<number | null>(null);
         chips
       />
     </VCol>
-    <VCol cols="12">
-      <VTextarea v-model="formData.description" rows="3" label="Keterangan" />
-    </VCol>
   </SaveFileDialog>
   <SaveFileDialog
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
-    ref="dialogSave"
+    ref="taskFromDosenDialog"
     width="1200"
     path="lms"
     title="Tambah Tugas"
@@ -185,8 +190,9 @@ const dosen_id = ref<number | null>(null);
         :items="dosen"
         item-title="text"
         item-value="id"
+        :readonly="isDosen"
         required
-        clearable
+        :clearable="!isDosen"
         clear-icon="ri-close-line"
       />
     </VCol>
@@ -225,7 +231,7 @@ const dosen_id = ref<number | null>(null);
       <FileInput
         v-model="formData.file_image"
         accept="image/*"
-        label="File Gambar"
+        label="Soal 1 (Image)"
         small-chips
         show-preview
         chips
@@ -236,7 +242,7 @@ const dosen_id = ref<number | null>(null);
       <FileInput
         v-model="formData.file_pdf"
         accept="pdf/*"
-        label="File PDF"
+        label="Soal 2 (PDF)"
         small-chips
         show-preview
         chips
@@ -300,10 +306,10 @@ const dosen_id = ref<number | null>(null);
               <VBtn
                 v-if="isDosenOrAdmin"
                 color="primary"
-                @click="dialogSave.show()"
+                @click="taskFromDosenDialog.show()"
               >
                 <VIcon end icon="ri-add-fill" />
-                Tambah Data
+                Tambah Tugas
               </VBtn>
             </VCol>
             <VCol cols="12" md="3" style="margin-block-start: 5px">
@@ -389,7 +395,7 @@ const dosen_id = ref<number | null>(null);
                   payload.until_date = new Date(payload.until_date)
                     .toISOString()
                     .substring(0, 10);
-                  dialogSave.show(payload);
+                  taskFromDosenDialog.show(payload);
                 }
               "
             >
