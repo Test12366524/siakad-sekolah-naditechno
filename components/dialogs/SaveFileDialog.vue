@@ -53,8 +53,6 @@ const save = async () => {
     if (props.requestForm)
       payload = extractNeededData(payload, props.requestForm);
 
-    console.log("payload", payload);
-
     const { errors, success } = await useApi(url, {
       withNotif: true,
       method: apiMethod.value,

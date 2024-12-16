@@ -26,6 +26,24 @@ const form = {
   pengalaman_kursus: "",
   pengalaman_organisasi: "",
 };
+
+const handleAction = async (status, type, data) => {
+  const url = `ppdb/change-status/${type}/${status}/${data.id}`;
+
+  console.log(url);
+  console.log("DATA", data);
+
+  const { errors, success } = await useApi(url, {
+    withNotif: true,
+    method: "PUT",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  if (success) tableRef.value.refresh();
+};
 </script>
 
 <template>
@@ -290,53 +308,118 @@ const form = {
           },
           {
             title: 'Status',
-            key: 'pendidikan_terakhir',
+            key: 'status_desc',
             sortable: false,
           },
         ]"
       >
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
-            <VBtn v-if="item.tripay_status_transaction == 0" size="x-small" style="border-radius: 0.375rem!important;">
-              <VIcon
-                start
-                icon="ri-checkbox-circle-line"
-              />
+            <VBtn
+              v-if="item.tripay_status_transaction == 0"
+              size="x-small"
+              style="border-radius: 0.375rem !important"
+              @click="
+                () => {
+                  confirmDialog.show({
+                    title: 'Approve Payment',
+                    message: `Anda yakin ingin mengubah status jadi approve?`,
+                    onConfirm: () => handleAction('payment', 'approved', item),
+                  });
+                }
+              "
+            >
+              <VIcon start icon="ri-checkbox-circle-line" />
               Payment Diterima
             </VBtn>
-            <VBtn v-if="item.tripay_status_transaction == 0" size="x-small" style="border-radius: 0.375rem!important;" color="secondary">
-              <VIcon
-                start
-                icon="ri-subtract-line"
-              />
+            <VBtn
+              v-if="item.tripay_status_transaction == 0"
+              size="x-small"
+              style="border-radius: 0.375rem !important"
+              color="secondary"
+              @click="
+                () => {
+                  confirmDialog.show({
+                    title: 'Reject Payment',
+                    message: `Anda yakin ingin mengubah status jadi reject?`,
+                    onConfirm: () => handleAction('payment', 'rejected', item),
+                  });
+                }
+              "
+            >
+              <VIcon start icon="ri-subtract-line" />
               Payment Ditolak
             </VBtn>
-            <VBtn v-if="item.status == 0 && item.tripay_status_transaction == 1" size="x-small" style="border-radius: 0.375rem!important;">
-              <VIcon
-                start
-                icon="ri-checkbox-circle-line"
-              />
+            <VBtn
+              v-if="item.status == 0 && item.tripay_status_transaction == 1"
+              size="x-small"
+              style="border-radius: 0.375rem !important"
+              @click="
+                () => {
+                  confirmDialog.show({
+                    title: 'Approve Verification',
+                    message: `Anda yakin ingin mengubah status jadi approve?`,
+                    onConfirm: () => handleAction('data', 'approved', item),
+                  });
+                }
+              "
+            >
+              <VIcon start icon="ri-checkbox-circle-line" />
               Verifikasi Data Diterima
             </VBtn>
-            <VBtn v-if="item.status == 0 && item.tripay_status_transaction == 1" size="x-small" style="border-radius: 0.375rem!important;" color="secondary">
-              <VIcon
-                start
-                icon="ri-subtract-line"
-              />
+            <VBtn
+              v-if="item.status == 0 && item.tripay_status_transaction == 1"
+              size="x-small"
+              style="border-radius: 0.375rem !important"
+              color="secondary"
+              @click="
+                () => {
+                  confirmDialog.show({
+                    title: 'Reject Verification',
+                    message: `Anda yakin ingin mengubah status jadi reject?`,
+                    onConfirm: () => handleAction('data', 'rejected', item),
+                  });
+                }
+              "
+            >
+              <VIcon start icon="ri-subtract-line" />
               Verifikasi Data Ditolak
             </VBtn>
-            <VBtn v-if="item.status_test == 0 && item.status == 1" size="x-small" style="border-radius: 0.375rem!important;">
-              <VIcon
-                start
-                icon="ri-checkbox-circle-line"
-              />
+            <VBtn
+              v-if="item.status_test == 0 && item.status == 1"
+              size="x-small"
+              style="border-radius: 0.375rem !important"
+              @click="
+                () => {
+                  confirmDialog.show({
+                    title: 'Status Lulus',
+                    message: `Anda yakin ingin mengubah status jadi lulus?`,
+                    onConfirm: () => handleAction('test', 'approved', item),
+                  });
+                }
+              "
+            >
+              >
+              <VIcon start icon="ri-checkbox-circle-line" />
               Lulus
             </VBtn>
-            <VBtn v-if="item.status_test == 0 && item.status == 1" size="x-small" style="border-radius: 0.375rem!important;" color="secondary">
-              <VIcon
-                start
-                icon="ri-subtract-line"
-              />
+            <VBtn
+              v-if="item.status_test == 0 && item.status == 1"
+              size="x-small"
+              style="border-radius: 0.375rem !important"
+              color="secondary"
+              @click="
+                () => {
+                  confirmDialog.show({
+                    title: 'Status Tidak Lulus',
+                    message: `Anda yakin ingin mengubah status jadi tidak lulus?`,
+                    onConfirm: () => handleAction('test', 'rejected', item),
+                  });
+                }
+              "
+            >
+              >
+              <VIcon start icon="ri-subtract-line" />
               Tidak Lulus
             </VBtn>
             <IconBtn
