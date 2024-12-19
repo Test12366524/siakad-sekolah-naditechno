@@ -14,6 +14,7 @@ const jadwal_mata_kuliah = ref();
 const kelas = ref();
 const mata_kuliah = ref();
 const dosen = ref();
+const user_id = ref();
 
 const form = ref({
   kelas_id: null,
@@ -103,14 +104,6 @@ useApi("mahasiswa/all").then(({ data }) => {
   mahasiswa.value = data;
 });
 
-useApi("jadwal-mata-kuliah/all").then(({ data }) => {
-  jadwal_mata_kuliah.value = data;
-});
-
-useApi("master/dosen/all").then(({ data }) => {
-  dosen.value = data;
-});
-
 useApi("master/mata-kuliah/all").then(({ data }) => {
   mata_kuliah.value = data;
 });
@@ -121,10 +114,36 @@ const status_action = ref();
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
     role_id.value = data.role_id;
-    if (data.role_id == 1 || data.role_id == 2) status_action.value = true;
-    else status_action.value = false;
+    user_id.value = data.id;
+    if (data.role_id == 1){
+      status_action.value = true;
+      useApi("master/dosen/all").then(({ data }) => {
+        dosen.value = data;
+      });
+      useApi("jadwal-mata-kuliah/all").then(({ data }) => {
+        jadwal_mata_kuliah.value = data;
+      });
+    } else if(data.role_id == 2){
+      status_action.value = true;
+      useApi("master/dosen/byUserID/" + user_id.value).then(({ data }) => {
+        dosen.value = data;
+        useApi("jadwal-mata-kuliah/all/" + data.id).then(({ data }) => {
+          jadwal_mata_kuliah.value = data;
+        });
+      });
+    } else {
+      useApi("master/dosen/all").then(({ data }) => {
+        dosen.value = data;
+      });
+      useApi("jadwal-mata-kuliah/all").then(({ data }) => {
+        jadwal_mata_kuliah.value = data;
+      });
+      status_action.value = false;
+    }
   });
 });
+
+
 
 const mata_kuliah_id = ref<number | null>(null);
 const dosen_id = ref<number | null>(null);

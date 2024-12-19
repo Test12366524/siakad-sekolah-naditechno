@@ -6,7 +6,7 @@
     <div class="d-flex align-center text-base">
       &copy;
       {{ new Date().getFullYear() }}
-      SIAKAD Kampus
+      PKU MUI Jakarta
     </div>
     <!-- 👉 Footer: right content -->
     <span

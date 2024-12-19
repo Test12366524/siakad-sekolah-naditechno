@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatFullDate } from "@/composables/common";
 import avatar1 from "@images/avatars/avatar-1.png";
 import avatar2 from "@images/avatars/avatar-2.png";
 import avatar3 from "@images/avatars/avatar-3.png";
@@ -153,8 +154,9 @@ onMounted(() => {
           </VListItemTitle>
           <VListItemSubtitle class="d-flex gap-1">
             <VIcon size="20" start icon="ri-calendar-line" />
-            <p>{{ meeting.content }}</p>
+            <p>{{ meeting.content }}</p>            
           </VListItemSubtitle>
+          <p style="font-size: 12px; margin-top: -10px;">{{ formatFullDate(meeting.from_date)?.dateOnly }} - {{ formatFullDate(meeting.to_date)?.dateOnly }}</p>
         </VListItem>
       </VList>
       <div v-else>tidak ada pengumuman</div>

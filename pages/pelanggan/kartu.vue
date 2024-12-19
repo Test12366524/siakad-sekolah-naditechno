@@ -162,7 +162,7 @@ onMounted(() => {
         <VCardText>
           <VRow style="margin-bottom: -52px;">
             <VCol v-if="selectedUser" cols="6">
-              <h2 class="mb-2">SIAKAD Kampus</h2>
+              <h2 class="mb-2">SIAKAD PKU</h2>
               <div
                 class="d-flex align-center flex-wrap justify-content-between"
               >
