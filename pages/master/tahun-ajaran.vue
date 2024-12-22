@@ -8,24 +8,17 @@ const dialogSave = ref();
 const tableRef = ref();
 
 const form = {
-  periode_id: "",
   name: "",
   status: 1,
 };
-
-const periodes = ref();
-
-useApi("master/periode/all").then(({ data }) => {
-    periodes.value = data;
-});
 </script>
 
 <template>
   <SaveDialog
     v-if="tableRef"
-    path="master/angkatan"
-    title="Tambah Angkatan"
-    edit-title="Edit Angkatan"
+    path="master/periode"
+    title="Tambah Tahun Ajaran"
+    edit-title="Edit Tahun Ajaran"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     :default-form="form"
@@ -33,25 +26,10 @@ useApi("master/periode/all").then(({ data }) => {
   >
 
     <VCol cols="12">
-      <VAutocomplete
-        v-model="formData.periode_id"
-        label="Tahun Ajaran"
-        density="compact"
-        :error-messages="validationErrors.periode_id"
-        placeholder="Pilih Tahun Ajaran"
-        :items="periodes"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
-      />
-    </VCol>
-    <VCol cols="12">
       <VTextField
-        :error-messages="validationErrors.angkatan"
-        v-model="formData.angkatan"
-        label="Angkatan"
+        :error-messages="validationErrors.name"
+        v-model="formData.name"
+        label="Nama"
       />
     </VCol>
 
@@ -88,18 +66,13 @@ useApi("master/periode/all").then(({ data }) => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Angkatan"
-        path="master/angkatan"
+        title="Data Tahun Ajaran"
+        path="master/periode"
         :with-actions="true"
         :headers="[
           {
             title: 'Tahun Ajaran',
-            key: 'periode_name',
-            sortable: false,
-          },
-          {
-            title: 'Angkatan',
-            key: 'angkatan',
+            key: 'name',
             sortable: false,
           },
           {
@@ -120,8 +93,8 @@ useApi("master/periode/all").then(({ data }) => {
             <IconBtn
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Angkatan',
-                  message: `Anda yakin ingin menghapus Angkatan ${
+                  title: 'Hapus Tahun Ajaran',
+                  message: `Anda yakin ingin menghapus Tahun Ajaran ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),
