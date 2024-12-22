@@ -54,6 +54,8 @@ const categories = [
   "Desember",
 ];
 
+const dashboardDatas = ref([]);
+
 const attendanceChartDatas = [
   {
     name: "Hadir",
@@ -185,7 +187,7 @@ const shipmentConfig = {
   yaxis: {
     tickAmount: 4,
     min: 0,
-    max: 50,
+    max: 60,
     labels: {
       style: {
         colors: labelColor,
@@ -258,13 +260,68 @@ const shipmentConfig = {
     },
   ],
 };
+
+const getYear = new Date().getFullYear();
+const averageAttendance = ref({});
+
+const calculateAttendanceAverage = (data) => {
+  // Objek untuk menyimpan hasil perhitungan
+  const result = {};
+
+  // Iterasi setiap kategori (Hadir, Izin, Sakit, Alpa)
+  data.forEach((category) => {
+    // Convert semua value ke number dan jumlahkan
+    const sum = category.data.reduce((acc, curr) => {
+      return acc + Number(curr.value);
+    }, 0);
+
+    // Hitung rata-rata (total dibagi jumlah bulan)
+    const average = sum / category.data.length;
+
+    // Hitung persentase (total dibagi (12 bulan * 30 hari) * 100)
+    const totalDaysInYear = 12 * 30; // Asumsi setiap bulan 30 hari
+    const percentage = (sum / totalDaysInYear) * 100;
+
+    // Simpan ke objek result dengan key nama kategori
+    result[category.name] = {
+      total: sum,
+      average: Number(average.toFixed(2)),
+      percentage: `${Number(percentage.toFixed(2))}%`,
+    };
+  });
+
+  return result;
+};
+
+const fetchData = () => {
+  const url = `dashboard/absensi-graph/${getYear}`;
+
+  useApi(url).then(({ data }) => {
+    console.log("AVERAGE", calculateAttendanceAverage(data.data));
+    averageAttendance.value = calculateAttendanceAverage(data.data);
+
+    const mappingData = data.data.map((item: any) => {
+      return {
+        name: item.name,
+        type: "column",
+        data: item.data.map((i: any) => i.value),
+      };
+    });
+
+    dashboardDatas.value = mappingData;
+  });
+};
+
+onMounted(() => {
+  fetchData();
+});
 </script>
 
 <template>
   <VCard>
     <VCardItem
-      title="Statistik Kehadiran tahun ini"
-      subtitle="Rata-rata kehadiran adalah 50%"
+      :title="`Statistik Kehadiran Tahun ${getYear}`"
+      :subtitle="`Persentase Hadir (${averageAttendance.Hadir?.percentage}), Izin (${averageAttendance.Izin?.percentage}), Sakit (${averageAttendance.Sakit?.percentage}), Alpa (${averageAttendance.Alpa?.percentage})`"
     />
 
     <VCardText>
@@ -273,7 +330,7 @@ const shipmentConfig = {
         type="line"
         height="320"
         :options="shipmentConfig"
-        :series="series"
+        :series="dashboardDatas"
       />
     </VCardText>
   </VCard>

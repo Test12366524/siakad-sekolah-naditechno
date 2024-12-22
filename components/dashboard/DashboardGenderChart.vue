@@ -192,8 +192,35 @@ const dashboardConfig = computed(() => {
   };
 });
 
+const dataAverage = ref({});
+
+const calculateAttendanceAverage = (data) => {
+  const averages = {};
+
+  data.forEach((category) => {
+    const total = category.data.reduce((sum, semesterData) => {
+      // Mengubah nilai string menjadi number jika diperlukan
+      return sum + Number(semesterData.value);
+    }, 0);
+
+    const average = total / category.data.length;
+
+    // Mengubah nama kunci menjadi lowercase dengan underscore
+    const key = category.type.toLowerCase().replace("-", "_");
+
+    averages[key] = average;
+  });
+
+  return averages;
+};
+
+const getYear = new Date().getFullYear();
+
 const fetchData = () => {
   useApi("dashboard/gender-statistic").then(({ data }) => {
+    console.log("AVERAGE", calculateAttendanceAverage(data));
+    dataAverage.value = calculateAttendanceAverage(data);
+
     const mappingData = data.map((item: any) => {
       return {
         name: item.type,
@@ -214,8 +241,8 @@ onMounted(() => {
 <template>
   <VCard>
     <VCardItem
-      title="Statistik Gender Tahun ini"
-      subtitle="Persensate rata-rata laki-laki persemester 20%, perempuan 80%"
+      :title="`Statistik Gender Tahun ${getYear}`"
+      :subtitle="`Persensate Laki-laki ${dataAverage.laki_laki}%, Perempuan ${dataAverage.perempuan}%`"
     />
 
     <VCardText>
