@@ -1,3 +1,5 @@
+const { user } = useAuthStore();
+
 export default defineNuxtRouteMiddleware(async (to) => {
   if (process.client) {
     const authStore = useAuthStore();
@@ -13,4 +15,5 @@ export default defineNuxtRouteMiddleware(async (to) => {
       }
     }
   }
+  
 });

@@ -67,7 +67,7 @@ const headers = [
   { title: "Semester saat ini", key: "semester_name", sortable: false },
 ];
 
-const handleInsertData = async (mahasiswaId) => {
+const handleInsertData = async (mahasiswaId: any) => {
   const url = `mahasiswa/naik-kelas/${mahasiswaId}`;
 
   const payload = {
@@ -89,7 +89,7 @@ const handleInsertData = async (mahasiswaId) => {
 };
 
 const handleInsertBulk = async () => {
-  const payload = mahasiswaByClass.value.map((item) => {
+  const payload = mahasiswaByClass.value.map((item: any) => {
     return {
       mahasiswa_id: item.id,
       kelas_id: kelasToId.value,
@@ -116,7 +116,7 @@ const handleInsertBulk = async () => {
   }
 };
 
-const getMahasiswaByClass = (selectedClassId) => {
+const getMahasiswaByClass = (selectedClassId: any) => {
   const getParams = {
     ...params,
     kelas_id: kelasId.value || selectedClassId,
@@ -145,8 +145,16 @@ const fetchRequirementDatas = () => {
 };
 
 onMounted(() => {
+  useApi("auth/me").then(({ data }) => {  
+    useApi(`level/kenaikan-kelas/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/`);
+      }
+    });
+  });
   fetchRequirementDatas();
 });
+
 </script>
 
 <template>

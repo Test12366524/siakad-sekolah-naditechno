@@ -150,6 +150,12 @@ defineExpose({
       <template #item.publish_date="{ item }">
         {{ formatFullDate(item.publish_date)?.dateOnly }}
       </template>
+      <template #item.borrow_date="{ item }">
+        {{ formatFullDate(item.borrow_date)?.dateOnly }}
+      </template>
+      <template #item.return_date="{ item }">
+        {{ formatFullDate(item.return_date)?.dateOnly }}
+      </template>
       <template #item.from_date="{ item }">
         {{ formatFullDate(item.from_date)?.dateOnly }}
       </template>

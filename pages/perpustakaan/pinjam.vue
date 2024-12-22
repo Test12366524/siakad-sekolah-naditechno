@@ -7,27 +7,37 @@ const dialogSave = ref();
 const tableRef = ref();
 
 const form = {
-  category_book_id: "",
-  title: "",
-  author: "",
-  cover: "",
-  slug: "",
-  description: "",
-  publisher: "",
-  publish_date: "",
-  bahasa: "",
-  halaman: "",
-  panjang: "",
-  lebar: "",
-  berat: "",
-  status: "",
+  book_id: "",
+  user_id: "",
+  borrow_date: "",
+  return_date: "",
 };
 
-const category_book = ref();
+const books = ref();
+const users = ref();
 
-useApi("master/category-book/all").then(({ data }) => {
-  category_book.value = data;
+useApi("book/all").then(({ data }) => {
+  books.value = data;
+})
+
+useApi("user/all-user").then(({ data }) => {
+  users.value = data;
 });
+
+const handleAction = async (data: any) => {
+  const url = `book/borrow/return/${data.id}`;
+
+  const { errors, success } = await useApi(url, {
+    withNotif: true,
+    method: "PUT",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  if (success) tableRef.value.refresh();
+};
 </script>
 
 <template>
@@ -36,21 +46,37 @@ useApi("master/category-book/all").then(({ data }) => {
     v-slot="{ formData, validationErrors, isDetail }"
     ref="dialogSave"
     width="1200"
-    path="ppdb"
-    title="Tambah Buku"
-    edit-title="Edit Buku"
+    path="book/borrow"
+    title="Tambah Pinjam Buku"
+    edit-title="Edit Pinjam Buku"
     detail-title="Detail Buku"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
     <VCol cols="12" md="6">
       <VAutocomplete
-        v-model="formData.category_book_id"
-        label="Kategori Buku"
+        v-model="formData.book_id"
+        label="Buku"
         density="compact"
-        :error-messages="validationErrors.category_book_id"
-        placeholder="Pilih Kategori Buku"
-        :items="category_book"
+        :error-messages="validationErrors.book_id"
+        placeholder="Pilih Buku"
+        :items="books"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+      />
+    </VCol>
+
+    <VCol cols="12" md="6">
+      <VAutocomplete
+        v-model="formData.user_id"
+        label="Mahasiswa / Dosen"
+        density="compact"
+        :error-messages="validationErrors.user_id"
+        placeholder="Pilih Mahasiswa / Dosen"
+        :items="users"
         item-title="text"
         item-value="id"
         required
@@ -61,126 +87,22 @@ useApi("master/category-book/all").then(({ data }) => {
 
     <VCol cols="12" md="6">
       <VTextField
-        v-model="formData.title"
-        :error-messages="validationErrors.title"
-        label="Judul"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="12">
-      <VTextarea
-        v-model="formData.description"
-        :error-messages="validationErrors.description"
-        label="Deskripsi"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <VTextField
-        v-model="formData.author"
-        :error-messages="validationErrors.author"
-        label="Author"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <FileInput
-        v-model="formData.cover"
-        accept="image/*"
-        label="Cover"
-        small-chips
-        chips
-        show-preview
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <VTextField
-        v-model="formData.slug"
-        :error-messages="validationErrors.slug"
-        label="Slug"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <VTextField
-        v-model="formData.publisher"
-        :error-messages="validationErrors.publisher"
-        label="Publisher"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <VTextField
-        v-model="formData.publish_date"
+        v-model="formData.borrow_date"
         type="date"
-        :error-messages="validationErrors.publish_date"
-        label="Publish Date"
+        :error-messages="validationErrors.borrow_date"
+        label="Tanggal Pinjam"
         :readonly="isDetail"
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="6">
       <VTextField
-        v-model="formData.bahasa"
-        :error-messages="validationErrors.bahasa"
-        label="Bahasa"
+        v-model="formData.return_date"
+        type="date"
+        :error-messages="validationErrors.return_date"
+        label="Tanggal Dikembalikan"
         :readonly="isDetail"
       />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <VTextField
-        v-model="formData.halaman"
-        :error-messages="validationErrors.halaman"
-        label="Halaman"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <VTextField
-        v-model="formData.panjang"
-        :error-messages="validationErrors.panjang"
-        label="Panjang"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <VTextField
-        v-model="formData.lebar"
-        :error-messages="validationErrors.lebar"
-        label="Lebar"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <VTextField
-        v-model="formData.berat"
-        :error-messages="validationErrors.berat"
-        label="Berat"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <VLabel>Status</VLabel>
-      <VRadioGroup
-        v-model="formData.status"
-        inline
-        :error-messages="validationErrors.status"
-      >
-        <VRadio label="Aktif" :value="1" />
-        <VRadio label="Nonaktif" :value="0" />
-      </VRadioGroup>
     </VCol>
   </SaveFileDialog>
 
@@ -203,74 +125,80 @@ useApi("master/category-book/all").then(({ data }) => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Buku"
-        path="book"
+        title="Data Pinjaman Buku"
+        path="book/borrow"
         :with-actions="true"
         :headers="[
           {
             title: 'Nama',
-            key: 'name',
+            key: 'user_name',
             sortable: false,
           },
           {
-            title: 'NIK',
-            key: 'nik',
+            title: 'Buku',
+            key: 'book_title',
             sortable: false,
           },
           {
-            title: 'Jenis Kelamin',
-            key: 'gender',
+            title: 'Tanggal Pinjam',
+            key: 'borrow_date',
             sortable: false,
           },
           {
-            title: 'Status Menikah',
-            key: 'mariage_desc',
+            title: 'Tanggal Dikembalikan',
+            key: 'return_date',
             sortable: false,
           },
           {
-            title: 'No. Handphone',
-            key: 'phone',
-            sortable: false,
-          },
-          {
-            title: 'Pendidikan Terakhir',
-            key: 'pendidikan_terakhir',
-            sortable: false,
-          },
-          {
-            title: 'Pekerjaan',
-            key: 'pekerjaan',
-            sortable: false,
-          },
-          {
-            title: 'Alamat',
-            key: 'address',
+            title: 'Status',
+            key: 'status_desc',
             sortable: false,
           },
         ]"
       >
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
-            <IconBtn
-              size="small"
-              title="Detail"
+            <VBtn
+              v-if="item.status_desc == 'Dipinjam'"
+              size="x-small"
+              style="border-radius: 0.375rem !important"
               @click="
                 () => {
-                  dialogSave.show({ ...item }, true);
+                  confirmDialog.show({
+                    title: 'Dikembalikan',
+                    message: `Anda yakin ingin mengubah status jadi dikembalikan?`,
+                    onConfirm: () => handleAction(item),
+                  });
                 }
               "
             >
-              <VIcon icon="ri-eye-line" />
-            </IconBtn>
-            <IconBtn size="small" @click="dialogSave.show({ ...item })">
+              <VIcon start icon="ri-checkbox-circle-line" />
+              Dikembalikan
+            </VBtn>
+            <IconBtn
+              v-if="item.status_desc == 'Dipinjam'"
+              size="small" 
+              @click="
+                () => {
+                  const payload = { ...item };
+                  payload.borrow_date = new Date(payload.borrow_date)
+                    .toISOString()
+                    .substring(0, 10);
+                  payload.return_date = new Date(payload.return_date)
+                    .toISOString()
+                    .substring(0, 10);
+                  dialogSave.show(payload);
+                }
+              ">
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              v-if="item.status_desc == 'Dipinjam'"
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Buku',
-                  message: `Anda yakin ingin menghapus Buku ${
+                  title: 'Hapus Pinjaman',
+                  message: `Anda yakin ingin menghapus Pinjaman ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),
