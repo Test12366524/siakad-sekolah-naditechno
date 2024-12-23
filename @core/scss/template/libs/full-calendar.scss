@@ -218,8 +218,8 @@ body .fc {
 
         .fc-button,
         .fc-button:active {
-          border: 1px solid rgb(var(--v-theme-primary));
-          color: rgb(var(--v-theme-primary));
+          border: 1px solid #015c4d;
+          color: #015c4d;
           font-size: 0.9375rem;
           font-weight: 500;
           line-height: 22px;
@@ -233,7 +233,7 @@ body .fc {
 
           &.fc-button-active {
             background-color: rgba(var(--v-theme-primary), var(--v-activated-opacity));
-            color: rgb(var(--v-theme-primary));
+            color: #015c4d;
           }
         }
 

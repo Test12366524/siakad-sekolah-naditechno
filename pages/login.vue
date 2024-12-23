@@ -142,7 +142,7 @@ const onSubmit = () => {
                   </NuxtLink> -->
                 </div>
 
-                <VBtn block type="submit"> Login </VBtn>
+                <VBtn block type="submit" style="background-color: #015c4d!important;"> Login </VBtn>
               </VCol>
             </VRow>
           </VForm>

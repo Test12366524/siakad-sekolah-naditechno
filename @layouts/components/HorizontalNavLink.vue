@@ -32,8 +32,10 @@ const props = withDefaults(defineProps<Props>(), {
     ]"
   >
     <Component
+    
       :is="item.to ? NuxtLink : 'a'"
       v-bind="getComputedNavLinkToProp(item)"
+      style="background-color: #015c4d!important;"
       :class="{
         'router-link-active router-link-exact-active': isNavLinkActive(
           item,

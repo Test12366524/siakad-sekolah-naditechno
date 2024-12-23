@@ -65,11 +65,11 @@
         .v-btn__overlay {
           --v-hover-opacity: 0.16;
 
-          background: rgb(var(--v-theme-primary));
+          background: #015c4d;
           opacity: var(--v-hover-opacity);
         }
 
-        color: rgb(var(--v-theme-primary));
+        color: #015c4d;
 
         .v-btn__underlay {
           opacity: 0;
@@ -99,14 +99,14 @@
       }
 
       .v-btn.v-btn--variant-outlined {
-        border-color: rgb(var(--v-theme-primary));
-        color: rgb(var(--v-theme-primary));
+        border-color: #015c4d;
+        color: #015c4d;
 
         /* stylelint-disable-next-line no-descending-specificity */
         .v-btn__overlay {
           --v-hover-opacity: 0.16;
 
-          background: rgb(var(--v-theme-primary));
+          background: #015c4d;
           opacity: var(--v-hover-opacity);
         }
       }

@@ -12,6 +12,7 @@ const semester = ref();
 const periode = ref();
 
 const jurusans = ref();
+const angkatans = ref();
 
 const religions = ref([
   { id: "Islam", text: "Islam" },
@@ -38,6 +39,7 @@ const form = {
   kelas_id: undefined,
   semester_id: undefined,
   periode_id: undefined,
+  angkatan_id: undefined,
   name: "",
   birth_date: "",
   place_of_birth: "",
@@ -73,6 +75,10 @@ useApi("master/jurusan/all").then(({ data }) => {
   jurusans.value = data;
 });
 
+useApi("master/angkatan/all").then(({ data }) => {
+  angkatans.value = data;
+});
+
 const role_id = ref();
 const status_action = ref();
 
@@ -104,7 +110,7 @@ onMounted(() => {
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.semester_id"
         label="Semester"
@@ -120,7 +126,23 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
+      <VAutocomplete
+        v-model="formData.angkatan_id"
+        label="Angkatan"
+        :error-messages="validationErrors.angkatan_id"
+        placeholder="Pilih Angkatan"
+        :items="angkatans"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :readonly="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.periode_id"
         label="Periode"
@@ -135,7 +157,7 @@ onMounted(() => {
         :readonly="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.fakultas_id"
         label="Fakultas"
@@ -150,7 +172,7 @@ onMounted(() => {
         :readonly="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.jurusan_id"
         label="Jurusan"
@@ -166,7 +188,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.kelas_id"
         label="Kelas"
@@ -182,7 +204,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.nim"
         :error-messages="validationErrors.nim"
@@ -191,7 +213,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.name"
         :error-messages="validationErrors.name"
@@ -200,7 +222,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.religion"
         label="Agama"
@@ -216,7 +238,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.nik"
         :error-messages="validationErrors.nik"
@@ -267,7 +289,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.email"
         type="email"
@@ -277,7 +299,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.phone_1"
         :error-messages="validationErrors.phone_1"
@@ -287,7 +309,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4" class="grid grid-cols-2">
+    <VCol cols="12" md="3" class="grid grid-cols-2">
       <FileInput
         v-model="formData.photo"
         accept="image/*"
@@ -299,7 +321,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="12">
+    <VCol cols="12" md="9">
       <VTextarea
         v-model="formData.address"
         :error-messages="validationErrors.address"
@@ -386,7 +408,7 @@ onMounted(() => {
           },
           {
             title: 'Angkatan',
-            key: 'periode_angkatan',
+            key: 'angkatan_name',
             sortable: false,
           },
           {

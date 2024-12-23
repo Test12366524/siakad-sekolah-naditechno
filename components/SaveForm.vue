@@ -92,7 +92,7 @@ defineExpose({
 
       <VCol v-if="!viewOnly" cols="12" class="pt-6 text-end">
         <VDivider class="pt-6" />
-        <VBtn type="submit">
+        <VBtn type="submit" >
           {{ isEditing ? "Update" : "Create" }}
         </VBtn>
       </VCol>

@@ -62,7 +62,7 @@ body {
             &:hover,
             &:active,
             &:focus {
-              color: rgb(var(--v-theme-primary));
+              color: #015c4d;
 
               .v-btn__overlay {
                 --v-hover-opacity: 0;
@@ -101,7 +101,7 @@ body {
           /* stylelint-disable-next-line no-descending-specificity */
           &.v-btn.v-btn--variant-text {
             &:hover {
-              color: rgb(var(--v-theme-primary));
+              color: #015c4d;
 
               .v-btn__overlay {
                 --v-hover-opacity: 0.16;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ctaDashboard from '@images/front-pages/landing-page/cta-dashboard.png'
+import ctaDashboard from '@images/front-pages/landing-page/cta-dashboard.png';
 </script>
 
 <template>
@@ -43,7 +43,7 @@ import ctaDashboard from '@images/front-pages/landing-page/cta-dashboard.png'
 }
 
 .banner-text {
-  color: rgb(var(--v-theme-primary));
+  color: #015c4d;
   font-size: 32px;
   font-weight: 700;
   letter-spacing: 0.25px;

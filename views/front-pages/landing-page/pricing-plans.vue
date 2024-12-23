@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import sectionTitleIcon from '@images/pages/section-title-icon.png'
-import frontPageVectorImg from '@images/svg/front-page-vector.svg'
-import ListArrowIcon from '@images/svg/list-arrow-icon.svg'
-import VectorIcon from '@images/svg/vector.svg'
+import sectionTitleIcon from '@images/pages/section-title-icon.png';
+import frontPageVectorImg from '@images/svg/front-page-vector.svg';
+import ListArrowIcon from '@images/svg/list-arrow-icon.svg';
+import VectorIcon from '@images/svg/vector.svg';
 
 const pricingPlans = [
   {
@@ -111,7 +111,7 @@ const pricingPlans = [
           <VCard
             flat
             border
-            :style="plan.current ? 'border:2px solid rgb(var(--v-theme-primary))' : ''"
+            :style="plan.current ? 'border:2px solid #015c4d' : ''"
           >
             <VCardText class="pa-lg-8 text-no-wrap">
               <div class="d-flex flex-column gap-y-8">

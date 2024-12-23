@@ -272,7 +272,7 @@ const moreList = [
 
 <style lang="scss" scoped>
 .selected-category {
-  border: 2px solid rgb(var(--v-theme-primary));
+  border: 2px solid #015c4d;
 }
 
 .not-selected-category {

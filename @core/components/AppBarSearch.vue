@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T extends unknown">
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { VList, VListItem } from 'vuetify/components/VList'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
+import { VList, VListItem } from 'vuetify/components/VList';
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
@@ -211,7 +211,7 @@ watch(
 .app-bar-search-suggestions {
   .app-bar-search-suggestion {
     &:hover {
-      color: rgb(var(--v-theme-primary));
+      color: #015c4d;
     }
   }
 }

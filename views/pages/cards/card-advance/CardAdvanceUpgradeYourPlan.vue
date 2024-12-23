@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import logoCreditCard2 from '@images/cards/logo-credit-card-2.png'
-import logoMastercardSmall from '@images/cards/logo-mastercard-small.png'
+import logoCreditCard2 from '@images/cards/logo-credit-card-2.png';
+import logoMastercardSmall from '@images/cards/logo-mastercard-small.png';
 
 const savedCards = [
   {
@@ -144,7 +144,7 @@ const savedCards = [
 <style lang="scss" scoped>
 .plan-upgrade-banner {
   .plan-details {
-    border: 1px solid rgb(var(--v-theme-primary));
+    border: 1px solid #015c4d;
   }
 
   background-color: rgba(var(--v-theme-primary), 0.16);

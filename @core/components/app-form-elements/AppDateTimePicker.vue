@@ -4,9 +4,9 @@ import { useTheme } from "vuetify";
 
 // @ts-expect-error There won't be declaration file for it
 import {
-  VField,
-  filterFieldProps,
-  makeVFieldProps,
+    VField,
+    filterFieldProps,
+    makeVFieldProps,
 } from "vuetify/lib/components/VField/VField";
 
 // @ts-expect-error There won't be declaration file for it
@@ -288,8 +288,8 @@ input[altinputclass="inlinePicker"] {
 
     &.selected,
     &.selected:hover {
-      border-color: rgb(var(--v-theme-primary));
-      background: rgb(var(--v-theme-primary));
+      border-color: #015c4d;
+      background: #015c4d;
       color: rgb(var(--v-theme-on-primary)) !important;
 
       @include mixins.elevation(2);
@@ -300,7 +300,7 @@ input[altinputclass="inlinePicker"] {
       border: none;
       background: rgba(var(--v-theme-primary), 0.1) !important;
       box-shadow: none !important;
-      color: rgb(var(--v-theme-primary));
+      color: #015c4d;
     }
 
     &.inRange.today {
@@ -319,15 +319,15 @@ input[altinputclass="inlinePicker"] {
     &.endRange,
     &.startRange:hover,
     &.endRange:hover {
-      border-color: rgb(var(--v-theme-primary));
-      background: rgb(var(--v-theme-primary));
+      border-color: #015c4d;
+      background: #015c4d;
       color: rgb(var(--v-theme-on-primary));
     }
 
     &.selected.startRange + .endRange:not(:nth-child(7n + 1)),
     &.startRange.startRange + .endRange:not(:nth-child(7n + 1)),
     &.endRange.startRange + .endRange:not(:nth-child(7n + 1)) {
-      box-shadow: -10px 0 0 rgb(var(--v-theme-primary));
+      box-shadow: -10px 0 0 #015c4d;
     }
 
     &.flatpickr-disabled,

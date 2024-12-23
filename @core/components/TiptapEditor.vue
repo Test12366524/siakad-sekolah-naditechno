@@ -155,6 +155,6 @@ watch(() => props.modelValue, () => {
 .is-active {
   border-color: rgba(var(--v-theme-primary), var(--v-border-opacity)) !important;
   background-color: rgba(var(--v-theme-primary), var(--v-activated-opacity));
-  color: rgb(var(--v-theme-primary));
+  color: #015c4d;
 }
 </style>

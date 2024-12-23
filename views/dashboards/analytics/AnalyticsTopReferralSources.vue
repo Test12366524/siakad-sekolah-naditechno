@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import facebookLogo from '@images/logos/facebook.png'
-import googleLogo from '@images/logos/google.png'
-import instagramLogo from '@images/logos/instagram.png'
-import redditLogo from '@images/logos/reddit.png'
+import facebookLogo from '@images/logos/facebook.png';
+import googleLogo from '@images/logos/google.png';
+import instagramLogo from '@images/logos/instagram.png';
+import redditLogo from '@images/logos/reddit.png';
 
 interface Product {
   title: string
@@ -281,7 +281,7 @@ const moreList = [
 
 <style lang="scss" scoped>
 .selected-category {
-  border: 2px solid rgb(var(--v-theme-primary));
+  border: 2px solid #015c4d;
 }
 
 .not-selected-category {

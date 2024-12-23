@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import stepperCheck from '@images/svg/stepper-check.svg'
+import stepperCheck from '@images/svg/stepper-check.svg';
 
 interface Item {
   title: string
@@ -213,7 +213,7 @@ watchEffect(() => {
   // 👉 stepper step with icon and  default
   .v-slide-group__content {
     .stepper-step-indicator {
-      border: 0.1875rem solid rgb(var(--v-theme-primary));
+      border: 0.1875rem solid #015c4d;
       border-radius: 50%;
       background-color: rgb(var(--v-theme-surface));
       block-size: 1.25rem;
@@ -223,7 +223,7 @@ watchEffect(() => {
 
     .stepper-step-line {
       border-radius: 0.1875rem;
-      background-color: rgb(var(--v-theme-primary));
+      background-color: #015c4d;
       block-size: 0.1875rem;
       opacity: var(--v-activated-opacity);
     }
@@ -248,7 +248,7 @@ watchEffect(() => {
     .stepper-steps-active {
       .stepper-icon-step,
       .stepper-step-icon {
-        color: rgb(var(--v-theme-primary)) !important;
+        color: #015c4d !important;
       }
 
       .stepper-step-indicator {
@@ -263,7 +263,7 @@ watchEffect(() => {
       }
 
       .stepper-chevron-indicator {
-        color: rgb(var(--v-theme-primary));
+        color: #015c4d;
       }
     }
 
@@ -336,7 +336,7 @@ watchEffect(() => {
     .stepper-steps-active {
       .stepper-icon-step {
         .stepper-icon {
-          background-color: rgb(var(--v-theme-primary));
+          background-color: #015c4d;
           color: rgba(var(--v-theme-on-primary));
 
           @include mixins.elevation(2);
