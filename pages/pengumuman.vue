@@ -14,6 +14,7 @@ const form = ref({
   content: "",
   from_date: "",
   to_date: "",
+  broadcast_to_whatsapp: "",
   status: "",
 });
 
@@ -124,14 +125,26 @@ onMounted(() => {
       />
     </VCol>
     <VCol cols="12" md="6">
+      <VLabel>Status Broadcast Whatsapp</VLabel>
+      <VRadioGroup
+        inline
+        v-model="formData.broadcast_to_whatsapp"
+        :error-messages="validationErrors.broadcast_to_whatsapp"
+      >
+        <VRadio label="Aktif" :value="1"></VRadio>
+        <VRadio label="Nonaktif" :value="0"></VRadio>
+      </VRadioGroup>
+    </VCol>
+    <VCol cols="12" md="6">
       <VLabel>Status</VLabel>
       <VRadioGroup
         inline
         v-model="formData.status"
         :error-messages="validationErrors.status"
       >
-        <VRadio label="Aktif" :value="1"></VRadio>
-        <VRadio label="Nonaktif" :value="0"></VRadio>
+        <VRadio label="Draft" :value="0"></VRadio>
+        <VRadio label="Publish" :value="1"></VRadio>
+        <VRadio label="Unpublish" :value="2"></VRadio>
       </VRadioGroup>
     </VCol>
   </SaveDialog>
@@ -177,6 +190,16 @@ onMounted(() => {
           {
             title: 'Tanggal Berakhir',
             key: 'to_date',
+            sortable: false,
+          },
+          {
+            title: 'Status',
+            key: 'status_desc',
+            sortable: false,
+          },
+          {
+            title: 'Status Broadcast Whtasapp',
+            key: 'broadcast_to_whatsapp_desc',
             sortable: false,
           },
         ]"
