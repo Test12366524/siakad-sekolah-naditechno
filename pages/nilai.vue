@@ -50,6 +50,12 @@ onMounted(() => {
     role_id.value = data.role_id;
     if (data.role_id == 1 || data.role_id == 2) status_action.value = true;
     else status_action.value = false;
+
+    useApi(`nilai/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
   });
 });
 

@@ -11,6 +11,16 @@ const form = {
   name: "",
   status: 1,
 };
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`master/tahun-ajaran/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

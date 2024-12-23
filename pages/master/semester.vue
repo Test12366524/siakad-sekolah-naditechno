@@ -12,6 +12,16 @@ const form = {
   semester: "",
   status: 1,
 };
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`master/semester/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

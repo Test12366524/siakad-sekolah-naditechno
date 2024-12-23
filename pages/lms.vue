@@ -15,6 +15,16 @@ const tabs = [
   { title: "Tugas", icon: "ri-task-line", tab: "tugas" },
   { title: "Jawaban", icon: "ri-question-answer-line", tab: "jawaban" },
 ];
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`lms/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

@@ -33,6 +33,13 @@ const getConfig = () => {
 };
 
 onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`konfigurasi/aplikasi/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
   getConfig();
 });
 

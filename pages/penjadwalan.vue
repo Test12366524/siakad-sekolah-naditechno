@@ -51,6 +51,12 @@ onMounted(() => {
     }else{
       status_action.value = false;
     }
+
+    useApi(`penjadwalan/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
   });
 });
 

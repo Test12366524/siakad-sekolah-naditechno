@@ -41,6 +41,16 @@ const handleAction = async (status, type, data) => {
 
   if (success) tableRef.value.refresh();
 };
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`pmb-mahasiswa/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

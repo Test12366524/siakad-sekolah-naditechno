@@ -18,6 +18,16 @@ const form = {
   address: "",
   photo: "",
 };
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`dosen/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

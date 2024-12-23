@@ -28,6 +28,16 @@ const category_book = ref();
 useApi("master/category-book/all").then(({ data }) => {
   category_book.value = data;
 });
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`perpustakaan/buku/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

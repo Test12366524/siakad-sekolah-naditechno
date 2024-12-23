@@ -131,11 +131,6 @@ const role_id = ref(0);
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
-    useApi(`level/kenaikan-kelas/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/`);
-      }
-    });
     role_id.value = data.role_id;
     if (data.role_id === 1) fetchingData();
     else if (data.role_id === 3) fetchingDataMahasiswa();

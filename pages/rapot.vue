@@ -14,6 +14,11 @@ const role_id = ref();
 onMounted(() => {
   
   useApi("auth/me").then(({ data }) => {
+    useApi(`rapot/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });  
     useApi("mahasiswa/getID/" + data.id).then(({ data }) => {
         const mahasiswa_id = data;
         useApi("rapot/" + mahasiswa_id).then(({ data }) => {

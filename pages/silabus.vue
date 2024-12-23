@@ -29,7 +29,11 @@ const getMataKuliahByClass = (dosen_id: number) => {
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
-    console.log(data);
+    useApi(`silabus/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
   });
 });
 

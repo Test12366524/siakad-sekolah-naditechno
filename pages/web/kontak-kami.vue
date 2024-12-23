@@ -43,6 +43,16 @@ const form = {
   created_at: "2024-12-11T13:33:01.035Z",
   updated_at: "2024-12-11T13:33:01.035Z",
 };
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`web/kontak-kami/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

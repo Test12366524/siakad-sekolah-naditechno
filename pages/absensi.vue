@@ -113,6 +113,8 @@ const status_action = ref();
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
+
+    
     role_id.value = data.role_id;
     user_id.value = data.id;
     if (data.role_id == 1){
@@ -140,6 +142,13 @@ onMounted(() => {
       });
       status_action.value = false;
     }
+
+    useApi(`absensi/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+    
   });
 });
 

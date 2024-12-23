@@ -38,6 +38,16 @@ const handleAction = async (data: any) => {
 
   if (success) tableRef.value.refresh();
 };
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`perpustakaan/pinjam/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

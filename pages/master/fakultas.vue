@@ -12,6 +12,16 @@ const form = {
   code: "",
   description: "",
 };
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`master/fakultas/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

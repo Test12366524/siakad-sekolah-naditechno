@@ -146,7 +146,7 @@ const fetchRequirementDatas = () => {
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {  
-    useApi(`level/kenaikan-kelas/${data.role_id}`).then(({ data }) => {
+    useApi(`kenaikan-kelas/${data.role_id}`).then(({ data }) => {
       if(data == 0){
         navigateTo(`/`);
       }

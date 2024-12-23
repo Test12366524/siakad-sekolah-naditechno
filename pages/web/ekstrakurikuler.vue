@@ -36,6 +36,16 @@ const form = {
   status: "",
   order: "",
 };
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`web/ekstrakurikuler/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

@@ -45,6 +45,16 @@ const form = {
   author_id: user.id,
   status: "",
 };
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`web/berita/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

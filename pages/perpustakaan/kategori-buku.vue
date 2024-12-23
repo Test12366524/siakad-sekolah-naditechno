@@ -12,6 +12,16 @@ const form = {
   description: "",
   status: 1,
 };
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`perpustakaan/kategori-buku/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

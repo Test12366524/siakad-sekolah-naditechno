@@ -30,6 +30,16 @@ useApi("master/jurusan/all").then(({ data }) => {
 useApi("master/semester/all").then(({ data }) => {
     semesters.value = data;
 });
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`master/matakuliah/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

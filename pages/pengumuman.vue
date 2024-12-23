@@ -45,6 +45,12 @@ onMounted(() => {
         { id: "mahasiswa", text: "mahasiswa" },
       ];
     }
+
+    useApi(`pengumuman/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
   });
 });
 

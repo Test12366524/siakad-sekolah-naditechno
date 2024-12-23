@@ -18,6 +18,16 @@ const periodes = ref();
 useApi("master/periode/all").then(({ data }) => {
     periodes.value = data;
 });
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`master/angkatan/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

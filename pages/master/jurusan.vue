@@ -20,6 +20,16 @@ const form = {
 useApi("master/fakultas/all").then(({ data }) => {
     fakultas.value = data;
 });
+
+onMounted(() => {
+  useApi("auth/me").then(({ data }) => {
+    useApi(`master/jurusan/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+  });
+});
 </script>
 
 <template>

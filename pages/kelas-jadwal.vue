@@ -52,6 +52,12 @@ const role_id = ref();
 const status_action = ref();
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
+    useApi(`kelas-jadwal/${data.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
+
     role_id.value = data.role_id;
     if(data.role_id == 1){
       status_action.value = true;
