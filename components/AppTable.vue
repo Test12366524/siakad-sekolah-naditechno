@@ -147,6 +147,9 @@ defineExpose({
       <template #item.join_date="{ item }">
         {{ formatFullDate(item.join_date)?.dateOnly }}
       </template>
+      <template #item.tanggal="{ item }">
+        {{ formatFullDate(item.tanggal)?.dateOnly }}
+      </template>
       <template #item.publish_date="{ item }">
         {{ formatFullDate(item.publish_date)?.dateOnly }}
       </template>
