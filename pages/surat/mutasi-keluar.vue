@@ -7,65 +7,75 @@ const dialogSave = ref();
 
 const tableRef = ref();
 
-const siswa = ref();
-
 const form = ref({
-  siswa_id: undefined,
+  siswa_id: "",
   sekolah: "",
   keterangan: "",
-  tanggal: "",
-  status: 1,
+  tanggal: null,
 });
 
-onMounted(() => {
+const studentList = ref([]);
+
+const getAllStudent = async () => {
   useApi("siswa/all").then(({ data }) => {
-    siswa.value = data;
+    studentList.value = data;
   });
+};
+
+const handleExportPdf = (item) => {
+  const payload = { ...item };
+  console.log(payload);
+};
+
+onMounted(() => {
+  getAllStudent();
 });
 </script>
 
 <template>
   <SaveDialog
     v-if="tableRef"
-    path="surat-mutasi-keluar"
+    path="mutasi-keluar"
     title="Tambah Surat Mutasi Keluar"
     edit-title="Edit Surat Mutasi Keluar"
-    v-slot="{ formData, validationErrors, isEditing }"
+    v-slot="{ formData, validationErrors, isEditing, isDetail }"
     ref="dialogSave"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
+    :requestForm="form"
     width="1200"
   >
-    <VCol cols="12" md="12">
+    <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.siswa_id"
         label="Siswa"
-        density="compact"
         :error-messages="validationErrors.siswa_id"
         placeholder="Pilih Siswa"
-        :items="siswa"
+        :items="studentList"
         item-title="text"
         item-value="id"
         required
         clearable
         clear-icon="ri-close-line"
+        :readonly="isDetail"
       />
     </VCol>
-
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VTextField
         :error-messages="validationErrors.sekolah"
         v-model="formData.sekolah"
         label="Sekolah"
+        :readonly="isDetail"
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VTextField
         type="date"
         :error-messages="validationErrors.tanggal"
         v-model="formData.tanggal"
         label="Tanggal"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -74,19 +84,9 @@ onMounted(() => {
         :error-messages="validationErrors.keterangan"
         v-model="formData.keterangan"
         label="Keterangan"
+        :readonly="isDetail"
+        rows="2"
       />
-    </VCol>
-
-    <VCol cols="12">
-      <VLabel>Status</VLabel>
-      <VRadioGroup
-        inline
-        v-model="formData.status"
-        :error-messages="validationErrors.status"
-      >
-        <VRadio label="Aktif" :value="1"></VRadio>
-        <VRadio label="Nonaktif" :value="0"></VRadio>
-      </VRadioGroup>
     </VCol>
   </SaveDialog>
 
@@ -113,27 +113,17 @@ onMounted(() => {
       <AppTable
         ref="tableRef"
         title="Data Surat Mutasi Keluar"
-        path="surat-mutasi-keluar"
+        path="mutasi-keluar"
         :with-actions="true"
         :headers="[
           {
-            title: 'Tanggal',
-            key: 'tanggal',
+            title: 'Siswa',
+            key: 'siswa_name',
             sortable: false,
           },
           {
-            title: 'Kategori',
-            key: 'kategori_name',
-            sortable: false,
-          },
-          {
-            title: 'Bank',
-            key: 'bank_name',
-            sortable: false,
-          },
-          {
-            title: 'Nominal',
-            key: 'nominal',
+            title: 'Sekolah',
+            key: 'sekolah',
             sortable: false,
           },
           {
@@ -141,9 +131,10 @@ onMounted(() => {
             key: 'keterangan',
             sortable: false,
           },
+
           {
-            title: 'Status',
-            key: 'status_desc',
+            title: 'Tanggal',
+            key: 'tanggal',
             sortable: false,
           },
         ]"
@@ -151,21 +142,37 @@ onMounted(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
+              label="Edit"
               @click="
-                dialogSave.show({
-                  ...item,
-                  status_desc: undefined,
-                })
+                () => {
+                  const payload = { ...item };
+                  payload.tanggal = new Date(payload.tanggal)
+                    .toISOString()
+                    .substring(0, 10);
+                  dialogSave.show(payload, false);
+                }
               "
               size="small"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              label="Export PDF"
+              @click="
+                () => {
+                  handleExportPdf(item);
+                }
+              "
+              size="small"
+            >
+              <VIcon icon="ri-export-fill" />
+            </IconBtn>
+            <IconBtn
+              label="Hapus"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Surat Mutasi Keluar',
-                  message: `Anda yakin ingin menghapus Surat Mutasi Keluar ${
+                  title: 'Hapus Surat Masuk',
+                  message: `Anda yakin ingin menghapus Surat Masuk ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),
