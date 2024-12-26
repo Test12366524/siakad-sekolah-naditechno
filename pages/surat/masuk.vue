@@ -14,9 +14,8 @@ const form = ref({
   tempat: "",
   tanggal: "",
   kepada: "",
-  deskripsi: "",
+  content: "",
   atas_nama: "",
-  status: 1,
 });
 
 const handleExportPdf = (item) => {
