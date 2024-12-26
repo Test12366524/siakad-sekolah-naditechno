@@ -174,6 +174,9 @@ defineExpose({
       <template #item.nominal="{ item }">
         {{ formatRupiah(item.nominal) }}
       </template>
+      <template #item.biaya="{ item }">
+        {{ formatRupiah(item.biaya) }}
+      </template>
       <template #item.nilai="{ item }">
         {{ !item.nilai && item.nilai !== 0 ? "-" : item.nilai }}
       </template>
