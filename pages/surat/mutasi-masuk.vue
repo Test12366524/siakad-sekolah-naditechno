@@ -7,87 +7,75 @@ const dialogSave = ref();
 
 const tableRef = ref();
 
-const banks = ref();
-const kategoriPengeluarans = ref();
-
 const form = ref({
-  kategori_pengeluaran_id: undefined,
-  bank_id: undefined,
-  nominal: "",
-  tanggal: "",
+  siswa_id: "",
+  sekolah: "",
   keterangan: "",
-  status: 1,
+  tanggal: null,
 });
 
+const studentList = ref([]);
+
+const getAllStudent = async () => {
+  useApi("siswa/all").then(({ data }) => {
+    studentList.value = data;
+  });
+};
+
+const handleExportPdf = (item) => {
+  const payload = { ...item };
+  console.log(payload);
+};
+
 onMounted(() => {
-  useApi("bank-mitra/all").then(({ data }) => {
-    banks.value = data;
-  });
-  useApi("kategori-pengeluaran/all").then(({ data }) => {
-    kategoriPengeluarans.value = data;
-  });
+  getAllStudent();
 });
 </script>
 
 <template>
   <SaveDialog
     v-if="tableRef"
-    path="pengeluaran"
-    title="Tambah Pengeluaran"
-    edit-title="Edit Pengeluaran"
-    v-slot="{ formData, validationErrors, isEditing }"
+    path="mutasi-masuk"
+    title="Tambah Surat Mutasi Masuk"
+    edit-title="Edit Surat Mutasi Masuk"
+    v-slot="{ formData, validationErrors, isEditing, isDetail }"
     ref="dialogSave"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
+    :requestForm="form"
     width="1200"
   >
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VAutocomplete
-        v-model="formData.kategori_pengeluaran_id"
-        label="Kategori"
-        density="compact"
-        :error-messages="validationErrors.kategori_pengeluaran_id"
-        placeholder="Pilih Kategori"
-        :items="kategoriPengeluarans"
+        v-model="formData.siswa_id"
+        label="Siswa"
+        :error-messages="validationErrors.siswa_id"
+        placeholder="Pilih Siswa"
+        :items="studentList"
         item-title="text"
         item-value="id"
         required
         clearable
         clear-icon="ri-close-line"
+        :readonly="isDetail"
       />
     </VCol>
-
-    <VCol cols="12" md="6">
-      <VAutocomplete
-        v-model="formData.bank_id"
-        label="Bank"
-        density="compact"
-        :error-messages="validationErrors.bank_id"
-        placeholder="Pilih Bank"
-        :items="banks"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
-      />
-    </VCol>
-
-    <VCol cols="6">
+    <VCol cols="12" md="4">
       <VTextField
-        :error-messages="validationErrors.nominal"
-        v-model="formData.nominal"
-        label="Nominal"
-        type="number"
+        :error-messages="validationErrors.sekolah"
+        v-model="formData.sekolah"
+        label="Sekolah"
+        :readonly="isDetail"
       />
     </VCol>
 
-    <VCol cols="6">
+    <VCol cols="12" md="4">
       <VTextField
         type="date"
         :error-messages="validationErrors.tanggal"
         v-model="formData.tanggal"
         label="Tanggal"
+        :readonly="isDetail"
       />
     </VCol>
 
@@ -96,19 +84,9 @@ onMounted(() => {
         :error-messages="validationErrors.keterangan"
         v-model="formData.keterangan"
         label="Keterangan"
+        :readonly="isDetail"
+        rows="2"
       />
-    </VCol>
-
-    <VCol cols="12">
-      <VLabel>Status</VLabel>
-      <VRadioGroup
-        inline
-        v-model="formData.status"
-        :error-messages="validationErrors.status"
-      >
-        <VRadio label="Aktif" :value="1"></VRadio>
-        <VRadio label="Nonaktif" :value="0"></VRadio>
-      </VRadioGroup>
     </VCol>
   </SaveDialog>
 
@@ -134,28 +112,18 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Pengeluaran"
-        path="pengeluaran"
+        title="Data Surat Mutasi Masuk"
+        path="mutasi-masuk"
         :with-actions="true"
         :headers="[
           {
-            title: 'Tanggal',
-            key: 'tanggal',
+            title: 'Siswa',
+            key: 'siswa_name',
             sortable: false,
           },
           {
-            title: 'Kategori',
-            key: 'kategori_name',
-            sortable: false,
-          },
-          {
-            title: 'Bank',
-            key: 'bank_name',
-            sortable: false,
-          },
-          {
-            title: 'Nominal',
-            key: 'nominal',
+            title: 'Sekolah',
+            key: 'sekolah',
             sortable: false,
           },
           {
@@ -163,9 +131,10 @@ onMounted(() => {
             key: 'keterangan',
             sortable: false,
           },
+
           {
-            title: 'Status',
-            key: 'status_desc',
+            title: 'Tanggal',
+            key: 'tanggal',
             sortable: false,
           },
         ]"
@@ -173,21 +142,37 @@ onMounted(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
+              label="Edit"
               @click="
-                dialogSave.show({
-                  ...item,
-                  status_desc: undefined,
-                })
+                () => {
+                  const payload = { ...item };
+                  payload.tanggal = new Date(payload.tanggal)
+                    .toISOString()
+                    .substring(0, 10);
+                  dialogSave.show(payload, false);
+                }
               "
               size="small"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              label="Export PDF"
+              @click="
+                () => {
+                  handleExportPdf(item);
+                }
+              "
+              size="small"
+            >
+              <VIcon icon="ri-export-fill" />
+            </IconBtn>
+            <IconBtn
+              label="Hapus"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Pengeluaran',
-                  message: `Anda yakin ingin menghapus Pengeluaran ${
+                  title: 'Hapus Surat Masuk',
+                  message: `Anda yakin ingin menghapus Surat Masuk ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),
