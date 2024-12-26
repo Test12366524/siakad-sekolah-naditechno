@@ -10,6 +10,7 @@ const props = defineProps({
   defaultForm: Object,
   width: null || Number,
   itemKey: null || String,
+  requestForm: Object,
 });
 
 const emits = defineEmits(["update:modelValue", "saved"]);
@@ -30,13 +31,17 @@ const save = async () => {
       ? `${props.path}/${formData.value[props.itemKey || "id"]}`
       : (props.path as string);
 
+    const payload = props.requestForm
+      ? extractNeededData(formData.value, props.requestForm)
+      : formData.value;
+
     const { errors, success } = await useApi(url, {
       withNotif: true,
       method: isEditing.value ? "PUT" : "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      data: formData.value,
+      data: payload,
     });
 
     validationErrors.value = errors ?? {};

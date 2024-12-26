@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { VTextField } from "vuetify/lib/components/index.mjs";
-
 const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
@@ -8,50 +6,53 @@ const dialogSave = ref();
 const tableRef = ref();
 
 const form = ref({
-  siswa_id: "",
-  sekolah: "",
-  keterangan: "",
-  tanggal: null,
+  guru_id: null, // guruid
+  mata_pelajaran_id: null,
+  biaya: 0,
 });
 
-const studentList = ref([]);
+const teacherList = ref([]);
+const mataPelajaranList = ref([]);
 
-const getAllStudent = async () => {
-  useApi("siswa/all").then(({ data }) => {
-    studentList.value = data;
+const getAllTeacher = async () => {
+  useApi("master/guru/all").then(({ data }) => {
+    teacherList.value = data;
   });
 };
 
-const handleExportPdf = (item) => {
-  const payload = { ...item };
-  console.log(payload);
+const getAllMataPelajaran = async () => {
+  useApi("master/mata-pelajaran/all").then(({ data }) => {
+    console.log(data);
+    mataPelajaranList.value = data;
+  });
 };
 
 onMounted(() => {
-  getAllStudent();
+  getAllTeacher();
+  getAllMataPelajaran();
 });
 </script>
 
 <template>
   <SaveDialog
     v-if="tableRef"
-    path="mutasi-masuk"
-    title="Tambah Surat Mutasi Masuk"
-    edit-title="Edit Surat Mutasi Masuk"
-    v-slot="{ formData, validationErrors, isEditing, isDetail }"
+    v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
+    path="guru-bimbel"
+    title="Tambah Guru Bimbel"
+    edit-title="Edit Guru Bimbel"
     :default-form="form"
+    :request-form="form"
     :refresh-callback="tableRef.refresh"
-    :requestForm="form"
-    width="1200"
+    width="600"
   >
-    <VCol cols="12" md="4">
+    <VCol cols="12">
       <VAutocomplete
-        v-model="formData.siswa_id"
-        label="Siswa"
-        :error-messages="validationErrors.siswa_id"
-        placeholder="Pilih Siswa"
-        :items="studentList"
+        v-model="formData.guru_id"
+        label="Guru"
+        :error-messages="validationErrors.guru_id"
+        placeholder="Pilih Guru"
+        :items="teacherList"
         item-title="text"
         item-value="id"
         required
@@ -60,32 +61,28 @@ onMounted(() => {
         :readonly="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="4">
-      <VTextField
-        :error-messages="validationErrors.sekolah"
-        v-model="formData.sekolah"
-        label="Sekolah"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12" md="4">
-      <VTextField
-        type="date"
-        :error-messages="validationErrors.tanggal"
-        v-model="formData.tanggal"
-        label="Tanggal"
+    <VCol cols="12">
+      <VAutocomplete
+        v-model="formData.mata_pelajaran_id"
+        label="Mata Pelajaran"
+        :error-messages="validationErrors.mata_pelajaran_id"
+        placeholder="Pilih Mata Pelajaran"
+        :items="mataPelajaranList"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
         :readonly="isDetail"
       />
     </VCol>
 
     <VCol cols="12">
-      <VTextarea
-        :error-messages="validationErrors.keterangan"
-        v-model="formData.keterangan"
-        label="Keterangan"
+      <CurrencyInput
+        v-model="formData.biaya"
+        :error-messages="validationErrors.biaya"
         :readonly="isDetail"
-        rows="2"
+        label="Biaya"
       />
     </VCol>
   </SaveDialog>
@@ -95,12 +92,12 @@ onMounted(() => {
       <VCard>
         <VCardItem>
           <VBtn
+            color="primary"
             @click="
               () => {
                 dialogSave.show();
               }
             "
-            color="primary"
           >
             <VIcon end icon="ri-add-fill" />
             Tambah Data
@@ -112,29 +109,23 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Surat Mutasi Masuk"
-        path="mutasi-masuk"
+        title="Data Guru Bimbel"
+        path="guru-bimbel"
         :with-actions="true"
         :headers="[
           {
-            title: 'Siswa',
-            key: 'siswa_name',
+            title: 'Guru',
+            key: 'guru_name',
             sortable: false,
           },
           {
-            title: 'Sekolah',
-            key: 'sekolah',
+            title: 'Mata Pelajaran',
+            key: 'mata_pelajaran_name',
             sortable: false,
           },
           {
-            title: 'Keterangan',
-            key: 'keterangan',
-            sortable: false,
-          },
-
-          {
-            title: 'Tanggal',
-            key: 'tanggal',
+            title: 'Biaya',
+            key: 'biaya',
             sortable: false,
           },
         ]"
@@ -143,32 +134,19 @@ onMounted(() => {
           <div class="d-flex gap-1">
             <IconBtn
               label="Edit"
+              size="small"
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.tanggal = new Date(payload.tanggal)
-                    .toISOString()
-                    .substring(0, 10);
                   dialogSave.show(payload, false);
                 }
               "
-              size="small"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
-              label="Export PDF"
-              @click="
-                () => {
-                  handleExportPdf(item);
-                }
-              "
-              size="small"
-            >
-              <VIcon icon="ri-export-fill" />
-            </IconBtn>
-            <IconBtn
               label="Hapus"
+              size="small"
               @click="
                 confirmDialog.show({
                   title: 'Hapus Surat Masuk',
@@ -178,7 +156,6 @@ onMounted(() => {
                   onConfirm: () => remove((item as any).id),
                 })
               "
-              size="small"
             >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>

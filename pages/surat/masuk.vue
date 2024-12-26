@@ -14,11 +14,14 @@ const form = ref({
   tempat: "",
   tanggal: "",
   kepada: "",
-  deskripsi: "",
+  content: "",
   atas_nama: "",
-  status: 1,
 });
 
+const handleExportPdf = (item) => {
+  const payload = { ...item };
+  console.log(payload);
+};
 </script>
 
 <template>
@@ -65,7 +68,7 @@ const form = ref({
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VTextField
         type="date"
         :error-messages="validationErrors.tanggal"
@@ -74,40 +77,26 @@ const form = ref({
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VTextField
         :error-messages="validationErrors.kepada"
         v-model="formData.kepada"
         label="Kepada"
       />
     </VCol>
-
-    <VCol cols="12">
-      <VTextarea
-        :error-messages="validationErrors.deskripsi"
-        v-model="formData.deskripsi"
-        label="Deskripsi"
-      />
-    </VCol>
-
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VTextField
         :error-messages="validationErrors.atas_nama"
         v-model="formData.atas_nama"
         label="Atas Nama"
       />
     </VCol>
-
-    <VCol cols="12" md="6">
-      <VLabel>Status</VLabel>
-      <VRadioGroup
-        inline
-        v-model="formData.status"
-        :error-messages="validationErrors.status"
-      >
-        <VRadio label="Aktif" :value="1"></VRadio>
-        <VRadio label="Nonaktif" :value="0"></VRadio>
-      </VRadioGroup>
+    <VCol cols="12">
+      <VTextarea
+        :error-messages="validationErrors.content"
+        v-model="formData.content"
+        label="Deskripsi"
+      />
     </VCol>
   </SaveDialog>
 
@@ -167,23 +156,19 @@ const form = ref({
             key: 'kepada',
             sortable: false,
           },
-          {
-            title: 'Status',
-            key: 'status_desc',
-            sortable: false,
-          },
         ]"
       >
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-            @click="
+              label="Edit"
+              @click="
                 () => {
                   const payload = { ...item };
                   payload.tanggal = new Date(payload.tanggal)
                     .toISOString()
                     .substring(0, 10);
-                  dialogSave.show(payload, true);
+                  dialogSave.show(payload, false);
                 }
               "
               size="small"
@@ -191,6 +176,18 @@ const form = ref({
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              label="Export PDF"
+              @click="
+                () => {
+                  handleExportPdf(item);
+                }
+              "
+              size="small"
+            >
+              <VIcon icon="ri-export-fill" />
+            </IconBtn>
+            <IconBtn
+              label="Hapus"
               @click="
                 confirmDialog.show({
                   title: 'Hapus Surat Masuk',

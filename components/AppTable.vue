@@ -147,6 +147,9 @@ defineExpose({
       <template #item.join_date="{ item }">
         {{ formatFullDate(item.join_date)?.dateOnly }}
       </template>
+      <template #item.tanggal="{ item }">
+        {{ formatFullDate(item.tanggal)?.dateOnly }}
+      </template>
       <template #item.publish_date="{ item }">
         {{ formatFullDate(item.publish_date)?.dateOnly }}
       </template>
@@ -170,6 +173,9 @@ defineExpose({
       </template>
       <template #item.nominal="{ item }">
         {{ formatRupiah(item.nominal) }}
+      </template>
+      <template #item.biaya="{ item }">
+        {{ formatRupiah(item.biaya) }}
       </template>
       <template #item.nilai="{ item }">
         {{ !item.nilai && item.nilai !== 0 ? "-" : item.nilai }}
