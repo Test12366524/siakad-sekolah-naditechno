@@ -141,10 +141,10 @@ onMounted(() => {
 
 <template>
   <VRow>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="12">
       <DashboardAnnouncement />
     </VCol>
-    <VCol cols="12" md="8">
+    <VCol cols="12" md="12">
       <VRow class="match-height">
         <VCol
           v-for="item in dashboardData"

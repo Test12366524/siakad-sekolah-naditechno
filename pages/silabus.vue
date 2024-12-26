@@ -29,6 +29,20 @@ const getMataKuliahByClass = (dosen_id: number) => {
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
+
+    if (data.role_id == 1){
+      useApi("master/dosen/all").then(({ data }) => {
+        dosen.value = data;
+      });
+    } else if (data.role_id == 2){
+      useApi("master/dosen/all/" + data.id).then(({ data }) => {
+        dosen.value = data;
+      });
+    } else {
+      useApi("master/dosen/all").then(({ data }) => {
+        dosen.value = data;
+      });
+    }
     useApi(`silabus/${data.role_id}`).then(({ data }) => {
       if(data == 0){
         navigateTo(`/not-authorized`);

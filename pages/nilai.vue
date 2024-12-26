@@ -30,9 +30,6 @@ useApi("mahasiswa/all").then(({ data }) => {
   mahasiswa.value = data;
 });
 
-useApi("master/dosen/all").then(({ data }) => {
-  dosen.value = data;
-});
 
 useApi("master/semester/all").then(({ data }) => {
   semester.value = data;
@@ -48,8 +45,20 @@ const status_action = ref();
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
     role_id.value = data.role_id;
-    if (data.role_id == 1 || data.role_id == 2) status_action.value = true;
-    else status_action.value = false;
+
+    if (data.role_id == 1){
+      status_action.value = true;
+      useApi("master/dosen/all").then(({ data }) => {
+        dosen.value = data;
+      });
+    } else if (data.role_id == 2){
+      status_action.value = true;
+      useApi("master/dosen/all/" + data.id).then(({ data }) => {
+        dosen.value = data;
+      });
+    } else {
+      status_action.value = false;
+    }
 
     useApi(`nilai/${data.role_id}`).then(({ data }) => {
       if(data == 0){

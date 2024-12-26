@@ -27,9 +27,6 @@ const form = {
 const handleAction = async (status, type, data) => {
   const url = `ppdb/change-status/${type}/${status}/${data.id}`;
 
-  console.log(url);
-  console.log("DATA", data);
-
   const { errors, success } = await useApi(url, {
     withNotif: true,
     method: "PUT",
@@ -60,9 +57,9 @@ onMounted(() => {
     ref="dialogSave"
     width="1200"
     path="ppdb"
-    title="Tambah PMB Mahasiswa"
-    edit-title="Edit PMB Mahasiswa"
-    detail-title="Detail PMB Mahasiswa"
+    title="Tambah PPDB"
+    edit-title="Edit PPDB"
+    detail-title="Detail PPDB"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
@@ -243,7 +240,7 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data PMB Mahasiswa"
+        title="Data PPDB"
         path="ppdb"
         :with-actions="true"
         :headers="[
@@ -411,8 +408,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus PMB Mahasiswa',
-                  message: `Anda yakin ingin menghapus PMB Mahasiswa ${
+                  title: 'Hapus PPDB',
+                  message: `Anda yakin ingin menghapus PPDB ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

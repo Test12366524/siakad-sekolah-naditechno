@@ -11,15 +11,33 @@ const tableRef = ref();
 const dosen = ref();
 const mata_kuliah = ref();
 
-useApi("master/dosen/all").then(({ data }) => {
-  dosen.value = data;
-});
-
-useApi("master/mata-kuliah/all").then(({ data }) => {
-  mata_kuliah.value = data;
-});
-
 const role_id = computed(() => user.role_id);
+
+if(user.role_id == 1){
+  useApi("master/dosen/all").then(({ data }) => {
+    dosen.value = data;
+  });
+  useApi("master/mata-kuliah/all").then(({ data }) => {
+    mata_kuliah.value = data;
+  });
+}else if(user.role_id == 2){
+  useApi("master/dosen/all/"+user.id).then(({ data }) => {
+    dosen.value = data;
+
+    useApi("master/mata-kuliah/all/" + data[0].id).then(({ data }) => {
+      mata_kuliah.value = data;
+    });
+  });
+  
+  
+}else{
+  useApi("master/dosen/all").then(({ data }) => {
+    dosen.value = data;
+  });
+  useApi("master/mata-kuliah/all").then(({ data }) => {
+    mata_kuliah.value = data;
+  });
+}
 
 const isDosenOrAdmin = computed(
   () => role_id.value === 1 || role_id.value === 2

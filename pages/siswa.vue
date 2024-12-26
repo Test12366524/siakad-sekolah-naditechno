@@ -88,7 +88,7 @@ onMounted(() => {
     if (data.role_id == 1 || data.role_id == 2) status_action.value = true;
     else status_action.value = false;
 
-    useApi(`mahasiswa/${data.role_id}`).then(({ data }) => {
+    useApi(`siswa/${data.role_id}`).then(({ data }) => {
       if(data == 0){
         navigateTo(`/not-authorized`);
       }
@@ -103,10 +103,10 @@ onMounted(() => {
     v-slot="{ formData, validationErrors, isDetail }"
     ref="dialogSave"
     width="1200"
-    path="mahasiswa"
-    title="Tambah Mahasiswa"
-    edit-title="Edit Mahasiswa"
-    detail-title="Detail Mahasiswa"
+    path="siswa"
+    title="Tambah Siswa"
+    edit-title="Edit Siswa"
+    detail-title="Detail Siswa"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
@@ -394,8 +394,8 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Mahasiswa"
-        path="mahasiswa"
+        title="Data Siswa"
+        path="siswa"
         :with-actions="status_action"
         :kelas_id="kelas_id"
         :periode_id="periode_id"
@@ -484,8 +484,8 @@ onMounted(() => {
               title="Hapus"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Mahasiswa',
-                  message: `Anda yakin ingin menghapus Mahasiswa ${
+                  title: 'Hapus Siswa',
+                  message: `Anda yakin ingin menghapus Siswa ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

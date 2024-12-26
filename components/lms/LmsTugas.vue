@@ -13,7 +13,7 @@ const mata_kuliah = ref();
 
 const form = {
   mata_kuliah_id: "",
-  dosen_id: 8,
+  dosen_id: "",
   title: "",
   subtitle: "",
   file_pdf: "",
@@ -33,9 +33,7 @@ const formUploadTugas = ref({
   file: "",
 });
 
-useApi("master/dosen/all").then(({ data }) => {
-  dosen.value = data;
-});
+
 
 const getMataKuliahByClass = (dosen_id: number) => {
   useApi("master/mata-kuliah/all/" + dosen_id).then(({ data }) => {
@@ -44,6 +42,20 @@ const getMataKuliahByClass = (dosen_id: number) => {
 }
 
 const role_id = computed(() => user.role_id);
+
+if(user.role_id == 1){
+  useApi("master/dosen/all").then(({ data }) => {
+    dosen.value = data;
+  });
+}else if(user.role_id == 2){
+  useApi("master/dosen/all/"+user.id).then(({ data }) => {
+    dosen.value = data;
+  });
+}else{
+  useApi("master/dosen/all").then(({ data }) => {
+    dosen.value = data;
+  });
+}
 
 const isDosenOrAdmin = computed(
   () => role_id.value === 1 || role_id.value === 2
@@ -68,6 +80,7 @@ const getDosenDetails = () => {
   useApi(url).then(({ data }) => {
     if (data.items){
       form.dosen_id = data.items[0].id;
+      getMataKuliahByClass(data.items[0].id)
     }  
   });
 };
