@@ -104,17 +104,7 @@ onMounted(() => {
               style="display: flex; justify-content: flex-end; gap: 1rem;"
             >
             <ImportFileExcel path="" />
-              <VBtn
-                color="info"
-                @click="handleExportData"
-              >
-                <VIcon
-                  end
-                  icon="ri-upload-2-line"
-                  class="mr-1"
-                />
-                Export Data
-              </VBtn>
+            <ExportFileExcel path="" />
             </VCol>
           </VRow>
         </VCardItem>
