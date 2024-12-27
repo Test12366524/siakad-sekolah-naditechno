@@ -7,7 +7,7 @@ const dashboardData = ref<any>(
   })
 );
 
-const mahasiswaData = ref<any>(
+const siswaData = ref<any>(
   Array.from({ length: 8 }).fill({
     title: "",
     value: "",
@@ -15,7 +15,7 @@ const mahasiswaData = ref<any>(
   })
 );
 
-const dosenData = ref<any>(
+const guruData = ref<any>(
   Array.from({ length: 8 }).fill({
     title: "",
     value: "",
@@ -27,15 +27,15 @@ const mappingData = (dataObject, icon = "ri-wallet-line") => {
   const titleMapping = {
     pmb_total: "Total PMB",
     pmb_paid: "Total Pembayaran PMB",
-    mahasiswa_total: "Total Mahasiswa",
-    dosen_total: "Total Dosen",
+    siswa_total: "Total Siswa",
+    guru_total: "Total Guru",
   };
 
   const iconMapping = {
     pmb_total: "ri-user-add-line",
     pmb_paid: "ri-currency-line",
-    mahasiswa_total: "ri-user-follow-fill",
-    dosen_total: "ri-user-star-line",
+    siswa_total: "ri-user-follow-fill",
+    guru_total: "ri-user-star-line",
   };
 
   const rupiahFormatValue = {
@@ -51,13 +51,13 @@ const mappingData = (dataObject, icon = "ri-wallet-line") => {
   }));
 };
 
-const mappingDataMahasiswa = (dataObject, icon = "ri-wallet-line") => {
+const mappingDataSiswa = (dataObject, icon = "ri-wallet-line") => {
   const titleMapping = {
     total_lms_not_done: "LMS Yang Belum Dikerjakan",
     total_hadir: "Total Pembayaran PMB",
-    total_izin: "Total Mahasiswa",
-    total_sakit: "Total Dosen",
-    total_alpa: "Total Dosen",
+    total_izin: "Total Siswa",
+    total_sakit: "Total Guru",
+    total_alpa: "Total Guru",
   };
 
   const iconMapping = {
@@ -81,11 +81,11 @@ const mappingDataMahasiswa = (dataObject, icon = "ri-wallet-line") => {
   }));
 };
 
-const mappingDataDosen = (dataObject, icon = "ri-wallet-line") => {
+const mappingDataGuru = (dataObject, icon = "ri-wallet-line") => {
   const titleMapping = {
     total_lms: "Total LMS",
     total_lms_not_graded: "Total LMS Belum Dinilai",
-    total_mata_kuliah: "Total Mata Kuliah",
+    total_mata_kuliah: "Total Mata Pelajaran",
     total_silabus: "Total Silabus",
   };
 
@@ -115,15 +115,15 @@ const fetchingData = () => {
   });
 };
 
-const fetchingDataMahasiswa = () => {
-  useApi("/dashboard/mahasiswa").then(({ data }) => {
-    mahasiswaData.value = mappingDataMahasiswa(data);
+const fetchingDataSiswa = () => {
+  useApi("/dashboard/siswa").then(({ data }) => {
+    siswaData.value = mappingDataSiswa(data);
   });
 };
 
-const fetchingDataDosen = () => {
-  useApi("/dashboard/dosen").then(({ data }) => {
-    dosenData.value = mappingDataDosen(data);
+const fetchingDataGuru = () => {
+  useApi("/dashboard/guru").then(({ data }) => {
+    guruData.value = mappingDataGuru(data);
   });
 };
 
@@ -133,8 +133,8 @@ onMounted(() => {
   useApi("auth/me").then(({ data }) => {
     role_id.value = data.role_id;
     if (data.role_id === 1) fetchingData();
-    else if (data.role_id === 3) fetchingDataMahasiswa();
-    else if (data.role_id === 2) fetchingDataDosen();
+    else if (data.role_id === 3) fetchingDataSiswa();
+    else if (data.role_id === 2) fetchingDataGuru();
   });
 });
 </script>
@@ -175,7 +175,7 @@ onMounted(() => {
           </div>
         </VCol>
         <VCol
-          v-for="item in mahasiswaData"
+          v-for="item in siswaData"
           v-if="role_id == 3"
           :key="`dashboard${item.title}`"
           cols="12"
@@ -203,7 +203,7 @@ onMounted(() => {
           </div>
         </VCol>
         <VCol
-          v-for="item in dosenData"
+          v-for="item in guruData"
           v-if="role_id == 2"
           :key="`dashboard${item.title}`"
           cols="12"

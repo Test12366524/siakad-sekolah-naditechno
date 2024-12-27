@@ -82,10 +82,10 @@ onMounted(() => {
     <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.user_id"
-        label="Mahasiswa / Dosen"
+        label="Siswa / Guru"
         density="compact"
         :error-messages="validationErrors.user_id"
-        placeholder="Pilih Mahasiswa / Dosen"
+        placeholder="Pilih Siswa / Guru"
         :items="users"
         item-title="text"
         item-value="id"

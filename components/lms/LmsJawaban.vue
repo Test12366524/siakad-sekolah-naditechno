@@ -8,52 +8,52 @@ const { user } = useAuthStore();
 const taskEditDialog = ref();
 const taskAssignmentDialog = ref();
 const tableRef = ref();
-const dosen = ref();
+const guru = ref();
 const mata_kuliah = ref();
 
 const role_id = computed(() => user.role_id);
 
 if(user.role_id == 1){
-  useApi("master/dosen/all").then(({ data }) => {
-    dosen.value = data;
+  useApi("master/guru/all").then(({ data }) => {
+    guru.value = data;
   });
-  useApi("master/mata-kuliah/all").then(({ data }) => {
+  useApi("master/mata-pelajaran/all").then(({ data }) => {
     mata_kuliah.value = data;
   });
 }else if(user.role_id == 2){
-  useApi("master/dosen/all/"+user.id).then(({ data }) => {
-    dosen.value = data;
+  useApi("master/guru/all/"+user.id).then(({ data }) => {
+    guru.value = data;
 
-    useApi("master/mata-kuliah/all/" + data[0].id).then(({ data }) => {
+    useApi("master/mata-pelajaran/all/" + data[0].id).then(({ data }) => {
       mata_kuliah.value = data;
     });
   });
   
   
 }else{
-  useApi("master/dosen/all").then(({ data }) => {
-    dosen.value = data;
+  useApi("master/guru/all").then(({ data }) => {
+    guru.value = data;
   });
-  useApi("master/mata-kuliah/all").then(({ data }) => {
+  useApi("master/mata-pelajaran/all").then(({ data }) => {
     mata_kuliah.value = data;
   });
 }
 
-const isDosenOrAdmin = computed(
+const isGuruOrAdmin = computed(
   () => role_id.value === 1 || role_id.value === 2
 );
 
 const getHeader = computed(() => {
-  if (isDosenOrAdmin.value) {
+  if (isGuruOrAdmin.value) {
     return [
       {
-        title: "Mahasiswa",
-        key: "mahasiswa_name",
+        title: "Siswa",
+        key: "siswa_name",
         sortable: false,
       },
       {
-        title: "Mata Kuliah",
-        key: "mata_kuliah_name",
+        title: "Mata Pelajaran",
+        key: "mata_pelajaran_name",
         sortable: false,
       },
       {
@@ -81,13 +81,13 @@ const getHeader = computed(() => {
 
   return [
     {
-      title: "Dosen",
-      key: "dosen_name",
+      title: "Guru",
+      key: "guru_name",
       sortable: false,
     },
     {
-      title: "Mata Kuliah",
-      key: "mata_kuliah_name",
+      title: "Mata Pelajaran",
+      key: "mata_pelajaran_name",
       sortable: false,
     },
     {
@@ -132,7 +132,7 @@ onMounted(() => {
 });
 
 const mata_kuliah_id = ref<number | null>(null);
-const dosen_id = ref<number | null>(null);
+const guru_id = ref<number | null>(null);
 </script>
 
 <template>
@@ -196,7 +196,7 @@ const dosen_id = ref<number | null>(null);
             }
           "
         >
-          <VIcon icon="ri-eye-line" class="mr-2" />Tugas Mahasiswa
+          <VIcon icon="ri-eye-line" class="mr-2" />Tugas Siswa
         </VBtn>
         <VTextField
           v-model="formData.nilai"
@@ -210,7 +210,7 @@ const dosen_id = ref<number | null>(null);
       <VTextarea
         v-model="formData.description"
         rows="3"
-        label="Catatan untuk mahasiswa"
+        label="Catatan untuk siswa"
       />
     </VCol>
   </SaveFileDialog>
@@ -228,8 +228,8 @@ const dosen_id = ref<number | null>(null);
   >
     <VCol cols="12" md="6">
       <VTextField
-        v-model="formData.mata_kuliah_name"
-        label="Mata Kuliah"
+        v-model="formData.mata_pelajaran_name"
+        label="Mata Pelajaran"
         readonly
       />
     </VCol>
@@ -318,7 +318,7 @@ const dosen_id = ref<number | null>(null);
             <!--
               <VCol cols="12" md="6">
               <VBtn
-              v-if="isDosenOrAdmin"
+              v-if="isGuruOrAdmin"
               color="primary"
               @click="taskEditDialog.show()"
               >
@@ -329,11 +329,11 @@ const dosen_id = ref<number | null>(null);
             -->
             <VCol cols="12" md="3" style="margin-block-start: 5px">
               <VAutocomplete
-                v-model="dosen_id"
-                label="Dosen"
+                v-model="guru_id"
+                label="Guru"
                 density="compact"
-                placeholder="Pilih Dosen"
-                :items="dosen"
+                placeholder="Pilih Guru"
+                :items="guru"
                 item-title="text"
                 item-value="id"
                 required
@@ -344,9 +344,9 @@ const dosen_id = ref<number | null>(null);
             <VCol cols="12" md="3" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="mata_kuliah_id"
-                label="Mata Kuliah"
+                label="Mata Pelajaran"
                 density="compact"
-                placeholder="Pilih Mata Kuliah"
+                placeholder="Pilih Mata Pelajaran"
                 :items="mata_kuliah"
                 item-title="text"
                 item-value="id"
@@ -365,7 +365,7 @@ const dosen_id = ref<number | null>(null);
         ref="tableRef"
         title="Daftar Jawaban"
         path="lms-tugas"
-        :dosen_id="dosen_id"
+        :guru_id="guru_id"
         :mata_kuliah_id="mata_kuliah_id"
         with-actions
         :headers="getHeader"
@@ -373,7 +373,7 @@ const dosen_id = ref<number | null>(null);
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              v-if="!isDosenOrAdmin"
+              v-if="!isGuruOrAdmin"
               size="small"
               @click="
                 () => {
@@ -384,7 +384,7 @@ const dosen_id = ref<number | null>(null);
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
-              v-if="isDosenOrAdmin"
+              v-if="isGuruOrAdmin"
               size="small"
               @click="
                 () => {
@@ -396,7 +396,7 @@ const dosen_id = ref<number | null>(null);
               <VIcon icon="ri-ball-pen-fill" />
             </IconBtn>
             <IconBtn
-              v-if="isDosenOrAdmin"
+              v-if="isGuruOrAdmin"
               size="small"
               @click="
                 confirmDialog.show({

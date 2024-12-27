@@ -20,8 +20,8 @@ const form = ref({
 
 const list_to = ref([
   { id: "semua", text: "semua" },
-  { id: "dosen", text: "dosen" },
-  { id: "mahasiswa", text: "mahasiswa" },
+  { id: "guru", text: "guru" },
+  { id: "siswa", text: "siswa" },
 ]);
 
 const user_id = ref<number | null>(null);
@@ -38,12 +38,12 @@ onMounted(() => {
     if (data.role_id === 1) {
       list_to.value = [
         { id: "semua", text: "semua" },
-        { id: "dosen", text: "dosen" },
-        { id: "mahasiswa", text: "mahasiswa" },
+        { id: "guru", text: "guru" },
+        { id: "siswa", text: "siswa" },
       ];
     } else if (data.role_id === 2) {
       list_to.value = [
-        { id: "mahasiswa", text: "mahasiswa" },
+        { id: "siswa", text: "siswa" },
       ];
     }
 

@@ -12,6 +12,7 @@ const form = ref({
   hari: '0', // 0 sampe 6
   dari_jam: null,
   ke_jam: null,
+  jumlah_jam: null,
   status: 1, // 0 atau 1
 })
 
@@ -168,6 +169,17 @@ onMounted(() => {
         density="compact"
       />
     </VCol>
+
+    <VCol cols="6">
+      <VTextField
+        v-model="formData.jumlah_jam"
+        type="number"
+        :error-messages="validationErrors.jumlah_jam"
+        label="Jumlah Jam"
+        density="compact"
+      />
+    </VCol>
+
     <VCol
       cols="12"
       md="6"
@@ -234,10 +246,14 @@ onMounted(() => {
             key: 'semester_name',
             sortable: false,
           },
-
           {
             title: 'Waktu',
             key: 'waktu',
+            sortable: false,
+          },
+          {
+            title: 'Jumlah Jam',
+            key: 'jumlah_jam',
             sortable: false,
           },
         ]"

@@ -41,7 +41,7 @@ const handleAction = async (status, type, data) => {
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
-    useApi(`pmb-mahasiswa/${data.role_id}`).then(({ data }) => {
+    useApi(`pmb-siswa/${data.role_id}`).then(({ data }) => {
       if(data == 0){
         navigateTo(`/not-authorized`);
       }

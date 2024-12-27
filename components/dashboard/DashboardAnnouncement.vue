@@ -108,7 +108,7 @@ const form = {
   to: "semua",
   title: "Besok Libur",
   content:
-    "Diberitahukan kepada seluruh dosen dan mahasiswa, bahwa beso libur.",
+    "Diberitahukan kepada seluruh guru dan siswa, bahwa beso libur.",
   from_date: "2024-12-14T17:00:00.000Z",
   to_date: "2024-12-24T17:00:00.000Z",
   status: 1,

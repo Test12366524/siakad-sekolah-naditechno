@@ -6,23 +6,23 @@ const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
 const tableRef = ref();
-const dosen = ref();
+const guru = ref();
 const mata_kuliah = ref();
 
 const form = {
   mata_kuliah_id: "",
-  dosen_id: "",
+  guru_id: "",
   title: "",
   description: "",
   file: "",
 };
 
-useApi("master/dosen/all").then(({ data }) => {
-  dosen.value = data;
+useApi("master/guru/all").then(({ data }) => {
+  guru.value = data;
 });
 
-const getMataKuliahByClass = (dosen_id: number) => {
-  useApi("master/mata-kuliah/all/" + dosen_id).then(({ data }) => {
+const getMataKuliahByClass = (guru_id: number) => {
+  useApi("master/mata-pelajaran/all/" + guru_id).then(({ data }) => {
     mata_kuliah.value = data;
   });
 }
@@ -31,16 +31,16 @@ onMounted(() => {
   useApi("auth/me").then(({ data }) => {
 
     if (data.role_id == 1){
-      useApi("master/dosen/all").then(({ data }) => {
-        dosen.value = data;
+      useApi("master/guru/all").then(({ data }) => {
+        guru.value = data;
       });
     } else if (data.role_id == 2){
-      useApi("master/dosen/all/" + data.id).then(({ data }) => {
-        dosen.value = data;
+      useApi("master/guru/all/" + data.id).then(({ data }) => {
+        guru.value = data;
       });
     } else {
-      useApi("master/dosen/all").then(({ data }) => {
-        dosen.value = data;
+      useApi("master/guru/all").then(({ data }) => {
+        guru.value = data;
       });
     }
     useApi(`silabus/${data.role_id}`).then(({ data }) => {
@@ -52,7 +52,7 @@ onMounted(() => {
 });
 
 const mata_kuliah_id = ref<number | null>(null);
-const dosen_id = ref<number | null>(null);
+const guru_id = ref<number | null>(null);
 </script>
 
 <template>
@@ -70,12 +70,12 @@ const dosen_id = ref<number | null>(null);
   >
     <VCol cols="12" md="6">
       <VAutocomplete
-        v-model="formData.dosen_id"
-        label="Dosen"
+        v-model="formData.guru_id"
+        label="Guru"
         density="compact"
-        :error-messages="validationErrors.dosen_id"
-        placeholder="Pilih Dosen"
-        :items="dosen"
+        :error-messages="validationErrors.guru_id"
+        placeholder="Pilih Guru"
+        :items="guru"
         item-title="text"
         item-value="id"
         required
@@ -83,8 +83,8 @@ const dosen_id = ref<number | null>(null);
         clear-icon="ri-close-line"
         :readonly="isDetail"
         @update:model-value="
-          (dosen_id: number) => {
-            getMataKuliahByClass(dosen_id);
+          (guru_id: number) => {
+            getMataKuliahByClass(guru_id);
           }
         "
       />
@@ -92,10 +92,10 @@ const dosen_id = ref<number | null>(null);
     <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.mata_kuliah_id"
-        label="Mata Kuliah"
+        label="Mata Pelajaran"
         density="compact"
         :error-messages="validationErrors.mata_kuliah_id"
-        placeholder="Pilih Mata Kuliah"
+        placeholder="Pilih Mata Pelajaran"
         :items="mata_kuliah"
         item-title="text"
         item-value="id"
@@ -148,11 +148,11 @@ const dosen_id = ref<number | null>(null);
             </VCol>
             <VCol cols="12" md="3" style="margin-block-start: 5px">
               <VAutocomplete
-                v-model="dosen_id"
-                label="Dosen"
+                v-model="guru_id"
+                label="Guru"
                 density="compact"
-                placeholder="Pilih Dosen"
-                :items="dosen"
+                placeholder="Pilih Guru"
+                :items="guru"
                 item-title="text"
                 item-value="id"
                 required
@@ -163,9 +163,9 @@ const dosen_id = ref<number | null>(null);
             <VCol cols="12" md="3" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="mata_kuliah_id"
-                label="Mata Kuliah"
+                label="Mata Pelajaran"
                 density="compact"
-                placeholder="Pilih Mata Kuliah"
+                placeholder="Pilih Mata Pelajaran"
                 :items="mata_kuliah"
                 item-title="text"
                 item-value="id"
@@ -184,18 +184,18 @@ const dosen_id = ref<number | null>(null);
         ref="tableRef"
         title="Data Silabus"
         path="silabus"
-        :dosen_id="dosen_id"
+        :guru_id="guru_id"
         :mata_kuliah_id="mata_kuliah_id"
         :with-actions="true"
         :headers="[
           {
-            title: 'Dosen',
-            key: 'dosen_name',
+            title: 'Guru',
+            key: 'guru_name',
             sortable: false,
           },
           {
-            title: 'Mata Kuliah',
-            key: 'mata_kuliah_name',
+            title: 'Mata Pelajaran',
+            key: 'mata_pelajaran_name',
             sortable: false,
           },
           {

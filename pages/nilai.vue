@@ -5,19 +5,19 @@ const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
 const tableRef = ref();
-const mahasiswa = ref();
-const dosen = ref();
+const siswa = ref();
+const guru = ref();
 const semester = ref();
 const mata_kuliah = ref();
 const kelas = ref();
 const bulkingDialog = ref();
-const mahasiswaTableRef = ref();
+const siswaTableRef = ref();
 
 const form = ref({
   kelas_id: "",
-  dosen_id: "",
+  guru_id: "",
   mata_kuliah_id: "",
-  mahasiswa_id: "",
+  siswa_id: "",
   kehadiran: "",
   tugas: "",
   uts: "",
@@ -26,8 +26,8 @@ const form = ref({
   predikat: "",
 });
 
-useApi("mahasiswa/all").then(({ data }) => {
-  mahasiswa.value = data;
+useApi("siswa/all").then(({ data }) => {
+  siswa.value = data;
 });
 
 
@@ -48,13 +48,13 @@ onMounted(() => {
 
     if (data.role_id == 1){
       status_action.value = true;
-      useApi("master/dosen/all").then(({ data }) => {
-        dosen.value = data;
+      useApi("master/guru/all").then(({ data }) => {
+        guru.value = data;
       });
     } else if (data.role_id == 2){
       status_action.value = true;
-      useApi("master/dosen/all/" + data.id).then(({ data }) => {
-        dosen.value = data;
+      useApi("master/guru/all/" + data.id).then(({ data }) => {
+        guru.value = data;
       });
     } else {
       status_action.value = false;
@@ -69,10 +69,10 @@ onMounted(() => {
 });
 
 const mata_kuliah_id = ref<number | null>(null);
-const dosen_id = ref<number | null>(null);
+const guru_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
 const semester_id = ref<number | null>(null);
-const mahasiswaByClass = ref([]);
+const siswaByClass = ref([]);
 
 const pagination = reactive({
   totalItem: 1,
@@ -88,9 +88,9 @@ const params = reactive({
 
 const singleDataForm = ref({
   kelas_id: "",
-  dosen_id: "",
+  guru_id: "",
   mata_kuliah_id: "",
-  mahasiswa_id: "",
+  siswa_id: "",
   kehadiran: "",
   tugas: "",
   uts: "",
@@ -112,31 +112,31 @@ const headers = [
 
 
 
-const getMataKuliahByClass = (dosen_id: number) => {
-  useApi("master/mata-kuliah/all/" + dosen_id).then(({ data }) => {
+const getMataKuliahByClass = (guru_id: number) => {
+  useApi("master/mata-pelajaran/all/" + guru_id).then(({ data }) => {
     mata_kuliah.value = data;
   });
 }
 
 
-const getMahasiswaByClass = (classId) => {
+const getSiswaByClass = (classId) => {
   const getParams = {
     ...params,
     kelas_id: form.kelas_id || classId,
   };
 
-  useApi(`mahasiswa${objectToParams(getParams)}`).then(({ data }) => {
+  useApi(`siswa${objectToParams(getParams)}`).then(({ data }) => {
     console.log(data);
     pagination.pageTotal = data.pageTotal;
     pagination.page = Number.parseInt(data.currentPage);
     pagination.totalItem = data.total;
-    mahasiswaByClass.value = data.items.map((item) => {
+    siswaByClass.value = data.items.map((item) => {
       return {
         ...item,
         kelas_id: form.kelas_id,
-        dosen_id: form.dosen_id,
+        guru_id: form.guru_id,
         mata_kuliah_id: form.mata_kuliah_id,
-        mahasiswa_id: item.id,
+        siswa_id: item.id,
         kehadiran: "0",
         tugas: "0",
         uts: "0",
@@ -174,14 +174,14 @@ const getPredikat = (item) => {
 };
 
 const handleInsertBulk = async () => {
-  console.log("handleInsertBulk", mahasiswaByClass.value);
+  console.log("handleInsertBulk", siswaByClass.value);
 
-  const data = mahasiswaByClass.value.map((item) => {
+  const data = siswaByClass.value.map((item) => {
     return {
       kelas_id: form.value.kelas_id,
-      dosen_id: form.value.dosen_id,
+      guru_id: form.value.guru_id,
       mata_kuliah_id: form.value.mata_kuliah_id,
-      mahasiswa_id: item.id,
+      siswa_id: item.id,
       kehadiran: item.kehadiran,
       tugas: item.tugas,
       uts: item.uts,
@@ -211,7 +211,7 @@ const handleInsertBulk = async () => {
 
 const isDataNotValid = computed(() => {
   return (
-    !form.value.kelas_id || !form.value.dosen_id || !form.value.mata_kuliah_id
+    !form.value.kelas_id || !form.value.guru_id || !form.value.mata_kuliah_id
   );
 });
 </script>
@@ -247,12 +247,12 @@ const isDataNotValid = computed(() => {
     </VCol>
     <VCol cols="12" md="4">
       <VAutocomplete
-        v-model="formData.dosen_id"
-        label="Dosen"
+        v-model="formData.guru_id"
+        label="Guru"
         density="compact"
-        :error-messages="validationErrors.dosen_id"
-        placeholder="Pilih Dosen"
-        :items="dosen"
+        :error-messages="validationErrors.guru_id"
+        placeholder="Pilih Guru"
+        :items="guru"
         item-title="text"
         item-value="id"
         required
@@ -264,10 +264,10 @@ const isDataNotValid = computed(() => {
     <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.mata_kuliah_id"
-        label="Mata Kuliah"
+        label="Mata Pelajaran"
         density="compact"
         :error-messages="validationErrors.mata_kuliah_id"
-        placeholder="Pilih Mata Kuliah"
+        placeholder="Pilih Mata Pelajaran"
         :items="mata_kuliah"
         item-title="text"
         item-value="id"
@@ -280,12 +280,12 @@ const isDataNotValid = computed(() => {
 
     <VCol cols="12" md="12">
       <VAutocomplete
-        v-model="formData.mahasiswa_id"
-        label="Mahasiswa"
+        v-model="formData.siswa_id"
+        label="Siswa"
         density="compact"
-        :error-messages="validationErrors.mahasiswa_id"
-        placeholder="Pilih Mahasiswa"
-        :items="mahasiswa"
+        :error-messages="validationErrors.siswa_id"
+        placeholder="Pilih Siswa"
+        :items="siswa"
         item-title="text"
         item-value="id"
         required
@@ -345,7 +345,7 @@ const isDataNotValid = computed(() => {
         clear-icon="ri-close-line"
         @update:model-value="
           (kelas_id) => {
-            getMahasiswaByClass(kelas_id);
+            getSiswaByClass(kelas_id);
             form.kelas_id = kelas_id;
           }
         "
@@ -353,21 +353,21 @@ const isDataNotValid = computed(() => {
     </VCol>
     <VCol cols="12" md="4">
       <VAutocomplete
-        v-model="formData.dosen_id"
-        label="Dosen"
+        v-model="formData.guru_id"
+        label="Guru"
         density="compact"
-        :error-messages="validationErrors.dosen_id"
-        placeholder="Pilih Dosen"
-        :items="dosen"
+        :error-messages="validationErrors.guru_id"
+        placeholder="Pilih Guru"
+        :items="guru"
         item-title="text"
         item-value="id"
         required
         clearable
         clear-icon="ri-close-line"
         @update:model-value="
-          (dosen_id) => {
-            form.dosen_id = dosen_id;
-            getMataKuliahByClass(dosen_id);
+          (guru_id) => {
+            form.guru_id = guru_id;
+            getMataKuliahByClass(guru_id);
           }
         "
       />
@@ -375,10 +375,10 @@ const isDataNotValid = computed(() => {
     <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.mata_kuliah_id"
-        label="Mata Kuliah"
+        label="Mata Pelajaran"
         density="compact"
         :error-messages="validationErrors.mata_kuliah_id"
-        placeholder="Pilih Mata Kuliah"
+        placeholder="Pilih Mata Pelajaran"
         :items="mata_kuliah"
         item-title="text"
         item-value="id"
@@ -394,9 +394,9 @@ const isDataNotValid = computed(() => {
     </VCol>
     <VCol cols="12" md="12">
       <VDataTable
-        ref="mahasiswaTableRef"
+        ref="siswaTableRef"
         :headers="headers"
-        :items="mahasiswaByClass"
+        :items="siswaByClass"
         :items-per-page="10"
         :page-count="pagination.pageTotal"
         class="text-no-wrap"
@@ -446,7 +446,7 @@ const isDataNotValid = computed(() => {
         <template #bottom>
           <VDivider />
           <div
-            v-if="mahasiswaByClass.length > 0"
+            v-if="siswaByClass.length > 0"
             class="d-flex justify-end flex-wrap gap-x-6 px-2 py-1"
           >
             <div
@@ -507,7 +507,7 @@ const isDataNotValid = computed(() => {
                 @click="
                   () => {
                     bulkingDialog.show();
-                    mahasiswaByClass = [];
+                    siswaByClass = [];
                   }
                 "
               >
@@ -532,11 +532,11 @@ const isDataNotValid = computed(() => {
             </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
-                v-model="dosen_id"
-                label="Dosen"
+                v-model="guru_id"
+                label="Guru"
                 density="compact"
-                placeholder="Pilih Dosen"
-                :items="dosen"
+                placeholder="Pilih Guru"
+                :items="guru"
                 item-title="text"
                 item-value="id"
                 required
@@ -547,9 +547,9 @@ const isDataNotValid = computed(() => {
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="mata_kuliah_id"
-                label="Mata Kuliah"
+                label="Mata Pelajaran"
                 density="compact"
-                placeholder="Pilih Mata Kuliah"
+                placeholder="Pilih Mata Pelajaran"
                 :items="mata_kuliah"
                 item-title="text"
                 item-value="id"
@@ -584,7 +584,7 @@ const isDataNotValid = computed(() => {
         path="nilai"
         :with-actions="status_action"
         :kelas_id="kelas_id"
-        :dosen_id="dosen_id"
+        :guru_id="guru_id"
         :mata_kuliah_id="mata_kuliah_id"
         :semester_id="semester_id"
         :headers="[
@@ -594,23 +594,23 @@ const isDataNotValid = computed(() => {
             sortable: false,
           },
           {
-            title: 'Dosen',
-            key: 'dosen_name',
+            title: 'Guru',
+            key: 'guru_name',
             sortable: false,
           },
           {
-            title: 'Mata Kuliah',
-            key: 'mata_kuliah_name',
+            title: 'Mata Pelajaran',
+            key: 'mata_pelajaran_name',
             sortable: false,
           },
           {
             title: 'NIM',
-            key: 'mahasiswa_nim',
+            key: 'siswa_nim',
             sortable: false,
           },
           {
             title: 'Nama',
-            key: 'mahasiswa_name',
+            key: 'siswa_name',
             sortable: false,
           },
           {

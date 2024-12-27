@@ -19,13 +19,13 @@ onMounted(() => {
         navigateTo(`/not-authorized`);
       }
     });  
-    useApi("mahasiswa/getID/" + data.id).then(({ data }) => {
-        const mahasiswa_id = data;
-        useApi("rapot/" + mahasiswa_id).then(({ data }) => {
-            form.value.name = data.mahasiswa.mahasiswa_name;
-            form.value.nim = data.mahasiswa.mahasiswa_nim;
-            form.value.periode = data.mahasiswa.periode_name;
-            form.value.semester = data.mahasiswa.semester_name;
+    useApi("siswa/getID/" + data.id).then(({ data }) => {
+        const siswa_id = data;
+        useApi("rapot/" + siswa_id).then(({ data }) => {
+            form.value.name = data.siswa.siswa_name;
+            form.value.nim = data.siswa.siswa_nim;
+            form.value.periode = data.siswa.periode_name;
+            form.value.semester = data.siswa.semester_name;
             // Simpan data rapot
             rapots.value = data.rapot;
         });
@@ -39,7 +39,7 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-            <VCardTitle>Biodata Mahasiswa</VCardTitle>
+            <VCardTitle>Biodata Siswa</VCardTitle>
         </VCardItem>
         <VCardText>
             <VRow>
@@ -79,21 +79,21 @@ onMounted(() => {
     <VCol cols="12">
         <VCard class="mt-4">
             <VCardItem>
-                <VCardTitle>Nilai Mata Kuliah</VCardTitle>
+                <VCardTitle>Nilai Mata Pelajaran</VCardTitle>
             </VCardItem>
             <VCardText>
                 <VRow v-for="rapot in rapots" :key="rapot.id">
                     <VCol cols="12" md="3">
                         <VTextField
-                            :model-value="rapot.dosen_name"
-                            label="Dosen"
+                            :model-value="rapot.guru_name"
+                            label="Guru"
                             :disabled="true"
                         />
                     </VCol>
                     <VCol cols="12" md="3">
                         <VTextField
-                            :model-value="rapot.mata_kuliah_name"
-                            label="Mata Kuliah"
+                            :model-value="rapot.mata_pelajaran_name"
+                            label="Mata Pelajaran"
                             :disabled="true"
                         />
                     </VCol>

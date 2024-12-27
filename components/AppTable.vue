@@ -16,7 +16,7 @@ const props = defineProps<{
   withActions: boolean | null
   kelas_id?: string | number | null
   gender?: string | number | null
-  dosen_id?: string | number | null
+  guru_id?: string | number | null
   mata_kuliah_id?: string | number | null
   periode_id?: string | number | null
   semester_id?: string | number | null
@@ -36,7 +36,7 @@ const appTable = useAppTable({
   kelas_id: props.kelas_id,
   gender: props.gender,
   mata_kuliah_id: props.mata_kuliah_id,
-  dosen_id: props.dosen_id,
+  guru_id: props.guru_id,
   semester_id: props.semester_id,
   periode_id: props.periode_id,
 })
@@ -63,9 +63,9 @@ watch(
 )
 
 watch(
-  () => props.dosen_id,
+  () => props.guru_id,
   newValue => {
-    appTable.dosen_id.value = newValue
+    appTable.guru_id.value = newValue
     appTable.fetchItems(true)
   },
   { immediate: true },

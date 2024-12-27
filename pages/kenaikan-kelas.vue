@@ -4,14 +4,14 @@ const { confirmDialog } = useCommonStore();
 const dialogSave = ref();
 const bulkingDialog = ref();
 const tableRef = ref();
-const mahasiswaTableRef = ref();
-const mahasiswaByClass = ref([]);
+const siswaTableRef = ref();
+const siswaByClass = ref([]);
 
 const form = {
   kelas_id: "",
   jadwal_id: "",
   pertemuan_ke: "",
-  mahasiswa_id: "",
+  siswa_id: "",
   kehadiran: "Hadir",
   description: "",
 };
@@ -31,14 +31,14 @@ const params = reactive({
 const goToPreviousPage = () => {
   if (pagination.page > 1) {
     params.page = params.page - 1;
-    getMahasiswaByClass();
+    getSiswaByClass();
   }
 };
 
 const goToNextPage = () => {
   if (pagination.page < pagination.pageTotal) {
     params.page = params.page + 1;
-    getMahasiswaByClass();
+    getSiswaByClass();
   }
 };
 
@@ -67,8 +67,8 @@ const headers = [
   { title: "Semester saat ini", key: "semester_name", sortable: false },
 ];
 
-const handleInsertData = async (mahasiswaId: any) => {
-  const url = `mahasiswa/naik-kelas/${mahasiswaId}`;
+const handleInsertData = async (siswaId: any) => {
+  const url = `siswa/naik-kelas/${siswaId}`;
 
   const payload = {
     kelas_id: kelasToId.value,
@@ -89,9 +89,9 @@ const handleInsertData = async (mahasiswaId: any) => {
 };
 
 const handleInsertBulk = async () => {
-  const payload = mahasiswaByClass.value.map((item: any) => {
+  const payload = siswaByClass.value.map((item: any) => {
     return {
-      mahasiswa_id: item.id,
+      siswa_id: item.id,
       kelas_id: kelasToId.value,
       periode_id: periodeToId.value,
       semester_id: semesterToId.value,
@@ -102,7 +102,7 @@ const handleInsertBulk = async () => {
     data: payload,
   };
 
-  const url = "mahasiswa/bulk-naik-kelas";
+  const url = "siswa/bulk-naik-kelas";
 
   const { errors, success } = await useApi(url, {
     withNotif: true,
@@ -116,17 +116,17 @@ const handleInsertBulk = async () => {
   }
 };
 
-const getMahasiswaByClass = (selectedClassId: any) => {
+const getSiswaByClass = (selectedClassId: any) => {
   const getParams = {
     ...params,
     kelas_id: kelasId.value || selectedClassId,
   };
 
-  useApi(`mahasiswa${objectToParams(getParams)}`).then(({ data }) => {
+  useApi(`siswa${objectToParams(getParams)}`).then(({ data }) => {
     pagination.pageTotal = data.pageTotal;
     pagination.page = Number.parseInt(data.currentPage);
     pagination.totalItem = data.total;
-    mahasiswaByClass.value = data.items;
+    siswaByClass.value = data.items;
   });
 };
 
@@ -175,8 +175,8 @@ onMounted(() => {
       }
     "
     @save-single="
-      (mahasiswaId) => {
-        handleInsertData(mahasiswaId);
+      (siswaId) => {
+        handleInsertData(siswaId);
       }
     "
   >
@@ -196,7 +196,7 @@ onMounted(() => {
         @update:model-value="
           (kelas_id) => {
             kelasFromId = kelas_id;
-            getMahasiswaByClass(kelas_id);
+            getSiswaByClass(kelas_id);
           }
         "
       />
@@ -260,9 +260,9 @@ onMounted(() => {
     </VCol>
     <VCol cols="12" md="12">
       <VDataTable
-        ref="mahasiswaTableRef"
+        ref="siswaTableRef"
         :headers="headers"
-        :items="mahasiswaByClass"
+        :items="siswaByClass"
         :items-per-page="pagination.itemsPerPage"
         :page-count="pagination.pageTotal"
         class="text-no-wrap"
@@ -270,7 +270,7 @@ onMounted(() => {
         <template #bottom>
           <VDivider />
           <div
-            v-if="mahasiswaByClass.length > 0"
+            v-if="siswaByClass.length > 0"
             class="d-flex justify-end flex-wrap gap-x-6 px-2 py-1"
           >
             <div
@@ -316,7 +316,7 @@ onMounted(() => {
                 @click="
                   () => {
                     bulkingDialog.show();
-                    mahasiswaByClass = [];
+                    siswaByClass = [];
                   }
                 "
               >
@@ -349,7 +349,7 @@ onMounted(() => {
       <AppTable
         ref="tableRef"
         title="Data Kenaikan Kelas"
-        path="mahasiswa"
+        path="siswa"
         :with-actions="true"
         :kelas_id="kelas_id"
         :headers="[
@@ -391,7 +391,7 @@ onMounted(() => {
                   payload.periode_id = null;
                   payload.semester_id = null;
                   payload.kelas_from_id = item.kelas_id;
-                  mahasiswaByClass = [item];
+                  siswaByClass = [item];
                   bulkingDialog.show(payload);
                 }
               "
