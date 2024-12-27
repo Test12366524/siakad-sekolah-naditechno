@@ -1,100 +1,130 @@
 <script setup lang="ts">
-import { VTextField } from "vuetify/lib/components/index.mjs";
+import { VTextField } from 'vuetify/lib/components/index.mjs'
 
-const { confirmDialog } = useCommonStore();
+const { confirmDialog } = useCommonStore()
 
-const dialogSave = ref();
+const dialogSave = ref()
 
-const tableRef = ref();
+const tableRef = ref()
 
 const form = ref({
-  penomoran: "",
-  perihal: "",
-  lampiran: "",
-  tempat: "",
-  tanggal: "",
-  kepada: "",
-  content: "",
-  atas_nama: "",
-});
+  penomoran: '',
+  perihal: '',
+  lampiran: '',
+  tempat: '',
+  tanggal: '',
+  kepada: '',
+  content: '',
+  atas_nama: '',
+})
 
-const handleExportPdf = (item) => {
-  const payload = { ...item };
-  console.log(payload);
-};
+const handleExportPdf = item => {
+  const payload = { ...item }
+
+  console.log(payload)
+}
+
+const handleExportData = () => {
+  console.log('Export Data')
+}
+
+const handleImportData = () => {
+  console.log('Import Data')
+}
 </script>
 
 <template>
   <SaveDialog
     v-if="tableRef"
+    v-slot="{ formData, validationErrors, isEditing }"
+    ref="dialogSave"
     path="surat-keluar"
     title="Tambah Surat Keluar"
     edit-title="Edit Surat Keluar"
-    v-slot="{ formData, validationErrors, isEditing }"
-    ref="dialogSave"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
     width="1200"
   >
-    <VCol cols="12" md="6">
+    <VCol
+      cols="12"
+      md="6"
+    >
       <VTextField
-        :error-messages="validationErrors.penomoran"
         v-model="formData.penomoran"
+        :error-messages="validationErrors.penomoran"
         label="Penomoran"
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol
+      cols="12"
+      md="6"
+    >
       <VTextField
-        :error-messages="validationErrors.perihal"
         v-model="formData.perihal"
+        :error-messages="validationErrors.perihal"
         label="Perihal"
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol
+      cols="12"
+      md="6"
+    >
       <VTextField
-        :error-messages="validationErrors.lampiran"
         v-model="formData.lampiran"
+        :error-messages="validationErrors.lampiran"
         label="Lampiran"
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol
+      cols="12"
+      md="6"
+    >
       <VTextField
-        :error-messages="validationErrors.tempat"
         v-model="formData.tempat"
+        :error-messages="validationErrors.tempat"
         label="Tempat"
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VTextField
+        v-model="formData.tanggal"
         type="date"
         :error-messages="validationErrors.tanggal"
-        v-model="formData.tanggal"
         label="Tanggal"
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VTextField
-        :error-messages="validationErrors.kepada"
         v-model="formData.kepada"
+        :error-messages="validationErrors.kepada"
         label="Kepada"
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VTextField
-        :error-messages="validationErrors.atas_nama"
         v-model="formData.atas_nama"
+        :error-messages="validationErrors.atas_nama"
         label="Atas Nama"
       />
     </VCol>
     <VCol cols="12">
       <VTextarea
-        :error-messages="validationErrors.content"
         v-model="formData.content"
+        :error-messages="validationErrors.content"
         label="Deskripsi"
       />
     </VCol>
@@ -104,17 +134,52 @@ const handleExportPdf = (item) => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VBtn
-            @click="
-              () => {
-                dialogSave.show();
-              }
-            "
-            color="primary"
-          >
-            <VIcon end icon="ri-add-fill" />
-            Tambah Data
-          </VBtn>
+          <VRow>
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <VBtn
+                color="primary"
+                @click="dialogSave.show()"
+              >
+                <VIcon
+                  end
+                  icon="ri-add-fill"
+                  class="mr-1"
+                />
+                Tambah Data
+              </VBtn>
+            </VCol>
+            <VCol
+              cols="12"
+              md="6"
+              style="display: flex; justify-content: flex-end; gap: 1rem;"
+            >
+              <VBtn
+                color="info"
+                @click="handleImportData"
+              >
+                <VIcon
+                  end
+                  icon="ri-download-2-line"
+                  class="mr-1"
+                />
+                Import Data
+              </VBtn>
+              <VBtn
+                color="info"
+                @click="handleExportData"
+              >
+                <VIcon
+                  end
+                  icon="ri-upload-2-line"
+                  class="mr-1"
+                />
+                Export Data
+              </VBtn>
+            </VCol>
+          </VRow>
         </VCardItem>
       </VCard>
     </VCol>
@@ -162,6 +227,7 @@ const handleExportPdf = (item) => {
           <div class="d-flex gap-1">
             <IconBtn
               label="Edit"
+              size="small"
               @click="
                 () => {
                   const payload = { ...item };
@@ -171,33 +237,32 @@ const handleExportPdf = (item) => {
                   dialogSave.show(payload, false);
                 }
               "
-              size="small"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
               label="Export PDF"
+              size="small"
               @click="
                 () => {
                   handleExportPdf(item);
                 }
               "
-              size="small"
             >
               <VIcon icon="ri-export-fill" />
             </IconBtn>
             <IconBtn
               label="Hapus"
+              size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Surat Masuk',
-                  message: `Anda yakin ingin menghapus Surat Masuk ${
+                  title: 'Hapus Surat Keluar',
+                  message: `Anda yakin ingin menghapus Surat Keluar ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),
                 })
               "
-              size="small"
             >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>
