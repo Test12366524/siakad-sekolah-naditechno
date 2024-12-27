@@ -1,47 +1,47 @@
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue'
 
 const props = defineProps({
   path: String,
-});
+})
 
-const fileInput = ref(null);
+const emit = defineEmits(['done'])
+
+const fileInput = ref(null)
 
 const formData = ref({
   file: null,
-});
-
-const emit = defineEmits(["done"]);
+})
 
 async function submit() {
   const { success, message } = await useApi(props.path, {
-    method: "POST",
+    method: 'POST',
     withLoader: true,
     withNotif: true,
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
     data: formData.value,
-  });
+  })
 
   if (success) {
-    emit("done", message);
-    fileInput.value.value = "";
+    emit('done', message)
+    fileInput.value.value = ''
     formData.value = {
       file: null,
-    };
+    }
   }
 }
 
 function triggerFileInput() {
-  fileInput.value.click(); // Programmatically click the hidden file input
+  fileInput.value.click() // Programmatically click the hidden file input
 }
 
 function handleFileChange(event) {
-  const file = event.target.files[0];
+  const file = event.target.files[0]
   if (file) {
-    formData.value.file = file;
-    submit();
+    formData.value.file = file
+    submit()
   }
 }
 </script>
@@ -53,13 +53,20 @@ function handleFileChange(event) {
       ref="fileInput"
       type="file"
       accept=".xls, .xlsx"
+      style="display: none;"
       @change="handleFileChange"
-      style="display: none"
-    />
+    >
 
     <!-- Button to trigger file input -->
-    <VBtn @click="triggerFileInput" color="success-darken-1">
-      <VIcon end icon="ri-download-fill" />
+    <VBtn
+      color="success-darken-1"
+      @click="triggerFileInput"
+    >
+      <VIcon
+        end
+        icon="ri-download-2-line"
+        class="mr-1"
+      />
       Import Data
     </VBtn>
   </div>

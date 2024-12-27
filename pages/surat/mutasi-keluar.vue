@@ -29,6 +29,14 @@ const handleExportPdf = item => {
   console.log(payload)
 }
 
+const handleExportData = () => {
+  console.log('Export Data')
+}
+
+const handleImportData = () => {
+  console.log('Import Data')
+}
+
 onMounted(() => {
   getAllStudent()
 })
@@ -115,20 +123,32 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VBtn
-            color="primary"
-            @click="
-              () => {
-                dialogSave.show();
-              }
-            "
-          >
-            <VIcon
-              end
-              icon="ri-add-fill"
-            />
-            Tambah Data
-          </VBtn>
+          <VRow>
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <VBtn
+                color="primary"
+                @click="dialogSave.show()"
+              >
+                <VIcon
+                  end
+                  icon="ri-add-fill"
+                  class="mr-1"
+                />
+                Tambah Data
+              </VBtn>
+            </VCol>
+            <VCol
+              cols="12"
+              md="6"
+              style="display: flex; justify-content: flex-end; gap: 1rem;"
+            >
+            <ImportFileExcel path="" />
+            <ExportFileExcel path="" />
+            </VCol>
+          </VRow>
         </VCardItem>
       </VCard>
     </VCol>
@@ -201,8 +221,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Surat Masuk',
-                  message: `Anda yakin ingin menghapus Surat Masuk ${
+                  title: 'Hapus Surat Mutasi Keluar',
+                  message: `Anda yakin ingin menghapus Surat Mutasi Keluar ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

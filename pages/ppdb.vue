@@ -1,45 +1,49 @@
 <script setup lang="ts">
-import { VCol, VTextField, VTextarea } from "vuetify/lib/components/index.mjs";
+import { VCol, VTextField, VTextarea } from 'vuetify/lib/components/index.mjs'
 
-const { confirmDialog } = useCommonStore();
+const { confirmDialog } = useCommonStore()
 
-const dialogSave = ref();
-const tableRef = ref();
+const dialogSave = ref()
+const tableRef = ref()
 
 const form = {
-  email: "",
-  name: "",
-  nik: "",
-  gender: "",
-  mariage_status: "",
-  pekerjaan: "",
-  address: "",
-  phone: "",
-  pendidikan_terakhir: "",
-  foto: "",
-  foto_copy_ktp: "",
-  foto_copy_ijazah: "",
-  surat_rekomendasi: "",
-  pengalaman_kursus: "",
-  pengalaman_organisasi: "",
-};
+  email: '',
+  name: '',
+  nik: '',
+  gender: '',
+  mariage_status: '',
+  pekerjaan: '',
+  address: '',
+  phone: '',
+  pendidikan_terakhir: '',
+  foto: '',
+  foto_copy_ktp: '',
+  foto_copy_ijazah: '',
+  surat_rekomendasi: '',
+  pengalaman_kursus: '',
+  pengalaman_organisasi: '',
+}
 
 const handleAction = async (status, type, data) => {
-  const url = `ppdb/change-status/${type}/${status}/${data.id}`;
+  const url = `ppdb/change-status/${type}/${status}/${data.id}`
 
   const { errors, success } = await useApi(url, {
     withNotif: true,
-    method: "PUT",
+    method: 'PUT',
     data,
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
-  });
+  })
 
-  if (success) tableRef.value.refresh();
-};
+  if (success)
+    tableRef.value.refresh()
+}
+
+const { user } = useAuthStore()
 
 onMounted(() => {
+<<<<<<< HEAD
   useApi("auth/me").then(({ data }) => {
     useApi(`pmb-siswa/${data.role_id}`).then(({ data }) => {
       if(data == 0){
@@ -48,6 +52,11 @@ onMounted(() => {
     });
   });
 });
+=======
+  if (user.role_id !== 1)
+    navigateTo('/not-authorized')
+})
+>>>>>>> 019695390ef26f9d9728a7c939133040c9e36e81
 </script>
 
 <template>
@@ -63,7 +72,10 @@ onMounted(() => {
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VTextField
         v-model="formData.name"
         :error-messages="validationErrors.name"
@@ -72,7 +84,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VTextField
         v-model="formData.nik"
         :error-messages="validationErrors.nik"
@@ -81,7 +96,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VLabel>Jenis Kelamin</VLabel>
       <VRadioGroup
         v-model="formData.gender"
@@ -89,12 +107,21 @@ onMounted(() => {
         :error-messages="validationErrors.gender"
         :readonly="isDetail"
       >
-        <VRadio label="Laki-laki" value="L" />
-        <VRadio label="Perempuan" value="P" />
+        <VRadio
+          label="Laki-laki"
+          value="L"
+        />
+        <VRadio
+          label="Perempuan"
+          value="P"
+        />
       </VRadioGroup>
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VTextField
         v-model="formData.phone"
         :error-messages="validationErrors.phone"
@@ -103,7 +130,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VTextField
         v-model="formData.pekerjaan"
         :error-messages="validationErrors.pekerjaan"
@@ -112,7 +142,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VLabel>Status Nikah</VLabel>
       <VRadioGroup
         v-model="formData.mariage_status"
@@ -120,13 +153,25 @@ onMounted(() => {
         :error-messages="validationErrors.mariage_status"
         :readonly="isDetail"
       >
-        <VRadio label="Belum Kawin" value="1" />
-        <VRadio label="Menikah" value="2" />
-        <VRadio label="Janda / Duda" value="3" />
+        <VRadio
+          label="Belum Kawin"
+          value="1"
+        />
+        <VRadio
+          label="Menikah"
+          value="2"
+        />
+        <VRadio
+          label="Janda / Duda"
+          value="3"
+        />
       </VRadioGroup>
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VTextField
         v-model="formData.email"
         type="email"
@@ -136,7 +181,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="2">
+    <VCol
+      cols="12"
+      md="2"
+    >
       <VTextField
         v-model="formData.pendidikan_terakhir"
         :error-messages="validationErrors.pendidikan_terakhir"
@@ -145,7 +193,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="2">
+    <VCol
+      cols="12"
+      md="2"
+    >
       <VTextField
         v-model="formData.pengalaman_kursus"
         :error-messages="validationErrors.pengalaman_kursus"
@@ -154,7 +205,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol
+      cols="12"
+      md="4"
+    >
       <VTextField
         v-model="formData.pengalaman_organisasi"
         :error-messages="validationErrors.pengalaman_organisasi"
@@ -163,7 +217,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="12">
+    <VCol
+      cols="12"
+      md="12"
+    >
       <VTextarea
         v-model="formData.address"
         :error-messages="validationErrors.address"
@@ -172,7 +229,11 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="3" class="grid grid-cols-2">
+    <VCol
+      cols="12"
+      md="3"
+      class="grid grid-cols-2"
+    >
       <FileInput
         v-model="formData.foto_1"
         accept="image/*"
@@ -184,7 +245,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="3">
+    <VCol
+      cols="12"
+      md="3"
+    >
       <FileInput
         v-model="formData.foto_copy_ijazah"
         accept="pdf/*"
@@ -196,7 +260,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="3">
+    <VCol
+      cols="12"
+      md="3"
+    >
       <FileInput
         v-model="formData.surat_rekomendasi"
         accept="pdf/*"
@@ -208,7 +275,10 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="3">
+    <VCol
+      cols="12"
+      md="3"
+    >
       <FileInput
         v-model="formData.foto_copy_ktp"
         accept="image/*"
@@ -227,8 +297,14 @@ onMounted(() => {
         <VCardItem>
           <VRow>
             <VCol>
-              <VBtn color="primary" @click="dialogSave.show()">
-                <VIcon end icon="ri-add-fill" />
+              <VBtn
+                color="primary"
+                @click="dialogSave.show()"
+              >
+                <VIcon
+                  end
+                  icon="ri-add-fill"
+                />
                 Tambah Data
               </VBtn>
             </VCol>
@@ -286,7 +362,7 @@ onMounted(() => {
             <VBtn
               v-if="item.tripay_status_transaction == 0"
               size="x-small"
-              style="border-radius: 0.375rem !important"
+              style="border-radius: 0.375rem !important;"
               @click="
                 () => {
                   confirmDialog.show({
@@ -297,13 +373,16 @@ onMounted(() => {
                 }
               "
             >
-              <VIcon start icon="ri-checkbox-circle-line" />
+              <VIcon
+                start
+                icon="ri-checkbox-circle-line"
+              />
               Payment Diterima
             </VBtn>
             <VBtn
               v-if="item.tripay_status_transaction == 0"
               size="x-small"
-              style="border-radius: 0.375rem !important"
+              style="border-radius: 0.375rem !important;"
               color="secondary"
               @click="
                 () => {
@@ -315,13 +394,16 @@ onMounted(() => {
                 }
               "
             >
-              <VIcon start icon="ri-subtract-line" />
+              <VIcon
+                start
+                icon="ri-subtract-line"
+              />
               Payment Ditolak
             </VBtn>
             <VBtn
               v-if="item.status == 0 && item.tripay_status_transaction == 1"
               size="x-small"
-              style="border-radius: 0.375rem !important"
+              style="border-radius: 0.375rem !important;"
               @click="
                 () => {
                   confirmDialog.show({
@@ -332,13 +414,16 @@ onMounted(() => {
                 }
               "
             >
-              <VIcon start icon="ri-checkbox-circle-line" />
+              <VIcon
+                start
+                icon="ri-checkbox-circle-line"
+              />
               Verifikasi Data Diterima
             </VBtn>
             <VBtn
               v-if="item.status == 0 && item.tripay_status_transaction == 1"
               size="x-small"
-              style="border-radius: 0.375rem !important"
+              style="border-radius: 0.375rem !important;"
               color="secondary"
               @click="
                 () => {
@@ -350,13 +435,16 @@ onMounted(() => {
                 }
               "
             >
-              <VIcon start icon="ri-subtract-line" />
+              <VIcon
+                start
+                icon="ri-subtract-line"
+              />
               Verifikasi Data Ditolak
             </VBtn>
             <VBtn
               v-if="item.status_test == 0 && item.status == 1"
               size="x-small"
-              style="border-radius: 0.375rem !important"
+              style="border-radius: 0.375rem !important;"
               @click="
                 () => {
                   confirmDialog.show({
@@ -368,13 +456,16 @@ onMounted(() => {
               "
             >
               >
-              <VIcon start icon="ri-checkbox-circle-line" />
+              <VIcon
+                start
+                icon="ri-checkbox-circle-line"
+              />
               Lulus
             </VBtn>
             <VBtn
               v-if="item.status_test == 0 && item.status == 1"
               size="x-small"
-              style="border-radius: 0.375rem !important"
+              style="border-radius: 0.375rem !important;"
               color="secondary"
               @click="
                 () => {
@@ -387,7 +478,10 @@ onMounted(() => {
               "
             >
               >
-              <VIcon start icon="ri-subtract-line" />
+              <VIcon
+                start
+                icon="ri-subtract-line"
+              />
               Tidak Lulus
             </VBtn>
             <IconBtn
@@ -401,7 +495,10 @@ onMounted(() => {
             >
               <VIcon icon="ri-eye-line" />
             </IconBtn>
-            <IconBtn size="small" @click="dialogSave.show({ ...item })">
+            <IconBtn
+              size="small"
+              @click="dialogSave.show({ ...item })"
+            >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn

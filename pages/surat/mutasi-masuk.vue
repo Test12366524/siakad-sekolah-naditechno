@@ -1,60 +1,75 @@
 <script setup lang="ts">
-import { VTextField } from "vuetify/lib/components/index.mjs";
+import { VTextField } from 'vuetify/lib/components/index.mjs'
 
-const { confirmDialog } = useCommonStore();
+const { confirmDialog } = useCommonStore()
 
-const dialogSave = ref();
+const dialogSave = ref()
 
-const tableRef = ref();
+const tableRef = ref()
 
 const form = ref({
-  penomoran: "",
-  siswa_id: "",
-  sekolah: "",
-  keterangan: "",
+  penomoran: '',
+  siswa_id: '',
+  sekolah: '',
+  keterangan: '',
   tanggal: null,
-});
+})
 
-const studentList = ref([]);
+const studentList = ref([])
 
 const getAllStudent = async () => {
-  useApi("siswa/all").then(({ data }) => {
-    studentList.value = data;
-  });
-};
+  useApi('siswa/all').then(({ data }) => {
+    studentList.value = data
+  })
+}
 
-const handleExportPdf = (item) => {
-  const payload = { ...item };
-  console.log(payload);
-};
+const handleExportPdf = item => {
+  const payload = { ...item }
+
+  console.log(payload)
+}
+
+const handleExportData = () => {
+  console.log('Export Data')
+}
+
+const handleImportData = () => {
+  console.log('Import Data')
+}
 
 onMounted(() => {
-  getAllStudent();
-});
+  getAllStudent()
+})
 </script>
 
 <template>
   <SaveDialog
     v-if="tableRef"
+    v-slot="{ formData, validationErrors, isEditing, isDetail }"
+    ref="dialogSave"
     path="mutasi-masuk"
     title="Tambah Surat Mutasi Masuk"
     edit-title="Edit Surat Mutasi Masuk"
-    v-slot="{ formData, validationErrors, isEditing, isDetail }"
-    ref="dialogSave"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
-    :requestForm="form"
+    :request-form="form"
     width="1000"
   >
-  <VCol cols="12" md="6">
+    <VCol
+      cols="12"
+      md="6"
+    >
       <VTextField
-        :error-messages="validationErrors.penomoran"
         v-model="formData.penomoran"
+        :error-messages="validationErrors.penomoran"
         label="Nomor Surat"
         :readonly="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="6">
+    <VCol
+      cols="12"
+      md="6"
+    >
       <VAutocomplete
         v-model="formData.siswa_id"
         label="Siswa"
@@ -69,20 +84,26 @@ onMounted(() => {
         :readonly="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="6">
+    <VCol
+      cols="12"
+      md="6"
+    >
       <VTextField
-        :error-messages="validationErrors.sekolah"
         v-model="formData.sekolah"
+        :error-messages="validationErrors.sekolah"
         label="Sekolah"
         :readonly="isDetail"
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol
+      cols="12"
+      md="6"
+    >
       <VTextField
+        v-model="formData.tanggal"
         type="date"
         :error-messages="validationErrors.tanggal"
-        v-model="formData.tanggal"
         label="Tanggal"
         :readonly="isDetail"
       />
@@ -90,8 +111,8 @@ onMounted(() => {
 
     <VCol cols="12">
       <VTextarea
-        :error-messages="validationErrors.keterangan"
         v-model="formData.keterangan"
+        :error-messages="validationErrors.keterangan"
         label="Keterangan"
         :readonly="isDetail"
         rows="2"
@@ -103,17 +124,32 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VBtn
-            @click="
-              () => {
-                dialogSave.show();
-              }
-            "
-            color="primary"
-          >
-            <VIcon end icon="ri-add-fill" />
-            Tambah Data
-          </VBtn>
+          <VRow>
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <VBtn
+                color="primary"
+                @click="dialogSave.show()"
+              >
+                <VIcon
+                  end
+                  icon="ri-add-fill"
+                  class="mr-1"
+                />
+                Tambah Data
+              </VBtn>
+            </VCol>
+            <VCol
+              cols="12"
+              md="6"
+              style="display: flex; justify-content: flex-end; gap: 1rem;"
+            >
+            <ImportFileExcel path="" />
+            <ExportFileExcel path="" />
+            </VCol>
+          </VRow>
         </VCardItem>
       </VCard>
     </VCol>
@@ -157,6 +193,7 @@ onMounted(() => {
           <div class="d-flex gap-1">
             <IconBtn
               label="Edit"
+              size="small"
               @click="
                 () => {
                   const payload = { ...item };
@@ -166,33 +203,32 @@ onMounted(() => {
                   dialogSave.show(payload, false);
                 }
               "
-              size="small"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
               label="Export PDF"
+              size="small"
               @click="
                 () => {
                   handleExportPdf(item);
                 }
               "
-              size="small"
             >
               <VIcon icon="ri-export-fill" />
             </IconBtn>
             <IconBtn
               label="Hapus"
+              size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Surat Masuk',
-                  message: `Anda yakin ingin menghapus Surat Masuk ${
+                  title: 'Hapus Surat Mutasi Masuk',
+                  message: `Anda yakin ingin menghapus Surat Mutasi Masuk' ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),
                 })
               "
-              size="small"
             >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>

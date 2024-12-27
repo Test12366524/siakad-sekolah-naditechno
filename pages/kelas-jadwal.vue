@@ -9,7 +9,7 @@ const tableRef = ref();
 const jadwal = ref();
 const kelas = ref();
 const guru = ref();
-const mata_kuliah = ref();
+const mata_pelajaran = ref();
 const semester = ref();
 
 const days = ref([
@@ -37,7 +37,7 @@ useApi("master/semester/all").then(({ data }) => {
 });
 
 useApi("master/mata-pelajaran/all").then(({ data }) => {
-  mata_kuliah.value = data;
+  mata_pelajaran.value = data;
 });
 
 useApi("master/guru/all").then(({ data }) => {
@@ -50,24 +50,16 @@ useApi("master/kelas/all").then(({ data }) => {
 
 const role_id = ref();
 const status_action = ref();
-onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`kelas-jadwal/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+const { user } = useAuthStore(false);
 
-    role_id.value = data.role_id;
-    if(data.role_id == 1){
-      status_action.value = true;
-    }else{
-      status_action.value = false;
-    }
-  });
+onMounted(() => {
+  console.log(user)
+  role_id.value = user.role_id;
+  status_action.value = user.role_id == 1;
 });
 
 const mata_kuliah_id = ref<number | null>(null);
+const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
 const semester_id = ref<number | null>(null);
@@ -233,6 +225,11 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
                 density="compact"
                 placeholder="Pilih Mata Pelajaran"
                 :items="mata_kuliah"
+                v-model="mata_pelajaran_id"
+                label="Mata Pelajaran"
+                density="compact"
+                placeholder="Pilih Mata Pelajaran"
+                :items="mata_pelajaran"
                 item-title="text"
                 item-value="id"
                 required
@@ -267,7 +264,7 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
         :with-actions="status_action"
         :kelas_id="kelas_id"
         :guru_id="guru_id"
-        :mata_kuliah_id="mata_kuliah_id"
+        :mata_pelajaran_id="mata_pelajaran_id"
         :semester_id="semester_id"
         :headers="[
           {

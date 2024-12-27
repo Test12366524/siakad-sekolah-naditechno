@@ -18,7 +18,7 @@ function exportExcel() {
 
 <template>
   <VBtn @click="exportExcel" color="success-darken-1">
-    <VIcon end icon="ri-upload-fill" />
+    <VIcon end icon="ri-upload-2-line" class="mr-1" />
     Export Data
   </VBtn>
 </template>
