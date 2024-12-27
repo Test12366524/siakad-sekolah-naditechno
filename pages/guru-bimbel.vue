@@ -22,7 +22,6 @@ const getAllTeacher = async () => {
 
 const getAllMataPelajaran = async () => {
   useApi("master/mata-pelajaran/all").then(({ data }) => {
-    console.log(data);
     mataPelajaranList.value = data;
   });
 };
