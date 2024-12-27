@@ -9,10 +9,10 @@ const taskFromGuruDialog = ref();
 const taskForSiswaDialog = ref();
 const tableRef = ref();
 const guru = ref();
-const mata_kuliah = ref();
+const mata_pelajaran = ref();
 
 const form = {
-  mata_kuliah_id: "",
+  mata_pelajaran_id: "",
   guru_id: "",
   title: "",
   subtitle: "",
@@ -37,7 +37,7 @@ const formUploadTugas = ref({
 
 const getMataKuliahByClass = (guru_id: number) => {
   useApi("master/mata-pelajaran/all/" + guru_id).then(({ data }) => {
-    mata_kuliah.value = data;
+    mata_pelajaran.value = data;
   });
 }
 
@@ -91,7 +91,7 @@ onMounted(() => {
   tableRef.value.refresh();
 });
 
-const mata_kuliah_id = ref<number | null>(null);
+const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
 </script>
 
@@ -220,12 +220,12 @@ const guru_id = ref<number | null>(null);
     </VCol>
     <VCol cols="12" md="6">
       <VAutocomplete
-        v-model="formData.mata_kuliah_id"
+        v-model="formData.mata_pelajaran_id"
         label="Mata Pelajaran"
         density="compact"
-        :error-messages="validationErrors.mata_kuliah_id"
+        :error-messages="validationErrors.mata_pelajaran_id"
         placeholder="Pilih Mata Pelajaran"
-        :items="mata_kuliah"
+        :items="mata_pelajaran"
         item-title="text"
         item-value="id"
         required
@@ -350,11 +350,11 @@ const guru_id = ref<number | null>(null);
             </VCol>
             <VCol cols="12" md="3" style="margin-block-start: 5px">
               <VAutocomplete
-                v-model="mata_kuliah_id"
+                v-model="mata_pelajaran_id"
                 label="Mata Pelajaran"
                 density="compact"
                 placeholder="Pilih Mata Pelajaran"
-                :items="mata_kuliah"
+                :items="mata_pelajaran"
                 item-title="text"
                 item-value="id"
                 required
@@ -373,7 +373,7 @@ const guru_id = ref<number | null>(null);
         title="Daftar Tugas"
         path="lms"
         :guru_id="guru_id"
-        :mata_kuliah_id="mata_kuliah_id"
+        :mata_pelajaran_id="mata_pelajaran_id"
         :with-actions="true"
         :headers="[
           {

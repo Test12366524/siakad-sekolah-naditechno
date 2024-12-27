@@ -99,7 +99,7 @@ onMounted(() => {
                     </VCol>
                     <VCol cols="12" md="2">
                         <VTextField
-                            :model-value="rapot.mata_kuliah_minimal_predikat"
+                            :model-value="rapot.mata_pelajaran_minimal_predikat"
                             label="Minimal Predikat"
                             :disabled="true"
                         />

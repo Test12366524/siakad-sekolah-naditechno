@@ -10,9 +10,9 @@ const tableRef = ref();
 const siswaTableRef = ref();
 const siswa = ref();
 const siswaByClass = ref([]);
-const jadwal_mata_kuliah = ref();
+const jadwal_mata_pelajaran = ref();
 const kelas = ref();
-const mata_kuliah = ref();
+const mata_pelajaran = ref();
 const guru = ref();
 const user_id = ref();
 
@@ -105,7 +105,7 @@ useApi("siswa/all").then(({ data }) => {
 });
 
 useApi("master/mata-pelajaran/all").then(({ data }) => {
-  mata_kuliah.value = data;
+  mata_pelajaran.value = data;
 });
 
 const role_id = ref();
@@ -123,14 +123,14 @@ onMounted(() => {
         guru.value = data;
       });
       useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
-        jadwal_mata_kuliah.value = data;
+        jadwal_mata_pelajaran.value = data;
       });
     } else if(data.role_id == 2){
       status_action.value = true;
       useApi("master/guru/byUserID/" + user_id.value).then(({ data }) => {
         guru.value = data;
         useApi("jadwal-mata-pelajaran/all/" + data.id).then(({ data }) => {
-          jadwal_mata_kuliah.value = data;
+          jadwal_mata_pelajaran.value = data;
         });
       });
     } else {
@@ -138,7 +138,7 @@ onMounted(() => {
         guru.value = data;
       });
       useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
-        jadwal_mata_kuliah.value = data;
+        jadwal_mata_pelajaran.value = data;
       });
       status_action.value = false;
     }
@@ -154,7 +154,7 @@ onMounted(() => {
 
 
 
-const mata_kuliah_id = ref<number | null>(null);
+const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
 
@@ -252,7 +252,7 @@ const isDataNotValid = computed(() => {
         density="compact"
         :error-messages="validationErrors.jadwal_id"
         placeholder="Pilih Jadwal Mata Pelajaran"
-        :items="jadwal_mata_kuliah"
+        :items="jadwal_mata_pelajaran"
         item-title="text"
         item-value="id"
         required
@@ -361,7 +361,7 @@ const isDataNotValid = computed(() => {
         density="compact"
         :error-messages="validationErrors.jadwal_id"
         placeholder="Pilih Jadwal Mata Pelajaran"
-        :items="jadwal_mata_kuliah"
+        :items="jadwal_mata_pelajaran"
         item-title="text"
         item-value="id"
         required
@@ -516,11 +516,11 @@ const isDataNotValid = computed(() => {
             </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
-                v-model="mata_kuliah_id"
+                v-model="mata_pelajaran_id"
                 label="Mata Pelajaran"
                 density="compact"
                 placeholder="Pilih Mata Pelajaran"
-                :items="mata_kuliah"
+                :items="mata_pelajaran"
                 item-title="text"
                 item-value="id"
                 required
@@ -541,7 +541,7 @@ const isDataNotValid = computed(() => {
         :with-actions="status_action"
         :kelas_id="kelas_id"
         :guru_id="guru_id"
-        :mata_kuliah_id="mata_kuliah_id"
+        :mata_pelajaran_id="mata_pelajaran_id"
         :headers="[
           {
             title: 'Kelas',

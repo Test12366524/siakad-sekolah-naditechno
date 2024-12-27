@@ -17,7 +17,7 @@ const props = defineProps<{
   kelas_id?: string | number | null
   gender?: string | number | null
   guru_id?: string | number | null
-  mata_kuliah_id?: string | number | null
+  mata_pelajaran_id?: string | number | null
   periode_id?: string | number | null
   semester_id?: string | number | null
 }>()
@@ -35,7 +35,7 @@ const appTable = useAppTable({
   path: props.path as string,
   kelas_id: props.kelas_id,
   gender: props.gender,
-  mata_kuliah_id: props.mata_kuliah_id,
+  mata_pelajaran_id: props.mata_pelajaran_id,
   guru_id: props.guru_id,
   semester_id: props.semester_id,
   periode_id: props.periode_id,
@@ -72,9 +72,9 @@ watch(
 )
 
 watch(
-  () => props.mata_kuliah_id,
+  () => props.mata_pelajaran_id,
   newValue => {
-    appTable.mata_kuliah_id.value = newValue
+    appTable.mata_pelajaran_id.value = newValue
     appTable.fetchItems(true)
   },
   { immediate: true },

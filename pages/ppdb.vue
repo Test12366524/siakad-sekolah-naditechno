@@ -43,7 +43,6 @@ const handleAction = async (status, type, data) => {
 const { user } = useAuthStore()
 
 onMounted(() => {
-<<<<<<< HEAD
   useApi("auth/me").then(({ data }) => {
     useApi(`pmb-siswa/${data.role_id}`).then(({ data }) => {
       if(data == 0){
@@ -52,11 +51,6 @@ onMounted(() => {
     });
   });
 });
-=======
-  if (user.role_id !== 1)
-    navigateTo('/not-authorized')
-})
->>>>>>> 019695390ef26f9d9728a7c939133040c9e36e81
 </script>
 
 <template>

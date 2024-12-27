@@ -58,7 +58,6 @@ onMounted(() => {
   status_action.value = user.role_id == 1;
 });
 
-const mata_kuliah_id = ref<number | null>(null);
 const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
@@ -220,11 +219,6 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
             </VCol>
             <VCol cols="12" md="2" style="margin-top: 5px;">
               <VAutocomplete
-                v-model="mata_kuliah_id"
-                label="Mata Pelajaran"
-                density="compact"
-                placeholder="Pilih Mata Pelajaran"
-                :items="mata_kuliah"
                 v-model="mata_pelajaran_id"
                 label="Mata Pelajaran"
                 density="compact"

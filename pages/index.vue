@@ -85,14 +85,14 @@ const mappingDataGuru = (dataObject, icon = "ri-wallet-line") => {
   const titleMapping = {
     total_lms: "Total LMS",
     total_lms_not_graded: "Total LMS Belum Dinilai",
-    total_mata_kuliah: "Total Mata Pelajaran",
+    total_mata_pelajaran: "Total Mata Pelajaran",
     total_silabus: "Total Silabus",
   };
 
   const iconMapping = {
     total_lms: "ri-user-add-line",
     total_lms_not_graded: "ri-currency-line",
-    total_mata_kuliah: "ri-user-follow-fill",
+    total_mata_pelajaran: "ri-user-follow-fill",
     total_silabus: "ri-user-star-line",
   };
 
