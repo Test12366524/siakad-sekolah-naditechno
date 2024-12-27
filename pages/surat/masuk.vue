@@ -156,17 +156,7 @@ const handleImportData = () => {
               md="6"
               style="display: flex; justify-content: flex-end; gap: 1rem;"
             >
-              <VBtn
-                color="info"
-                @click="handleImportData"
-              >
-                <VIcon
-                  end
-                  icon="ri-download-2-line"
-                  class="mr-1"
-                />
-                Import Data
-              </VBtn>
+            <ImportFileExcel path="" />
               <VBtn
                 color="info"
                 @click="handleExportData"
