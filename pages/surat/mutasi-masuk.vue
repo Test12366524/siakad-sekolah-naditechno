@@ -8,6 +8,7 @@ const dialogSave = ref();
 const tableRef = ref();
 
 const form = ref({
+  penomoran: "",
   siswa_id: "",
   sekolah: "",
   keterangan: "",
@@ -43,9 +44,17 @@ onMounted(() => {
     :default-form="form"
     :refresh-callback="tableRef.refresh"
     :requestForm="form"
-    width="1200"
+    width="1000"
   >
-    <VCol cols="12" md="4">
+  <VCol cols="12" md="6">
+      <VTextField
+        :error-messages="validationErrors.penomoran"
+        v-model="formData.penomoran"
+        label="Nomor Surat"
+        :readonly="isDetail"
+      />
+    </VCol>
+    <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.siswa_id"
         label="Siswa"
@@ -60,7 +69,7 @@ onMounted(() => {
         :readonly="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="6">
       <VTextField
         :error-messages="validationErrors.sekolah"
         v-model="formData.sekolah"
@@ -69,7 +78,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="6">
       <VTextField
         type="date"
         :error-messages="validationErrors.tanggal"
@@ -116,6 +125,11 @@ onMounted(() => {
         path="mutasi-masuk"
         :with-actions="true"
         :headers="[
+          {
+            title: 'No Surat',
+            key: 'penomoran',
+            sortable: false,
+          },
           {
             title: 'Siswa',
             key: 'siswa_name',
