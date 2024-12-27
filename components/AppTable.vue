@@ -178,6 +178,9 @@ defineExpose({
       <template #item.start_date="{ item }">
         {{ formatFullDate(item.start_date)?.dateOnly }}
       </template>
+      <template #item.date="{ item }">
+        {{ formatFullDate(item.date)?.dateOnly }}
+      </template>
       <template #item.until_date="{ item }">
         {{ formatFullDate(item.until_date)?.dateOnly }}
       </template>
