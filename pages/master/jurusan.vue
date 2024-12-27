@@ -7,19 +7,13 @@ const dialogSave = ref();
 
 const tableRef = ref();
 
-const fakultas = ref();
-
 
 const form = {
-  fakultas_id: undefined,
   name: "",
   code: "",
   description: "",
 };
 
-useApi("master/fakultas/all").then(({ data }) => {
-    fakultas.value = data;
-});
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
@@ -43,21 +37,6 @@ onMounted(() => {
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-    <VCol cols="12">
-      <VAutocomplete
-        v-model="formData.fakultas_id"
-        label="Fakultas"
-        density="compact"
-        :error-messages="validationErrors.fakultas_id"
-        placeholder="Pilih Fakultas"
-        :items="fakultas"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
-      />
-    </VCol>
     <VCol cols="12">
       <VTextField
         :error-messages="validationErrors.code"
@@ -107,11 +86,6 @@ onMounted(() => {
         path="master/jurusan"
         :with-actions="true"
         :headers="[
-          {
-            title: 'Fakultas',
-            key: 'fakultas_name',
-            sortable: false,
-          },
           {
             title: 'Kode',
             key: 'code',

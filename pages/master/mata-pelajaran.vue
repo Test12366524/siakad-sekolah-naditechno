@@ -5,23 +5,19 @@ const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
 const tableRef = ref();
-const fakultas = ref();
 const jurusans = ref();
 const semesters = ref();
 
 const form = {
-  fakultas_id: undefined,
   jurusan_id: undefined,
   semester_id: undefined,
   name: "",
   code: "",
   description: "",
+  minimal: "",
+  minimal_predikat: "",
   status: 1,
 };
-
-useApi("master/fakultas/all").then(({ data }) => {
-    fakultas.value = data;
-});
 
 useApi("master/jurusan/all").then(({ data }) => {
     jurusans.value = data;
@@ -33,7 +29,7 @@ useApi("master/semester/all").then(({ data }) => {
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
-    useApi(`master/matakuliah/${data.role_id}`).then(({ data }) => {
+    useApi(`master/mata-pelajaran/${data.role_id}`).then(({ data }) => {
       if(data == 0){
         navigateTo(`/not-authorized`);
       }
@@ -45,30 +41,15 @@ onMounted(() => {
 <template>
   <SaveDialog
     v-if="tableRef"
-    path="master/mata-kuliah"
-    title="Tambah Mata Kuliah"
-    edit-title="Edit Mata Kuliah"
+    path="master/mata-pelajaran"
+    title="Tambah Mata Pelajaran"
+    edit-title="Edit Mata Pelajaran"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-    <VCol cols="12" md="4">
-      <VAutocomplete
-        v-model="formData.fakultas_id"
-        label="Fakultas"
-        density="compact"
-        :error-messages="validationErrors.fakultas_id"
-        placeholder="Pilih Fakultas"
-        :items="fakultas"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
-      />
-    </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.jurusan_id"
         label="Jurusan"
@@ -84,7 +65,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.semester_id"
         label="Semester"
@@ -124,6 +105,24 @@ onMounted(() => {
       />
     </VCol>
 
+    <VCol cols="12" md="6">
+      <VTextField
+        :error-messages="validationErrors.minimal"
+        v-model="formData.minimal"
+        label="Minimal Nilai"
+        typr="number"
+      />
+    </VCol>
+
+    <VCol cols="12" md="6">
+      <VTextField
+        :error-messages="validationErrors.minimal_predikat"
+        v-model="formData.minimal_predikat"
+        label="Minimal Predikat"
+        placeholder="A / B / C / D / E"
+      />
+    </VCol>
+
     <VCol cols="12">
       <VLabel>Status</VLabel>
       <VRadioGroup
@@ -157,15 +156,10 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Mata Kuliah"
-        path="master/mata-kuliah"
+        title="Data Mata Pelajaran"
+        path="master/mata-pelajaran"
         :with-actions="true"
         :headers="[
-          {
-            title: 'Fakultas',
-            key: 'fakultas_name',
-            sortable: false,
-          },
           {
             title: 'Jurusan',
             key: 'jurusan_name',
@@ -209,8 +203,8 @@ onMounted(() => {
             <IconBtn
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Mata Kuliah',
-                  message: `Anda yakin ingin menghapus Mata Kuliah ${
+                  title: 'Hapus Mata Pelajaran',
+                  message: `Anda yakin ingin menghapus Mata Pelajaran ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

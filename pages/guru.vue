@@ -7,7 +7,8 @@ const dialogSave = ref();
 const tableRef = ref();
 
 const form = {
-  nidn: "",
+  nik: "",
+  nuptk: "",
   nip: "",
   name: "",
   gender: "L",
@@ -16,12 +17,16 @@ const form = {
   email: "",
   phone: "",
   address: "",
+  pendidikan_terakhir: "",
+  tugas_tambahan_1: "",
+  tugas_tambahan_2: "",
+  tugas_tambahan_3: "",
   photo: "",
 };
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
-    useApi(`dosen/${data.role_id}`).then(({ data }) => {
+    useApi(`guru/${data.role_id}`).then(({ data }) => {
       if(data == 0){
         navigateTo(`/not-authorized`);
       }
@@ -35,27 +40,36 @@ onMounted(() => {
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isDetail }"
     ref="dialogSave"
-    path="master/dosen"
-    title="Tambah Dosen"
-    detail-title="Detail Dosen"
-    edit-title="Edit Dosen"
+    path="master/guru"
+    title="Tambah Guru"
+    detail-title="Detail Guru"
+    edit-title="Edit Guru"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
     <VCol cols="12" md="6">
       <VTextField
-        v-model="formData.nidn"
-        :error-messages="validationErrors.nidn"
-        label="NIDN"
+        v-model="formData.nip"
+        :error-messages="validationErrors.nip"
+        label="NIP"
         :readonly="isDetail"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        v-model="formData.nip"
-        :error-messages="validationErrors.nip"
-        label="NIP"
+        v-model="formData.nik"
+        :error-messages="validationErrors.nik"
+        label="NIK"
+        :readonly="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="6">
+      <VTextField
+        v-model="formData.nuptk"
+        :error-messages="validationErrors.nuptk"
+        label="NUPTK"
         :readonly="isDetail"
       />
     </VCol>
@@ -82,7 +96,16 @@ onMounted(() => {
       </VRadioGroup>
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="3">
+      <VTextField
+        v-model="formData.place_of_birth"
+        :error-messages="validationErrors.place_of_birth"
+        label="Tempat Lahir"
+        :readonly="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.birth_date"
         type="date"
@@ -92,14 +115,6 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="6">
-      <VTextField
-        v-model="formData.place_of_birth"
-        :error-messages="validationErrors.place_of_birth"
-        label="Tempat Lahir"
-        :readonly="isDetail"
-      />
-    </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
@@ -125,6 +140,42 @@ onMounted(() => {
         v-model="formData.address"
         :error-messages="validationErrors.address"
         label="Alamat"
+        :readonly="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="6">
+      <VTextField
+        v-model="formData.pendidikan_terakhir"
+        :error-messages="validationErrors.pendidikan_terakhir"
+        label="Pendidikan Terakhir"
+        :readonly="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="6">
+      <VTextField
+        v-model="formData.tugas_tambahan_1"
+        :error-messages="validationErrors.tugas_tambahan_1"
+        label="Tugas Tambahan 2"
+        :readonly="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="6">
+      <VTextField
+        v-model="formData.tugas_tambahan_2"
+        :error-messages="validationErrors.tugas_tambahan_2"
+        label="Tugas Tambahan 2"
+        :readonly="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12" md="6">
+      <VTextField
+        v-model="formData.tugas_tambahan_3"
+        :error-messages="validationErrors.tugas_tambahan_3"
+        label="Tugas Tambahan 3"
         :readonly="isDetail"
       />
     </VCol>
@@ -161,8 +212,8 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Dosen"
-        path="master/dosen"
+        title="Data Guru"
+        path="master/guru"
         :with-actions="true"
         :headers="[
           {
@@ -171,8 +222,8 @@ onMounted(() => {
             sortable: false,
           },
           {
-            title: 'NIDN',
-            key: 'nidn',
+            title: 'NIK',
+            key: 'nik',
             sortable: false,
           },
           {
@@ -232,8 +283,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Dosen',
-                  message: `Anda yakin ingin menghapus Dosen ${
+                  title: 'Hapus Guru',
+                  message: `Anda yakin ingin menghapus Guru ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

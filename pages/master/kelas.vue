@@ -5,22 +5,22 @@ const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
 const tableRef = ref();
-const fakultas = ref();
 const jurusans = ref();
+const guru = ref();
 
 const form = {
-  fakultas_id: undefined,
+  wali_kelas_id: undefined,
   jurusan_id: undefined,
   name: "",
   code: "",
 };
 
-useApi("master/fakultas/all").then(({ data }) => {
-    fakultas.value = data;
+useApi("master/jurusan/all").then(({ data }) => {
+  jurusans.value = data;
 });
 
-useApi("master/jurusan/all").then(({ data }) => {
-    jurusans.value = data;
+useApi("master/guru/all").then(({ data }) => {
+  guru.value = data;
 });
 
 onMounted(() => {
@@ -47,12 +47,12 @@ onMounted(() => {
   >
     <VCol cols="12" md="6">
       <VAutocomplete
-        v-model="formData.fakultas_id"
-        label="Fakultas"
+        v-model="formData.wali_kelas_id"
+        label="Wali Kelas"
         density="compact"
-        :error-messages="validationErrors.fakultas_id"
-        placeholder="Pilih Fakultas"
-        :items="fakultas"
+        :error-messages="validationErrors.wali_kelas_id"
+        placeholder="Pilih Wali Kelas"
+        :items="guru"
         item-title="text"
         item-value="id"
         required
@@ -117,8 +117,8 @@ onMounted(() => {
         :with-actions="true"
         :headers="[
           {
-            title: 'Fakultas',
-            key: 'fakultas_name',
+            title: 'Wali KElas',
+            key: 'wali_kelas_name',
             sortable: false,
           },
           {
