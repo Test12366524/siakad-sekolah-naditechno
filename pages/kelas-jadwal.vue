@@ -8,8 +8,8 @@ const dialogSave = ref();
 const tableRef = ref();
 const jadwal = ref();
 const kelas = ref();
-const dosen = ref();
-const mata_kuliah = ref();
+const guru = ref();
+const mata_pelajaran = ref();
 const semester = ref();
 
 const days = ref([
@@ -28,7 +28,7 @@ const form = {
   semester_id: undefined,
 };
 
-useApi("jadwal-mata-kuliah/all").then(({ data }) => {
+useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
   jadwal.value = data;
 });
 
@@ -36,12 +36,12 @@ useApi("master/semester/all").then(({ data }) => {
   semester.value = data;
 });
 
-useApi("master/mata-kuliah/all").then(({ data }) => {
-  mata_kuliah.value = data;
+useApi("master/mata-pelajaran/all").then(({ data }) => {
+  mata_pelajaran.value = data;
 });
 
-useApi("master/dosen/all").then(({ data }) => {
-  dosen.value = data;
+useApi("master/guru/all").then(({ data }) => {
+  guru.value = data;
 });
 
 useApi("master/kelas/all").then(({ data }) => {
@@ -50,25 +50,16 @@ useApi("master/kelas/all").then(({ data }) => {
 
 const role_id = ref();
 const status_action = ref();
-onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`kelas-jadwal/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+const { user } = useAuthStore(false);
 
-    role_id.value = data.role_id;
-    if(data.role_id == 1){
-      status_action.value = true;
-    }else{
-      status_action.value = false;
-    }
-  });
+onMounted(() => {
+  console.log(user)
+  role_id.value = user.role_id;
+  status_action.value = user.role_id == 1;
 });
 
-const mata_kuliah_id = ref<number | null>(null);
-const dosen_id = ref<number | null>(null);
+const mata_pelajaran_id = ref<number | null>(null);
+const guru_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
 const semester_id = ref<number | null>(null);
 
@@ -214,11 +205,11 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
             </VCol>
             <VCol cols="12" md="2" style="margin-top: 5px;">
               <VAutocomplete
-                v-model="dosen_id"
-                label="Dosen"
+                v-model="guru_id"
+                label="Guru"
                 density="compact"
-                placeholder="Pilih Dosen"
-                :items="dosen"
+                placeholder="Pilih Guru"
+                :items="guru"
                 item-title="text"
                 item-value="id"
                 required
@@ -228,11 +219,11 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
             </VCol>
             <VCol cols="12" md="2" style="margin-top: 5px;">
               <VAutocomplete
-                v-model="mata_kuliah_id"
-                label="Mata Kuliah"
+                v-model="mata_pelajaran_id"
+                label="Mata Pelajaran"
                 density="compact"
-                placeholder="Pilih Mata Kuliah"
-                :items="mata_kuliah"
+                placeholder="Pilih Mata Pelajaran"
+                :items="mata_pelajaran"
                 item-title="text"
                 item-value="id"
                 required
@@ -266,8 +257,8 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
         path="kelas-jadwal"
         :with-actions="status_action"
         :kelas_id="kelas_id"
-        :dosen_id="dosen_id"
-        :mata_kuliah_id="mata_kuliah_id"
+        :guru_id="guru_id"
+        :mata_pelajaran_id="mata_pelajaran_id"
         :semester_id="semester_id"
         :headers="[
           {
@@ -281,13 +272,13 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
             sortable: false,
           },
           {
-            title: 'Mata Kuliah',
-            key: 'mata_kuliah_name',
+            title: 'Mata Pelajaran',
+            key: 'mata_pelajaran_name',
             sortable: false,
           },
           {
-            title: 'Dosen',
-            key: 'dosen_name',
+            title: 'Guru',
+            key: 'guru_name',
             sortable: false,
           },
           {
