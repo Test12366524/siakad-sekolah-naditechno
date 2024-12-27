@@ -29,6 +29,14 @@ const handleExportPdf = item => {
   console.log(payload)
 }
 
+const handleExportData = () => {
+  console.log('Export Data')
+}
+
+const handleImportData = () => {
+  console.log('Import Data')
+}
+
 onMounted(() => {
   getAllStudent()
 })
@@ -115,20 +123,52 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VBtn
-            color="primary"
-            @click="
-              () => {
-                dialogSave.show();
-              }
-            "
-          >
-            <VIcon
-              end
-              icon="ri-add-fill"
-            />
-            Tambah Data
-          </VBtn>
+          <VRow>
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <VBtn
+                color="primary"
+                @click="dialogSave.show()"
+              >
+                <VIcon
+                  end
+                  icon="ri-add-fill"
+                  class="mr-1"
+                />
+                Tambah Data
+              </VBtn>
+            </VCol>
+            <VCol
+              cols="12"
+              md="6"
+              style="display: flex; justify-content: flex-end; gap: 1rem;"
+            >
+              <VBtn
+                color="info"
+                @click="handleImportData"
+              >
+                <VIcon
+                  end
+                  icon="ri-download-2-line"
+                  class="mr-1"
+                />
+                Import Data
+              </VBtn>
+              <VBtn
+                color="info"
+                @click="handleExportData"
+              >
+                <VIcon
+                  end
+                  icon="ri-upload-2-line"
+                  class="mr-1"
+                />
+                Export Data
+              </VBtn>
+            </VCol>
+          </VRow>
         </VCardItem>
       </VCard>
     </VCol>
@@ -201,8 +241,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Surat Masuk',
-                  message: `Anda yakin ingin menghapus Surat Masuk ${
+                  title: 'Hapus Surat Mutasi Keluar',
+                  message: `Anda yakin ingin menghapus Surat Mutasi Keluar ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),
