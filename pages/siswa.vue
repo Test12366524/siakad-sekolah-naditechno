@@ -93,17 +93,11 @@ const getSubDistrictList = async (district_id: number) => {
   subDistrictList.value = data;
 };
 
-onMounted(() => {
-  getProvinceList();
-  useApi("auth/me").then(({ data }) => {
-    role_id.value = data.role_id;
-    if (data.role_id == 1 || data.role_id == 2) status_action.value = true;
-    else status_action.value = false;
+const { user } = useAuthStore();
 
-    useApi(`siswa/${data.role_id}`).then(({ data }) => {
-      if (data == 0) navigateTo("/not-authorized");
-    });
-  });
+onMounted(() => {
+  if (user.role_id !== 1) navigateTo("/not-authorized");
+  getProvinceList();
 });
 
 const form = {
