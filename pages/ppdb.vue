@@ -483,7 +483,9 @@ onMounted(() => {
               title="Detail"
               @click="
                 () => {
-                  dialogSave.show({ ...item }, true);
+                  const payload = { ...item };
+                  payload.mariage_status = String(item.mariage_status);
+                  dialogSave.show(payload, true);
                 }
               "
             >
@@ -491,7 +493,13 @@ onMounted(() => {
             </IconBtn>
             <IconBtn
               size="small"
-              @click="dialogSave.show({ ...item })"
+              @click="
+                () => {
+                  const payload = { ...item };
+                  payload.mariage_status = String(item.mariage_status);
+                  dialogSave.show(payload);
+                }
+              "
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
