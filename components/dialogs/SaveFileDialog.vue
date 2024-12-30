@@ -90,7 +90,6 @@ defineExpose({
       formData.value = { ...props.defaultForm };
       isEditing.value = false;
     }
-    console.log("isDetailFORM", isDetailForm.value);
   },
 });
 </script>
