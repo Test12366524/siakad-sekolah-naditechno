@@ -7,6 +7,7 @@ const dialogSave = ref();
 const tableRef = ref();
 const jurusans = ref();
 const semesters = ref();
+const predikatList = ["A", "B", "C", "D", "E"];
 
 const form = {
   jurusan_id: undefined,
@@ -15,24 +16,22 @@ const form = {
   code: "",
   description: "",
   minimal: "",
-  minimal_predikat: "",
+  minimal_predikat: null,
   status: 1,
 };
 
 useApi("master/jurusan/all").then(({ data }) => {
-    jurusans.value = data;
+  jurusans.value = data;
 });
 
 useApi("master/semester/all").then(({ data }) => {
-    semesters.value = data;
+  semesters.value = data;
 });
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
     useApi(`master/mata-pelajaran/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
+      if (data == 0) navigateTo("/not-authorized");
     });
   });
 });
@@ -41,11 +40,11 @@ onMounted(() => {
 <template>
   <SaveDialog
     v-if="tableRef"
+    v-slot="{ formData, validationErrors, isEditing }"
+    ref="dialogSave"
     path="master/mata-pelajaran"
     title="Tambah Mata Pelajaran"
     edit-title="Edit Mata Pelajaran"
-    v-slot="{ formData, validationErrors, isEditing }"
-    ref="dialogSave"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
@@ -83,58 +82,61 @@ onMounted(() => {
 
     <VCol cols="12">
       <VTextField
-        :error-messages="validationErrors.code"
         v-model="formData.code"
+        :error-messages="validationErrors.code"
         label="Kode"
       />
     </VCol>
 
     <VCol cols="12">
       <VTextField
-        :error-messages="validationErrors.name"
         v-model="formData.name"
+        :error-messages="validationErrors.name"
         label="Nama"
       />
     </VCol>
 
     <VCol cols="12">
       <VTextarea
-        :error-messages="validationErrors.description"
         v-model="formData.description"
+        :error-messages="validationErrors.description"
         label="Deskripsi"
       />
     </VCol>
 
     <VCol cols="12" md="6">
       <VTextField
-        :error-messages="validationErrors.minimal"
         v-model="formData.minimal"
+        :error-messages="validationErrors.minimal"
         label="Minimal Nilai"
         typr="number"
       />
     </VCol>
 
     <VCol cols="12" md="6">
-      <VTextField
-        :error-messages="validationErrors.minimal_predikat"
+      <VAutocomplete
         v-model="formData.minimal_predikat"
         label="Minimal Predikat"
-        placeholder="A / B / C / D / E"
+        :error-messages="validationErrors.minimal_predikat"
+        placeholder="Pilih Predikat"
+        :items="predikatList"
+        required
+        clearable
+        clear-icon="ri-close-line"
       />
     </VCol>
 
     <VCol cols="12">
       <VLabel>Status</VLabel>
       <VRadioGroup
-        inline
         v-model="formData.status"
+        inline
         :error-messages="validationErrors.status"
       >
-        <VRadio label="Aktif" :value="1"></VRadio>
-        <VRadio label="Nonaktif" :value="0"></VRadio>
+        <VRadio label="Aktif" :value="1" />
+        <VRadio label="Nonaktif" :value="0" />
       </VRadioGroup>
     </VCol>
-
   </SaveDialog>
 
   <VRow>
@@ -143,7 +145,7 @@ onMounted(() => {
         <VCardItem>
           <VRow>
             <VCol>
-              <VBtn @click="dialogSave.show()" color="primary">
+              <VBtn color="primary" @click="dialogSave.show()">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -195,12 +197,13 @@ onMounted(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              @click="dialogSave.show({ ...item, status_desc: undefined })"
               size="small"
+              @click="dialogSave.show({ ...item, status_desc: undefined })"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              size="small"
               @click="
                 confirmDialog.show({
                   title: 'Hapus Mata Pelajaran',
@@ -210,7 +213,6 @@ onMounted(() => {
                   onConfirm: () => remove((item as any).id),
                 })
               "
-              size="small"
             >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>
