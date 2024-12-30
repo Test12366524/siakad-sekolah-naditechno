@@ -6,6 +6,7 @@ const bulkingDialog = ref();
 const tableRef = ref();
 const siswaTableRef = ref();
 const siswaByClass = ref([]);
+const selectedSiswas = ref([]);
 
 const form = {
   kelas_id: "",
@@ -56,7 +57,8 @@ const isDataNotValid = computed(
     !kelasFromId.value ||
     !kelasToId.value ||
     !periodeToId.value ||
-    !semesterToId.value
+    !semesterToId.value ||
+    selectedSiswas.value.length === 0
 );
 
 const headers = [
@@ -89,14 +91,16 @@ const handleInsertData = async (siswaId: any) => {
 };
 
 const handleInsertBulk = async () => {
-  const payload = siswaByClass.value.map((item: any) => {
-    return {
-      siswa_id: item.id,
-      kelas_id: kelasToId.value,
-      periode_id: periodeToId.value,
-      semester_id: semesterToId.value,
-    };
-  });
+  const payload = siswaByClass.value
+    .filter((siswa) => selectedSiswas.value.includes(siswa.id))
+    .map((item: any) => {
+      return {
+        siswa_id: item.id,
+        kelas_id: kelasToId.value,
+        periode_id: periodeToId.value,
+        semester_id: semesterToId.value,
+      };
+    });
 
   const request = {
     data: payload,
@@ -145,16 +149,13 @@ const fetchRequirementDatas = () => {
 };
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {  
+  useApi("auth/me").then(({ data }) => {
     useApi(`kenaikan-kelas/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/`);
-      }
+      if (data == 0) navigateTo("/");
     });
   });
   fetchRequirementDatas();
 });
-
 </script>
 
 <template>
@@ -261,11 +262,13 @@ onMounted(() => {
     <VCol cols="12" md="12">
       <VDataTable
         ref="siswaTableRef"
+        v-model="selectedSiswas"
         :headers="headers"
         :items="siswaByClass"
         :items-per-page="pagination.itemsPerPage"
         :page-count="pagination.pageTotal"
         class="text-no-wrap"
+        show-select
       >
         <template #bottom>
           <VDivider />
@@ -388,10 +391,11 @@ onMounted(() => {
                 () => {
                   const payload = { ...item };
                   kelasFromId = item.kelas_id;
-                  payload.periode_id = null;
-                  payload.semester_id = null;
+                  semesterToId = item.semester_id;
+                  periodeToId = item.periode_id;
                   payload.kelas_from_id = item.kelas_id;
                   siswaByClass = [item];
+                  selectedSiswas = [item.id];
                   bulkingDialog.show(payload);
                 }
               "

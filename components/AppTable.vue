@@ -1,35 +1,36 @@
 <script setup lang="ts">
-import { formatFullDate } from '@/composables/common';
-import { watch } from 'vue';
-import { VDataTableServer } from 'vuetify/lib/components/index.mjs';
+import { formatFullDate } from "@/composables/common";
+import { watch } from "vue";
+import { VDataTableServer } from "vuetify/lib/components/index.mjs";
 
 const props = defineProps<{
-  title: string
-  path: string
+  title: string;
+  path: string;
   headers: Array<{
-    title: string
-    key: string
-    sortable: boolean | null
-    width: number | null
-    rupiah?: boolean
-  }>
-  withActions: boolean | null
-  kelas_id?: string | number | null
-  gender?: string | number | null
-  guru_id?: string | number | null
-  mata_pelajaran_id?: string | number | null
-  periode_id?: string | number | null
-  semester_id?: string | number | null
-}>()
+    title: string;
+    key: string;
+    sortable: boolean | null;
+    width: number | null;
+    rupiah?: boolean;
+  }>;
+  withActions: boolean | null;
+  kelas_id?: string | number | null;
+  gender?: string | number | null;
+  guru_id?: string | number | null;
+  mata_pelajaran_id?: string | number | null;
+  periode_id?: string | number | null;
+  semester_id?: string | number | null;
+  showSelect?: boolean;
+}>();
 
 // Fungsi untuk format Rupiah
 const formatRupiah = (value: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
     minimumFractionDigits: 0,
-  }).format(value)
-}
+  }).format(value);
+};
 
 const appTable = useAppTable({
   path: props.path as string,
@@ -39,88 +40,78 @@ const appTable = useAppTable({
   guru_id: props.guru_id,
   semester_id: props.semester_id,
   periode_id: props.periode_id,
-})
+});
 
 // Watch for changes in prop and update the internal kelas_id
 watch(
   () => props.kelas_id,
-  newValue => {
+  (newValue) => {
     if (props.kelas_id) {
-      appTable.kelas_id.value = newValue
-      appTable.fetchItems(true)
+      appTable.kelas_id.value = newValue;
+      appTable.fetchItems(true);
     }
   },
-  { immediate: true },
-)
+  { immediate: true }
+);
 
 watch(
   () => props.gender,
-  newValue => {
-    appTable.gender.value = newValue
-    appTable.fetchItems(true)
+  (newValue) => {
+    appTable.gender.value = newValue;
+    appTable.fetchItems(true);
   },
-  { immediate: true },
-)
+  { immediate: true }
+);
 
 watch(
   () => props.guru_id,
-  newValue => {
-    appTable.guru_id.value = newValue
-    appTable.fetchItems(true)
+  (newValue) => {
+    appTable.guru_id.value = newValue;
+    appTable.fetchItems(true);
   },
-  { immediate: true },
-)
+  { immediate: true }
+);
 
 watch(
   () => props.mata_pelajaran_id,
-  newValue => {
-    appTable.mata_pelajaran_id.value = newValue
-    appTable.fetchItems(true)
+  (newValue) => {
+    appTable.mata_pelajaran_id.value = newValue;
+    appTable.fetchItems(true);
   },
-  { immediate: true },
-)
+  { immediate: true }
+);
 
 watch(
   () => props.semester_id,
-  newValue => {
-    appTable.semester_id.value = newValue
-    appTable.fetchItems(true)
+  (newValue) => {
+    appTable.semester_id.value = newValue;
+    appTable.fetchItems(true);
   },
-  { immediate: true },
-)
+  { immediate: true }
+);
 
 watch(
   () => props.periode_id,
-  newValue => {
-    appTable.periode_id.value = newValue
-    appTable.fetchItems(true)
+  (newValue) => {
+    appTable.periode_id.value = newValue;
+    appTable.fetchItems(true);
   },
-  { immediate: true },
-)
+  { immediate: true }
+);
 
 defineExpose({
   refresh: () => appTable.fetchItems(true),
-})
+});
 </script>
 
 <template>
   <VCard>
     <VCardItem>
-      <VRow
-        align="center"
-        justify="space-between"
-      >
-        <VCol
-          cols="12"
-          md="8"
-        >
+      <VRow align="center" justify="space-between">
+        <VCol cols="12" md="8">
           <VCardTitle>{{ title }}</VCardTitle>
         </VCol>
-        <VCol
-          cols="12"
-          md="4"
-          class="d-flex align-center"
-        >
+        <VCol cols="12" md="4" class="d-flex align-center">
           <VTextField
             v-model="appTable.search.value"
             class="ma-2"
@@ -152,6 +143,7 @@ defineExpose({
           width: 10,
         } : {},
       ] ?? []"
+      :show-select="props.showSelect"
       @update:options="() => appTable.fetchItems()"
     >
       <template #item.join_date="{ item }">
@@ -188,7 +180,8 @@ defineExpose({
         {{ formatRupiah(item.nominal) }}
       </template>
       <template #item.waktu="{ item }">
-        {{ item.hari_desc }} , {{ item.dari_jam.substring(0, 5) }} - {{ item.ke_jam.substring(0, 5) }}
+        {{ item.hari_desc }} , {{ item.dari_jam.substring(0, 5) }} -
+        {{ item.ke_jam.substring(0, 5) }}
       </template>
       <template #item.biaya="{ item }">
         {{ formatRupiah(item.biaya) }}
@@ -207,21 +200,12 @@ defineExpose({
             }
           "
         >
-          <VIcon
-            icon="ri-eye-line"
-            class="mr-2"
-          /> Buka File
+          <VIcon icon="ri-eye-line" class="mr-2" /> Buka File
         </VBtn>
-        <p v-else>
-          -
-        </p>
+        <p v-else>-</p>
       </template>
       <template #item.actions="{ item }">
-        <slot
-          name="actions"
-          :item="item"
-          :remove="appTable.removeRowBy"
-        />
+        <slot name="actions" :item="item" :remove="appTable.removeRowBy" />
       </template>
     </VDataTableServer>
   </VCard>
