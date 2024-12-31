@@ -14,6 +14,59 @@ const periode = ref();
 const jurusans = ref();
 const angkatans = ref();
 
+const form = ref({
+  id: "",
+  user_id: "",
+  angkatan_id: "",
+  semester_id: "",
+  periode_id: "",
+  jurusan_id: "",
+  kelas_id: "",
+  name: "",
+  photo: "",
+  birth_date: "",
+  place_of_birth: "",
+  gender: "",
+  religion: "",
+  nik: "",
+  entrance_date: "",
+  email: "",
+  phone_1: "",
+  phone_2: "",
+  address: "",
+  created_at: "",
+  updated_at: "",
+  nisn: "",
+  keterangan: "",
+  status: "",
+  nis: "",
+  nis_number: "",
+  kip: "",
+  kks: "",
+  province_id: "",
+  city_id: "",
+  district_id: "",
+  subdistrict_id: "",
+  post_code: "",
+  anak_ke: "",
+  dari_jumlah_anak: "",
+  nama_ayah: "",
+  nama_ibu: "",
+  pekerjaan_ayah: "",
+  pekerjaan_ibu: "",
+  nik_ayah: "",
+  nik_ibu: "",
+  no_kk: "",
+  asal_sekolah: "",
+  jurusan_name: "",
+  jurusan_code: "",
+  periode_name: "",
+  angkatan_name: "",
+  semester_name: "",
+  kelas_name: "",
+  kelas_code: "",
+});
+
 const religions = ref([
   { id: "Islam", text: "Islam" },
   { id: "Kristen", text: "Kristen" },
@@ -67,6 +120,13 @@ const getProvinceList = async () => {
   });
 
   provinceList.value = data;
+  cityList.value = [];
+  districtList.value = [];
+  subDistrictList.value = [];
+
+  const resetKeys = ["city_id", "district_id", "subdistrict_id"];
+
+  dialogSave.value.resetData(form.value, resetKeys);
 };
 
 const getCityList = async (province_id: number) => {
@@ -75,6 +135,12 @@ const getCityList = async (province_id: number) => {
   });
 
   cityList.value = data;
+  districtList.value = [];
+  subDistrictList.value = [];
+
+  const resetKeys = ["district_id", "subdistrict_id"];
+
+  dialogSave.value.resetData(form.value, resetKeys);
 };
 
 const getDistrictList = async (city_id: number) => {
@@ -83,6 +149,11 @@ const getDistrictList = async (city_id: number) => {
   });
 
   districtList.value = data;
+  subDistrictList.value = [];
+
+  const resetKeys = ["subdistrict_id"];
+
+  dialogSave.value.resetData(form.value, resetKeys);
 };
 
 const getSubDistrictList = async (district_id: number) => {
@@ -96,15 +167,10 @@ const getSubDistrictList = async (district_id: number) => {
 const { user } = useAuthStore();
 
 onMounted(() => {
-  if (user.role_id !== 1) navigateTo("/not-authorized");
+  if (user.role_id !== 1) return navigateTo("/not-authorized");
+  role_id.value = user.role_id;
   getProvinceList();
 });
-
-const form = {
-  nis: "",
-  nisn: "",
-  kip: "",
-};
 
 const { pageLoader } = useCommonStore();
 
@@ -122,13 +188,13 @@ const handleShowDialog = async (data, isDetail) => {
   await getSubDistrictList(payload.district_id);
   if (payload.photo) previewPhoto.value = getFileUrl(payload.photo);
 
-  console.log("AFTER", data);
   payload.entrance_date = new Date(payload.entrance_date)
     .toISOString()
     .substring(0, 10);
   payload.birth_date = new Date(payload.birth_date)
     .toISOString()
     .substring(0, 10);
+  form.value = payload;
   dialogSave.value.show(payload, isDetail);
   pageLoader.hide();
 };
@@ -154,6 +220,7 @@ const handleShowDialog = async (data, isDetail) => {
             class="mb-3"
             rounded
             border
+            max-height="300"
             :src="
               previewPhoto ||
               'https://placehold.jp/30/fff/555/300x150.png?text=Foto'
@@ -577,7 +644,7 @@ const handleShowDialog = async (data, isDetail) => {
         ref="tableRef"
         title="Data Siswa"
         path="siswa"
-        :with-actions="status_action"
+        :with-actions="true"
         :kelas_id="kelas_id"
         :periode_id="periode_id"
         :semester_id="semester_id"

@@ -86,3 +86,11 @@ export const addDaysToDate = (dateString, daysToAdd) => {
 
   return date.toISOString().split("T")[0];
 };
+
+export const resetObjectByKeys = (data, keysToReset) => {
+  keysToReset.forEach((key) => {
+    if (data.hasOwnProperty(key)) data[key] = null;
+  });
+
+  return data;
+};

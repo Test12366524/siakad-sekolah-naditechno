@@ -45,7 +45,7 @@ const { user } = useAuthStore();
 const previewPhoto = ref("");
 
 onMounted(() => {
-  if (user.role_id !== 1) navigateTo("/not-authorized");
+  if (user.role_id !== 1) return navigateTo("/not-authorized");
   getTugasTambahan();
   getMataPelajaran();
 });
@@ -66,8 +66,10 @@ onMounted(() => {
   >
     <VRow>
       <VCol cols="12" md="3">
-        <VCol cols="12">
+        <VCol cols="12" align-self="center">
           <VImg
+            max-height="300"
+            max-width="200"
             class="mb-3"
             rounded
             border
