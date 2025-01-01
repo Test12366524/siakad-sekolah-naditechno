@@ -4,7 +4,6 @@ import { VCol, VTextField } from "vuetify/lib/components/index.mjs";
 const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
-
 const tableRef = ref();
 
 const form = {
@@ -12,48 +11,45 @@ const form = {
   status: 1,
 };
 
+
+const { user } = useAuthStore();
+
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`master/tugas-tambahan/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
-  });
+  if (user.role_id !== 1) navigateTo("/not-authorized");
 });
 </script>
 
 <template>
   <SaveDialog
     v-if="tableRef"
+    v-slot="{ formData, validationErrors, isEditing }"
+    ref="dialogSave"
     path="master/tugas-tambahan"
     title="Tambah Tugas Tambahan"
     edit-title="Edit Tugas Tambahan"
-    v-slot="{ formData, validationErrors, isEditing }"
-    ref="dialogSave"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
+    :request-form="form"
+    width="500"
   >
     <VCol cols="12">
       <VTextField
-        :error-messages="validationErrors.name"
         v-model="formData.name"
-        label="Nama"
+        :error-messages="validationErrors.name"
+        label="Nama Tugas Tambahan"
       />
     </VCol>
-
     <VCol cols="12">
       <VLabel>Status</VLabel>
       <VRadioGroup
-        inline
         v-model="formData.status"
+        inline
         :error-messages="validationErrors.status"
       >
-        <VRadio label="Aktif" :value="1"></VRadio>
-        <VRadio label="Nonaktif" :value="0"></VRadio>
+        <VRadio label="Aktif" :value="1" />
+        <VRadio label="Nonaktif" :value="0" />
       </VRadioGroup>
     </VCol>
-
   </SaveDialog>
 
   <VRow>
@@ -62,7 +58,7 @@ onMounted(() => {
         <VCardItem>
           <VRow>
             <VCol>
-              <VBtn @click="dialogSave.show()" color="primary">
+              <VBtn color="primary" @click="dialogSave.show()">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -94,12 +90,13 @@ onMounted(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              @click="dialogSave.show({ ...item, status_desc: undefined })"
               size="small"
+              @click="dialogSave.show({ ...item, status_desc: undefined })"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
+              size="small"
               @click="
                 confirmDialog.show({
                   title: 'Hapus Tugas Tambahan',
@@ -109,7 +106,6 @@ onMounted(() => {
                   onConfirm: () => remove((item as any).id),
                 })
               "
-              size="small"
             >
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>

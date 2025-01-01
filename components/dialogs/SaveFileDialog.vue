@@ -90,7 +90,9 @@ defineExpose({
       formData.value = { ...props.defaultForm };
       isEditing.value = false;
     }
-    console.log("isDetailFORM", isDetailForm.value);
+  },
+  resetData(currentItem: typeof props.defaultForm, keys: Array = []) {
+    formData.value = resetObjectByKeys(currentItem, keys);
   },
 });
 </script>
