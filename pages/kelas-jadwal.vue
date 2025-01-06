@@ -86,6 +86,7 @@ const periode_id = ref<number | null>(null);
 const value_kelas_id = ref<number | null>(null);
 const value_jadwal_id = ref<number | null>(null);
 const value_semester_id = ref<number | null>(null);
+const value_periode_id = ref<number | null>(null);
 
 const setKelas = (kelas_id: number) => {
   value_kelas_id.value = kelas_id;
@@ -97,13 +98,17 @@ const setJadwal = (jadwal_id: number) => {
 
 const setSemester = (semester_id: number) => {
   value_semester_id.value = semester_id;
-  if (value_kelas_id.value && value_jadwal_id.value && value_semester_id.value) {
-    checkingData(value_kelas_id.value, value_jadwal_id.value, value_semester_id.value);
+};
+
+const setPeriode = (periode_id: number) => {
+  value_periode_id.value = periode_id;
+  if (value_kelas_id.value && value_jadwal_id.value && value_semester_id.value && value_periode_id.value) {
+    checkingData(value_kelas_id.value, value_jadwal_id.value, value_semester_id.value, value_periode_id.value);
   }
 };
 
-const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) => {
-  useApi(`/kelas-jadwal/${kelas_id}/${jadwal_id}/${semester_id}`)
+const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number, periode_id: number) => {
+  useApi(`/kelas-jadwal/${kelas_id}/${jadwal_id}/${semester_id}/${periode_id}`)
     .then(({ data }) => {
       if (data && data.length > 0) {
         snackbar.show({
@@ -207,6 +212,11 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
         :items="periode"
         item-title="text"
         item-value="id"
+        @update:model-value="
+          (periode_id: number) => {
+            setPeriode(periode_id);
+          }
+        "
         required
         clearable
         clear-icon="ri-close-line"

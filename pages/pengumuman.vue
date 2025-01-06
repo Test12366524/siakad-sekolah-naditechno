@@ -27,6 +27,9 @@ const list_to = ref([
 const user_id = ref<number | null>(null);
 const user_name = ref<string | null>(null);
 
+const role_id = ref();
+const status_action = ref();
+
 onMounted(() => {
   const { user } = useAuthStore();
   useApi(`level/pengumuman/${user.role_id}`).then(({ data }) => {
@@ -42,16 +45,20 @@ onMounted(() => {
 
   // Update list_to based on user's role
   if (user.role_id === 1) {
+    status_action.value = user.role_id == 1;
     list_to.value = [
       { id: "semua", text: "semua" },
       { id: "guru", text: "guru" },
       { id: "siswa", text: "siswa" },
     ];
   } else if (user.role_id === 2) {
+    status_action.value = user.role_id == 2;
     list_to.value = [
       { id: "siswa", text: "siswa" },
     ];
   }
+
+  role_id.value = user.role_id;
 });
 
 </script>
@@ -149,7 +156,7 @@ onMounted(() => {
   </SaveDialog>
 
   <VRow>
-    <VCol cols="12">
+    <VCol cols="12" v-if="role_id == 1 || role_id == 2">
       <VCard>
         <VCardItem>
           <VRow>
@@ -169,7 +176,7 @@ onMounted(() => {
         ref="tableRef"
         title="Data Pengumuman"
         path="announcement"
-        :with-actions="true"
+        :with-actions="status_action"
         :headers="[
           {
             title: 'Nama',

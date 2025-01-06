@@ -24,13 +24,10 @@ if(user.role_id == 1){
 }else if(user.role_id == 2){
   useApi("master/guru/all/"+user.id).then(({ data }) => {
     guru.value = data;
-
     useApi("master/mata-pelajaran/all/" + data[0].id).then(({ data }) => {
       mata_pelajaran.value = data;
     });
   });
-  
-  
 }else{
   useApi("master/guru/all").then(({ data }) => {
     guru.value = data;

@@ -73,6 +73,9 @@ const handleExportPdf = item => {
   console.log(payload)
 }
 
+const role_id = ref();
+const status_action = ref();
+
 onMounted(() => {
   getAllTeacher()
   getAllMataPelajaran()
@@ -84,6 +87,9 @@ onMounted(() => {
       navigateTo(`/not-authorized`);
     }
   });
+
+  role_id.value = user.role_id;
+  status_action.value = user.role_id == 1;
 })
 
 </script>
@@ -254,6 +260,7 @@ onMounted(() => {
           <VRow>
             <VCol cols="12" md="6">
               <VBtn
+                v-if="role_id == 1"
                 color="primary"
                 @click="
                   () => {
@@ -306,9 +313,9 @@ onMounted(() => {
         ref="tableRef"
         title="Data Jadwal Guru"
         path="jadwal-mata-pelajaran"
+        :with-actions="status_action"
         :periode_id="periode_id"
         :semester_id="semester_id"
-        :with-actions="true"
         :headers="[
           {
             title: 'Guru',

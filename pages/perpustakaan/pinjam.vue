@@ -39,6 +39,8 @@ const handleAction = async (data: any) => {
   if (success) tableRef.value.refresh();
 };
 
+const role_id = ref();
+const status_action = ref();
 onMounted(() => {
   const { user } = useAuthStore();
   useApi(`level/perpustakaan-pinjam/${user.role_id}`).then(({ data }) => {
@@ -46,6 +48,9 @@ onMounted(() => {
       navigateTo(`/not-authorized`);
     }
   });
+
+  role_id.value = user.role_id;
+  status_action.value = user.role_id == 1;
 });
 </script>
 
@@ -116,7 +121,7 @@ onMounted(() => {
   </SaveFileDialog>
 
   <VRow>
-    <VCol cols="12">
+    <VCol cols="12" v-if="role_id == 1">
       <VCard>
         <VCardItem>
           <VRow>
@@ -136,7 +141,7 @@ onMounted(() => {
         ref="tableRef"
         title="Data Pinjaman Buku"
         path="book/borrow"
-        :with-actions="true"
+        :with-actions="status_action"
         :headers="[
           {
             title: 'Nama',

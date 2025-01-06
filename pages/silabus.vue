@@ -8,6 +8,7 @@ const dialogSave = ref();
 const tableRef = ref();
 const guru = ref();
 const mata_pelajaran = ref();
+const filter_mata_pelajaran = ref();
 
 const form = {
   mata_pelajaran_id: "",
@@ -27,6 +28,13 @@ const getMataKuliahByClass = (guru_id: number) => {
   });
 }
 
+useApi("master/mata-pelajaran/all").then(({ data }) => {
+  filter_mata_pelajaran.value = data;
+});
+
+const role_id = ref();
+const status_action = ref();
+
 onMounted(() => {
   const { user } = useAuthStore();
   useApi(`level/silabus/${user.role_id}`).then(({ data }) => {
@@ -35,10 +43,12 @@ onMounted(() => {
     }
   });
   if (user.role_id == 1){
+    status_action.value = user.role_id == 1;
     useApi("master/guru/all").then(({ data }) => {
       guru.value = data;
     });
   } else if (user.role_id == 2){
+    status_action.value = user.role_id == 2;
     useApi("master/guru/all/" + user.id).then(({ data }) => {
       guru.value = data;
     });
@@ -47,6 +57,8 @@ onMounted(() => {
       guru.value = data;
     });
   }
+
+  role_id.value = user.role_id;
 });
 
 const mata_pelajaran_id = ref<number | null>(null);
@@ -139,7 +151,7 @@ const guru_id = ref<number | null>(null);
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6">
-              <VBtn color="primary" @click="dialogSave.show()">
+              <VBtn color="primary" v-if="role_id == 1 || role_id == 2" @click="dialogSave.show()">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -164,7 +176,7 @@ const guru_id = ref<number | null>(null);
                 label="Mata Pelajaran"
                 density="compact"
                 placeholder="Pilih Mata Pelajaran"
-                :items="mata_pelajaran"
+                :items="filter_mata_pelajaran"
                 item-title="text"
                 item-value="id"
                 required
@@ -184,7 +196,7 @@ const guru_id = ref<number | null>(null);
         path="silabus"
         :guru_id="guru_id"
         :mata_pelajaran_id="mata_pelajaran_id"
-        :with-actions="true"
+        :with-actions="status_action"
         :headers="[
           {
             title: 'Guru',
