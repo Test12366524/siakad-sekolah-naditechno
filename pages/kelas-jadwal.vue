@@ -11,6 +11,9 @@ const kelas = ref();
 const guru = ref();
 const mata_pelajaran = ref();
 const semester = ref();
+const filter_semester = ref();
+const filter_periode = ref();
+const periode = ref();
 
 const days = ref([
   { id: '0', text: "Senin" },
@@ -32,8 +35,20 @@ useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
   jadwal.value = data;
 });
 
-useApi("master/semester/all").then(({ data }) => {
+useApi("master/semester/all/1").then(({ data }) => {
   semester.value = data;
+});
+
+useApi("master/semester/all/0").then(({ data }) => {
+  filter_semester.value = data;
+});
+
+useApi("master/periode/all/1").then(({ data }) => {
+  periode.value = data;
+});
+
+useApi("master/periode/all/0").then(({ data }) => {
+  filter_periode.value = data;
 });
 
 useApi("master/mata-pelajaran/all").then(({ data }) => {
@@ -50,10 +65,14 @@ useApi("master/kelas/all").then(({ data }) => {
 
 const role_id = ref();
 const status_action = ref();
-const { user } = useAuthStore(false);
+const { user } = useAuthStore();
 
 onMounted(() => {
-  console.log(user)
+  useApi(`level/kelas-jadwal/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
   role_id.value = user.role_id;
   status_action.value = user.role_id == 1;
 });
@@ -62,6 +81,7 @@ const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
 const semester_id = ref<number | null>(null);
+const periode_id = ref<number | null>(null);
 
 const value_kelas_id = ref<number | null>(null);
 const value_jadwal_id = ref<number | null>(null);
@@ -156,7 +176,7 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
       />
     </VCol>
 
-    <VCol cols="12" md="12">
+    <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.semester_id"
         label="Semester"
@@ -176,6 +196,22 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
         clear-icon="ri-close-line"
       />
     </VCol>
+
+    <VCol cols="12" md="6">
+      <VAutocomplete
+        v-model="formData.periode_id"
+        density="compact"
+        label="Periode"
+        :error-messages="validationErrors.periode_id"
+        placeholder="Pilih Periode"
+        :items="periode"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+      />
+    </VCol>
   </SaveDialog>
 
   <VRow>
@@ -183,13 +219,13 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
       <VCard>
         <VCardItem>
           <VRow>
-            <VCol cols="12" md="4">
+            <VCol cols="12" md="2">
               <VBtn v-if="role_id == 1" @click="dialogSave.show()" color="primary">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
             </VCol>
-            <VCol cols="12" md="2" style="margin-top: 5px;">
+            <VCol cols="12" md="2">
               <VAutocomplete
                 v-model="kelas_id"
                 label="Kelas"
@@ -203,7 +239,7 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
                 clear-icon="ri-close-line"
               />
             </VCol>
-            <VCol cols="12" md="2" style="margin-top: 5px;">
+            <VCol cols="12" md="2">
               <VAutocomplete
                 v-model="guru_id"
                 label="Guru"
@@ -217,7 +253,7 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
                 clear-icon="ri-close-line"
               />
             </VCol>
-            <VCol cols="12" md="2" style="margin-top: 5px;">
+            <VCol cols="12" md="2">
               <VAutocomplete
                 v-model="mata_pelajaran_id"
                 label="Mata Pelajaran"
@@ -231,13 +267,27 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
                 clear-icon="ri-close-line"
               />
             </VCol>
-            <VCol cols="12" md="2" style="margin-block-start: 5px">
+            <VCol cols="12" md="2">
               <VAutocomplete
                 v-model="semester_id"
                 density="compact"
                 label="Semester"
                 placeholder="Pilih Semester"
-                :items="semester"
+                :items="filter_semester"
+                item-title="text"
+                item-value="id"
+                required
+                clearable
+                clear-icon="ri-close-line"
+              />
+            </VCol>
+            <VCol cols="12" md="2">
+              <VAutocomplete
+                v-model="periode_id"
+                density="compact"
+                label="Tahun Ajaran"
+                placeholder="Pilih Tahun Ajaran"
+                :items="filter_periode"
                 item-title="text"
                 item-value="id"
                 required
@@ -260,6 +310,7 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
         :guru_id="guru_id"
         :mata_pelajaran_id="mata_pelajaran_id"
         :semester_id="semester_id"
+        :periode_id="periode_id"
         :headers="[
           {
             title: 'Kelas',
@@ -284,6 +335,11 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number) 
           {
             title: 'Semester',
             key: 'semester_name',
+            sortable: false,
+          },
+          {
+            title: 'Tahun Ajar',
+            key: 'periode_name',
             sortable: false,
           },
         ]"

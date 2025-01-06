@@ -14,12 +14,11 @@ const form = {
 };
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`master/semester/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/master-semester/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
 });
 </script>

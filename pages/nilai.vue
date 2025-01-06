@@ -8,6 +8,10 @@ const tableRef = ref();
 const siswa = ref();
 const guru = ref();
 const semester = ref();
+const filter_semester = ref();
+const periode = ref();
+const filter_periode = ref();
+const filter_mata_pelajaran = ref();
 const mata_pelajaran = ref();
 const kelas = ref();
 const bulkingDialog = ref();
@@ -17,6 +21,8 @@ const form = ref({
   kelas_id: "",
   guru_id: "",
   mata_pelajaran_id: "",
+  semester_id: "",
+  periode_id: "",
   siswa_id: "",
   kehadiran: "",
   tugas: "",
@@ -30,48 +36,63 @@ useApi("siswa/all").then(({ data }) => {
   siswa.value = data;
 });
 
+useApi("master/mata-pelajaran/all").then(({ data }) => {
+  filter_mata_pelajaran.value = data;
+});
 
-useApi("master/semester/all").then(({ data }) => {
+useApi("master/semester/all/1").then(({ data }) => {
   semester.value = data;
+});
+
+useApi("master/semester/all/0").then(({ data }) => {
+  filter_semester.value = data;
 });
 
 useApi("master/kelas/all").then(({ data }) => {
   kelas.value = data;
 });
 
+useApi("master/periode/all/1").then(({ data }) => {
+  periode.value = data;
+});
+
+useApi("master/periode/all/0").then(({ data }) => {
+  filter_periode.value = data;
+});
+
 const role_id = ref();
 const status_action = ref();
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    role_id.value = data.role_id;
-
-    if (data.role_id == 1){
-      status_action.value = true;
-      useApi("master/guru/all").then(({ data }) => {
-        guru.value = data;
-      });
-    } else if (data.role_id == 2){
-      status_action.value = true;
-      useApi("master/guru/all/" + data.id).then(({ data }) => {
-        guru.value = data;
-      });
-    } else {
-      status_action.value = false;
+  const { user } = useAuthStore();
+  useApi(`level/nilai/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
     }
-
-    useApi(`nilai/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
   });
+
+  role_id.value = user.role_id;
+
+  if (user.role_id == 1){
+    status_action.value = true;
+    useApi("master/guru/all").then(({ data }) => {
+      guru.value = data;
+    });
+  } else if (user.role_id == 2){
+    status_action.value = true;
+    useApi("master/guru/all/" + user.id).then(({ data }) => {
+      guru.value = data;
+    });
+  } else {
+    status_action.value = false;
+  }
 });
 
 const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
 const semester_id = ref<number | null>(null);
+const periode_id = ref<number | null>(null);
 const siswaByClass = ref([]);
 
 const pagination = reactive({
@@ -90,6 +111,8 @@ const singleDataForm = ref({
   kelas_id: "",
   guru_id: "",
   mata_pelajaran_id: "",
+  semester_id: "",
+  periode_id: "",
   siswa_id: "",
   kehadiran: "",
   tugas: "",
@@ -101,7 +124,7 @@ const singleDataForm = ref({
 
 const headers = [
   { title: "Nama", key: "name", sortable: false },
-  { title: "NIM", key: "nim", sortable: false },
+  { title: "NISN", key: "nisn", sortable: false },
   { title: "Absensi", key: "kehadiran", sortable: false },
   { title: "Tugas", key: "tugas", sortable: false },
   { title: "UTS", key: "uts", sortable: false },
@@ -136,6 +159,7 @@ const getSiswaByClass = (classId) => {
         kelas_id: form.kelas_id,
         guru_id: form.guru_id,
         mata_pelajaran_id: form.mata_pelajaran_id,
+        semester_id: form.semester_id,
         siswa_id: item.id,
         kehadiran: "0",
         tugas: "0",
@@ -181,6 +205,7 @@ const handleInsertBulk = async () => {
       kelas_id: form.value.kelas_id,
       guru_id: form.value.guru_id,
       mata_pelajaran_id: form.value.mata_pelajaran_id,
+      semester_id: form.value.semester_id,
       siswa_id: item.id,
       kehadiran: item.kehadiran,
       tugas: item.tugas,
@@ -217,7 +242,7 @@ const isDataNotValid = computed(() => {
 </script>
 
 <template>
-  <SaveFileDialog
+  <SaveDialog
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
@@ -229,7 +254,7 @@ const isDataNotValid = computed(() => {
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.kelas_id"
         label="Kelas"
@@ -245,7 +270,7 @@ const isDataNotValid = computed(() => {
         :readonly="isEditing"
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.guru_id"
         label="Guru"
@@ -261,7 +286,7 @@ const isDataNotValid = computed(() => {
         :readonly="isEditing"
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="2">
       <VAutocomplete
         v-model="formData.mata_pelajaran_id"
         label="Mata Pelajaran"
@@ -269,6 +294,40 @@ const isDataNotValid = computed(() => {
         :error-messages="validationErrors.mata_pelajaran_id"
         placeholder="Pilih Mata Pelajaran"
         :items="mata_pelajaran"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :readonly="isEditing"
+      />
+    </VCol>
+
+    <VCol cols="12" md="2">
+      <VAutocomplete
+        v-model="formData.semester_id"
+        label="Semester"
+        density="compact"
+        :error-messages="validationErrors.semester_id"
+        placeholder="Pilih Semester"
+        :items="semester"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :readonly="isEditing"
+      />
+    </VCol>
+
+    <VCol cols="12" md="2">
+      <VAutocomplete
+        v-model="formData.periode_id"
+        label="Tahun Ajar"
+        density="compact"
+        :error-messages="validationErrors.periode_id_id"
+        placeholder="Pilih Tahun Ajar"
+        :items="periode"
         item-title="text"
         item-value="id"
         required
@@ -313,7 +372,7 @@ const isDataNotValid = computed(() => {
     <VCol cols="12" md="2">
       <VTextField v-model="formData.predikat" label="Predikat" />
     </VCol>
-  </SaveFileDialog>
+  </SaveDialog>
   <SaveBulkDialog
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
@@ -330,7 +389,7 @@ const isDataNotValid = computed(() => {
       }
     "
   >
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.kelas_id"
         label="Kelas"
@@ -351,7 +410,7 @@ const isDataNotValid = computed(() => {
         "
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.guru_id"
         label="Guru"
@@ -372,7 +431,7 @@ const isDataNotValid = computed(() => {
         "
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="2">
       <VAutocomplete
         v-model="formData.mata_pelajaran_id"
         label="Mata Pelajaran"
@@ -388,6 +447,46 @@ const isDataNotValid = computed(() => {
         @update:model-value="
           (mata_pelajaran_id) => {
             form.mata_pelajaran_id = mata_pelajaran_id;
+          }
+        "
+      />
+    </VCol>
+    <VCol cols="12" md="2">
+      <VAutocomplete
+        v-model="formData.semester_id"
+        label="Semester"
+        density="compact"
+        :error-messages="validationErrors.semester_id"
+        placeholder="Pilih Semester"
+        :items="semester"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        @update:model-value="
+          (semester_id) => {
+            form.semester_id = semester_id;
+          }
+        "
+      />
+    </VCol>
+    <VCol cols="12" md="2">
+      <VAutocomplete
+        v-model="formData.periode_id"
+        label="Tahun Ajar"
+        density="compact"
+        :error-messages="validationErrors.periode_id"
+        placeholder="Pilih Tahun Ajar"
+        :items="periode"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        @update:model-value="
+          (periode_id) => {
+            form.periode_id = periode_id;
           }
         "
       />
@@ -484,93 +583,99 @@ const isDataNotValid = computed(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VRow>
-            <VCol
-              cols="12"
-              md="4"
-              class="d-flex gap-4"
-              style="margin-block-start: 5px"
-            >
-              <!--
+          <VRow align="center" class="d-flex flex-wrap gap-2">
+            <!-- Action Buttons -->
+            <VCol cols="auto">
+              <div class="d-flex gap-2">
                 <VBtn
-                v-if="role_id == 1 || role_id == 2"
-                color="primary"
-                @click="dialogSave.show()"
-                >
-                <VIcon end icon="ri-add-fill" />
-                Nilai Single
-                </VBtn>
-              -->
-              <VBtn
-                v-if="role_id == 1 || role_id == 2"
-                color="primary"
-                @click="
-                  () => {
+                  v-if="role_id == 1 || role_id == 2"
+                  color="primary"
+                  @click="() => {
                     bulkingDialog.show();
                     siswaByClass = [];
-                  }
-                "
-              >
-                <VIcon end icon="ri-add-fill" />
-                Tambah Nilai
-              </VBtn>
-              <ExportFileExcel path="nilai/export-excel" />
+                  }"
+                >
+                  <VIcon end icon="ri-add-fill" />
+                  Tambah Nilai
+                </VBtn>
+                <ExportFileExcel path="nilai/export-excel" />
+              </div>
             </VCol>
-            <VCol cols="12" md="2" style="margin-block-start: 5px">
-              <VAutocomplete
-                v-model="kelas_id"
-                label="Kelas"
-                density="compact"
-                placeholder="Pilih Kelas"
-                :items="kelas"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="2" style="margin-block-start: 5px">
-              <VAutocomplete
-                v-model="guru_id"
-                label="Guru"
-                density="compact"
-                placeholder="Pilih Guru"
-                :items="guru"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="2" style="margin-block-start: 5px">
-              <VAutocomplete
-                v-model="mata_pelajaran_id"
-                label="Mata Pelajaran"
-                density="compact"
-                placeholder="Pilih Mata Pelajaran"
-                :items="mata_pelajaran"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="2" style="margin-block-start: 5px">
-              <VAutocomplete
-                v-model="semester_id"
-                label="Semester"
-                density="compact"
-                placeholder="Pilih Semester"
-                :items="semester"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
+
+            <!-- Filter Fields -->
+            <VCol>
+              <VRow>
+                <VCol cols="12" sm="6" md="2">
+                  <VAutocomplete
+                    v-model="kelas_id"
+                    label="Kelas"
+                    density="compact"
+                    placeholder="Pilih Kelas"
+                    :items="kelas"
+                    item-title="text"
+                    item-value="id"
+                    required
+                    clearable
+                    clear-icon="ri-close-line"
+                  />
+                </VCol>
+                <VCol cols="12" sm="6" md="3">
+                  <VAutocomplete
+                    v-model="guru_id"
+                    label="Guru"
+                    density="compact"
+                    placeholder="Pilih Guru"
+                    :items="guru"
+                    item-title="text"
+                    item-value="id"
+                    required
+                    clearable
+                    clear-icon="ri-close-line"
+                  />
+                </VCol>
+                <VCol cols="12" sm="6" md="3">
+                  <VAutocomplete
+                    v-model="mata_pelajaran_id"
+                    label="Mata Pelajaran"
+                    density="compact"
+                    placeholder="Pilih Mata Pelajaran"
+                    :items="filter_mata_pelajaran"
+                    item-title="text"
+                    item-value="id"
+                    required
+                    clearable
+                    clear-icon="ri-close-line"
+                  />
+                </VCol>
+                <VCol cols="12" sm="6" md="2">
+                  <VAutocomplete
+                    v-model="semester_id"
+                    label="Semester"
+                    density="compact"
+                    placeholder="Pilih Semester"
+                    :items="filter_semester"
+                    item-title="text"
+                    item-value="id"
+                    required
+                    clearable
+                    clear-icon="ri-close-line"
+                  />
+                </VCol>
+                <VCol cols="12" sm="6" md="2">
+                  <VAutocomplete
+                    v-model="periode_id"
+                    label="Tahun Ajar"
+                    density="compact"
+                    placeholder="Pilih Tahun Ajar"
+                    :items="filter_periode"
+                    item-title="text"
+                    item-value="id"
+                    required
+                    clearable
+                    clear-icon="ri-close-line"
+                  />
+                </VCol>
+              </VRow>
             </VCol>
           </VRow>
         </VCardItem>
@@ -587,6 +692,7 @@ const isDataNotValid = computed(() => {
         :guru_id="guru_id"
         :mata_pelajaran_id="mata_pelajaran_id"
         :semester_id="semester_id"
+        :periode_id="periode_id"
         :headers="[
           {
             title: 'Kelas',
@@ -604,8 +710,8 @@ const isDataNotValid = computed(() => {
             sortable: false,
           },
           {
-            title: 'NIM',
-            key: 'siswa_nim',
+            title: 'NISN',
+            key: 'siswa_nisn',
             sortable: false,
           },
           {

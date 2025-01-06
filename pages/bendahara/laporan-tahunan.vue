@@ -110,6 +110,13 @@ const goToPreviousPage = () => {
 };
 
 onMounted(() => {
+  const { user } = useAuthStore();
+  useApi(`level/bendahara-laporan-tahunan/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
+  
   getCabangList();
   getBanks();
 
@@ -118,6 +125,7 @@ onMounted(() => {
   // });
   fetchData(params);
 });
+
 
 const card_color = "info";
 const card_icon = "ri-money-dollar-box-line";

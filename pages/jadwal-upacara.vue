@@ -19,6 +19,13 @@ const getAllTeacher = async () => {
 }
 
 onMounted(() => {
+  const { user } = useAuthStore();
+  useApi(`level/jadwal-upacara/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
+
   getAllTeacher()
 })
 </script>

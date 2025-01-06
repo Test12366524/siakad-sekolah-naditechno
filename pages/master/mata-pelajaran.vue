@@ -29,10 +29,11 @@ useApi("master/semester/all").then(({ data }) => {
 });
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`master/mata-pelajaran/${data.role_id}`).then(({ data }) => {
-      if (data == 0) navigateTo("/not-authorized");
-    });
+  const { user } = useAuthStore();
+  useApi(`level/master-mata-pelajaran/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
 });
 </script>

@@ -38,12 +38,11 @@ const form = {
 };
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`web/ekstrakurikuler/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/web-ekstrakurikuler/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
 });
 </script>

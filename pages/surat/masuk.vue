@@ -31,6 +31,16 @@ const handleExportData = () => {
 const handleImportData = () => {
   console.log('Import Data')
 }
+
+onMounted(() => {
+  const { user } = useAuthStore();
+  useApi(`level/surat-masuk/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
+});
+
 </script>
 
 <template>

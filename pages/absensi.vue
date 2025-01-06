@@ -12,6 +12,7 @@ const siswa = ref();
 const siswaByClass = ref([]);
 const jadwal_mata_pelajaran = ref();
 const kelas = ref();
+const semester = ref();
 const mata_pelajaran = ref();
 const guru = ref();
 const user_id = ref();
@@ -19,6 +20,7 @@ const user_id = ref();
 const form = ref({
   kelas_id: null,
   jadwal_id: "",
+  semester_id: "",
   pertemuan_ke: "",
   siswa_id: "",
   kehadiran: "Hadir",
@@ -41,6 +43,7 @@ const bulkData = ref([
   {
     kelas_id: 2,
     jadwal_id: 4,
+    semester_id: 2,
     siswa_id: 3,
     kehadiran: "Hadir", // Hadir, Izin, Sakit, Alpa
     pertemuan_ke: 5,
@@ -63,6 +66,7 @@ const getSiswaByClass = (classId: number) => {
         ...item,
         kelas_id: form.value.kelas_id || classId,
         jadwal_id: form.value.jadwal_id,
+        semester_id: form.value.semester_id,
         siswa_id: item.id,
         kehadiran: "Hadir",
         pertemuan_ke: form.value.pertemuan_ke,
@@ -73,6 +77,7 @@ const getSiswaByClass = (classId: number) => {
       return {
         kelas_id: form.value.kelas_id || classId,
         jadwal_id: form.value.jadwal_id,
+        semester_id: form.value.semester_id,
         siswa_id: item.id,
         kehadiran: 1,
         pertemuan_ke: form.value.pertemuan_ke,
@@ -100,6 +105,10 @@ useApi("master/kelas/all").then(({ data }) => {
   kelas.value = data;
 });
 
+useApi("master/semester/all").then(({ data }) => {
+  semester.value = data;
+});
+
 useApi("siswa/all").then(({ data }) => {
   siswa.value = data;
 });
@@ -112,44 +121,40 @@ const role_id = ref();
 const status_action = ref();
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-
-    
-    role_id.value = data.role_id;
-    user_id.value = data.id;
-    if (data.role_id == 1){
-      status_action.value = true;
-      useApi("master/guru/all").then(({ data }) => {
-        guru.value = data;
-      });
-      useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
-        jadwal_mata_pelajaran.value = data;
-      });
-    } else if(data.role_id == 2){
-      status_action.value = true;
-      useApi("master/guru/byUserID/" + user_id.value).then(({ data }) => {
-        guru.value = data;
-        useApi("jadwal-mata-pelajaran/all/" + data.id).then(({ data }) => {
-          jadwal_mata_pelajaran.value = data;
-        });
-      });
-    } else {
-      useApi("master/guru/all").then(({ data }) => {
-        guru.value = data;
-      });
-      useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
-        jadwal_mata_pelajaran.value = data;
-      });
-      status_action.value = false;
+  const { user } = useAuthStore();
+  useApi(`level/absensi/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
     }
-
-    useApi(`absensi/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
-    
   });
+
+  role_id.value = user.role_id;
+  user_id.value = user.id;
+  if (user.role_id == 1){
+    status_action.value = true;
+    useApi("master/guru/all").then(({ data }) => {
+      guru.value = data;
+    });
+    useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
+      jadwal_mata_pelajaran.value = data;
+    });
+  } else if(user.role_id == 2){
+    status_action.value = true;
+    useApi("master/guru/byUserID/" + user_id.value).then(({ data }) => {
+      guru.value = data;
+      useApi("jadwal-mata-pelajaran/all/" + data.id).then(({ data }) => {
+        jadwal_mata_pelajaran.value = data;
+      });
+    });
+  } else {
+    useApi("master/guru/all").then(({ data }) => {
+      guru.value = data;
+    });
+    useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
+      jadwal_mata_pelajaran.value = data;
+    });
+    status_action.value = false;
+  }
 });
 
 
@@ -160,7 +165,7 @@ const kelas_id = ref<number | null>(null);
 
 const headers = [
   { title: "Nama", key: "name", sortable: false },
-  { title: "NIM", key: "nim", sortable: false },
+  { title: "NISN", key: "nisn", sortable: false },
   { title: "Keterangan", key: "keterangan", sortable: false, value: "-" },
   { title: "Kehadiran", key: "kehadiran", sortable: false, value: "Hadir" },
 ];
@@ -170,6 +175,7 @@ const handleInsertBulk = async () => {
     return {
       kelas_id: Number(form.value.kelas_id),
       jadwal_id: form.value.jadwal_id,
+      semester_id: form.value.semester_id,
       siswa_id: item.id,
       kehadiran: item.kehadiran,
       pertemuan_ke: form.value.pertemuan_ke,
@@ -199,6 +205,7 @@ const handleShowBulkDialog = () => {
   form.value = {
     kelas_id: "",
     jadwal_id: "",
+    semester_id: "",
     pertemuan_ke: "",
     siswa_id: "",
     kehadiran: "Hadir",
@@ -229,7 +236,7 @@ const isDataNotValid = computed(() => {
     :refresh-callback="tableRef.refresh"
     :width="900"
   >
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.kelas_id"
         label="Kelas"
@@ -245,7 +252,7 @@ const isDataNotValid = computed(() => {
         :readonly="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.jadwal_id"
         label="Jadwal Mata Pelajaran"
@@ -261,13 +268,29 @@ const isDataNotValid = computed(() => {
         :readonly="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.pertemuan_ke"
         type="number"
         :error-messages="validationErrors.pertemuan_ke"
         label="Pertemuan Ke"
         density="compact"
+        :readonly="isDetail"
+      />
+    </VCol>
+    <VCol cols="12" md="3">
+      <VAutocomplete
+        v-model="formData.semester_id"
+        label="Semester"
+        density="compact"
+        :error-messages="validationErrors.semester_id"
+        placeholder="Pilih Semester"
+        :items="semester"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
         :readonly="isDetail"
       />
     </VCol>
@@ -328,7 +351,7 @@ const isDataNotValid = computed(() => {
       }
     "
   >
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.kelas_id"
         label="Kelas"
@@ -354,7 +377,7 @@ const isDataNotValid = computed(() => {
         "
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.jadwal_id"
         label="Jadwal Mata Pelajaran"
@@ -374,7 +397,7 @@ const isDataNotValid = computed(() => {
         "
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.pertemuan_ke"
         type="number"
@@ -384,6 +407,26 @@ const isDataNotValid = computed(() => {
         @update:model-value="
           (pertemuan_ke) => {
             form.pertemuan_ke = pertemuan_ke;
+          }
+        "
+      />
+    </VCol>
+    <VCol cols="12" md="3">
+      <VAutocomplete
+        v-model="formData.semester_id"
+        label="Semester"
+        density="compact"
+        :error-messages="validationErrors.semester_id"
+        placeholder="Pilih Semester"
+        :items="semester"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        @update:model-value="
+          (semester_id) => {
+            form.semester_id = semester_id;
           }
         "
       />
@@ -545,17 +588,17 @@ const isDataNotValid = computed(() => {
         :headers="[
           {
             title: 'Kelas',
-            key: 'kelas_name',
-            sortable: false,
-          },
-          {
-            title: 'Guru',
-            key: 'guru_name',
+            key: 'wali_kelas_desc',
             sortable: false,
           },
           {
             title: 'Mata Pelajaran',
             key: 'mata_pelajaran_name',
+            sortable: false,
+          },
+          {
+            title: 'Guru',
+            key: 'guru_name',
             sortable: false,
           },
           {
@@ -574,8 +617,8 @@ const isDataNotValid = computed(() => {
             sortable: false,
           },
           {
-            title: 'NIM',
-            key: 'siswa_nim',
+            title: 'NISN',
+            key: 'siswa_nisn',
             sortable: false,
           },
           {

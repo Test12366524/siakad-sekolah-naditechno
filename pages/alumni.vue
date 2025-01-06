@@ -4,18 +4,24 @@ import { VCol, VTextField } from "vuetify/lib/components/index.mjs";
 const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
-
 const tableRef = ref();
+const siswa = ref();
 
 const form = {
-  name: "",
-  description: "",
-  status: 1,
+  siswa_id: undefined,
+  kerja: "",
+  perusahaan: "",
+  alamat_perusahaan: "",
 };
+
+useApi("siswa/all").then(({ data }) => {
+  siswa.value = data;
+});
+
 
 onMounted(() => {
   const { user } = useAuthStore();
-  useApi(`level/perpustakaan-kategori-buku/${user.role_id}`).then(({ data }) => {
+  useApi(`level/alumni/${user.role_id}`).then(({ data }) => {
     if(data == 0){
       navigateTo(`/not-authorized`);
     }
@@ -26,40 +32,49 @@ onMounted(() => {
 <template>
   <SaveDialog
     v-if="tableRef"
-    path="master/category-book"
-    title="Tambah Kategori Buku"
-    edit-title="Edit Kategori Buku"
+    path="siswa/alumni"
+    title="Tambah Alumni"
+    edit-title="Edit Alumni"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
+    <VCol cols="12" md="12">
+      <VAutocomplete
+        v-model="formData.siswa_id"
+        label="Siswa"
+        density="compact"
+        :error-messages="validationErrors.siswa_id"
+        placeholder="Pilih Siswa"
+        :items="siswa"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+      />
+    </VCol>
+    <VCol cols="12" md="12">
+      <VTextField
+        :error-messages="validationErrors.kerja"
+        v-model="formData.kerja"
+        label="Kerja"
+      />
+    </VCol>
+    <VCol cols="12" md="12">
+      <VTextField
+        :error-messages="validationErrors.perusahaan"
+        v-model="formData.perusahaan"
+        label="Perusahaan"
+      />
+    </VCol>
     <VCol cols="12">
       <VTextField
-        :error-messages="validationErrors.name"
-        v-model="formData.name"
-        label="Nama"
+        :error-messages="validationErrors.alamat_perusahaan"
+        v-model="formData.alamat_perusahaan"
+        label="Alamat Perusahaan"
       />
-    </VCol>
-    
-    <VCol cols="12">
-      <VTextarea
-        :error-messages="validationErrors.description"
-        v-model="formData.description"
-        label="Deskripsi"
-      />
-    </VCol>
-
-    <VCol cols="12">
-      <VLabel>Status</VLabel>
-      <VRadioGroup
-        inline
-        v-model="formData.status"
-        :error-messages="validationErrors.status"
-      >
-        <VRadio label="Aktif" :value="1"></VRadio>
-        <VRadio label="Nonaktif" :value="0"></VRadio>
-      </VRadioGroup>
     </VCol>
 
   </SaveDialog>
@@ -83,23 +98,28 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Kategori Buku"
-        path="master/category-book"
+        title="Data Alumni"
+        path="siswa/alumni"
         :with-actions="true"
         :headers="[
           {
-            title: 'Nama',
-            key: 'name',
+            title: 'Siswa',
+            key: 'siswa_name',
             sortable: false,
           },
           {
-            title: 'Deskripsi',
-            key: 'description',
+            title: 'Kerja',
+            key: 'kerja',
             sortable: false,
           },
           {
-            title: 'Status',
-            key: 'status_desc',
+            title: 'Perusahaan',
+            key: 'perusahaan',
+            sortable: false,
+          },
+          {
+            title: 'Alamat Perusahaan',
+            key: 'alamat_perusahaan',
             sortable: false,
           },
         ]"
@@ -107,7 +127,7 @@ onMounted(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              @click="dialogSave.show({ ...item, status_desc: undefined })"
+              @click="dialogSave.show({ ...item })"
               size="small"
             >
               <VIcon icon="ri-pencil-line" />
@@ -115,8 +135,8 @@ onMounted(() => {
             <IconBtn
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Kategori Buku',
-                  message: `Anda yakin ingin menghapus Kategori Buku ${
+                  title: 'Hapus Alumni',
+                  message: `Anda yakin ingin menghapus Alumni ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

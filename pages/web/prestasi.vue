@@ -1,45 +1,64 @@
 <script setup lang="ts">
+import { VCol, VTextField } from "vuetify/lib/components/index.mjs";
+
 const { confirmDialog } = useCommonStore();
+const { user } = useAuthStore();
 
 const dialogSave = ref();
 const tableRef = ref();
-const baseUrl = "slider";
+const baseUrl = "prestasi";
 
 const headers = [
   {
-    title: "Title",
+    title: "Kategori",
+    key: "category_name",
+    sortable: false,
+  },
+  {
+    title: "Judul",
     key: "title",
     sortable: false,
   },
   {
-    title: "Description",
-    key: "description",
+    title: "Kompetisi",
+    key: "kompetisi",
     sortable: false,
   },
   {
-    title: "Order",
-    key: "order",
+    title: "Atas Nama",
+    key: "atas_nama",
+    sortable: false,
+  },
+  {
+    title: "Publish Date",
+    key: "publish_date",
     sortable: false,
   },
   {
     title: "Status",
-    key: "status",
+    key: "status_desc",
     sortable: false,
   },
 ];
 
 const form = {
   title: "",
-  image: "",
-  description: "",
+  kompetisi: "",
+  atas_nama: "",
+  cover: "",
   content: "",
+  publish_date: "",
+  author_id: user.id,
   status: "",
-  order: "",
 };
 
+const category = ref();
+useApi("prestasi-category/all").then(({ data }) => {
+  category.value = data;
+});
+
 onMounted(() => {
-  const { user } = useAuthStore();
-  useApi(`level/web-slider/${user.role_id}`).then(({ data }) => {
+  useApi(`level/web-prestasi/${user.role_id}`).then(({ data }) => {
     if(data == 0){
       navigateTo(`/not-authorized`);
     }
@@ -50,39 +69,57 @@ onMounted(() => {
 <template>
   <SaveFileDialog
     v-if="tableRef"
-    v-slot="{ formData, validationErrors }"
+    v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     :path="baseUrl"
-    title="Tambah Ekstrakulikuler"
-    edit-title="Edit Ekstrakulikuler"
+    title="Tambah Prestasi"
+    edit-title="Edit Prestasi"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
     :width="1000"
   >
     <VCol cols="12">
+      <VAutocomplete
+        v-model="formData.prestasi_category_id"
+        label="Kategori Prestasi"
+        density="compact"
+        :error-messages="validationErrors.prestasi_category_id"
+        placeholder="Pilih Kategori Prestasi"
+        :items="category"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+      />
+    </VCol>
+    <VCol cols="12">
       <VTextField
         v-model="formData.title"
         :error-messages="validationErrors.title"
-        label="Title"
+        label="Judul"
       />
     </VCol>
+
     <VCol cols="12">
-      <VTextarea
-        v-model="formData.description"
-        :error-messages="validationErrors.description"
-        label="Description"
+      <VTextField
+        v-model="formData.kompetisi"
+        :error-messages="validationErrors.kompetisi"
+        label="Kompetisi"
       />
     </VCol>
+
     <VCol cols="12">
-      <VTextarea
-        v-model="formData.content"
-        :error-messages="validationErrors.content"
-        label="Content"
+      <VTextField
+        v-model="formData.atas_nama"
+        :error-messages="validationErrors.atas_nama"
+        label="Atas Nama"
       />
     </VCol>
+
     <VCol cols="12" md="6">
       <FileInput
-        v-model="formData.image"
+        v-model="formData.cover"
         accept="image/*"
         label="Cover"
         small-chips
@@ -92,10 +129,10 @@ onMounted(() => {
     </VCol>
     <VCol cols="12" md="3">
       <VTextField
-        v-model="formData.order"
-        :error-messages="validationErrors.order"
-        label="Order"
-        type="number"
+        v-model="formData.publish_date"
+        :error-messages="validationErrors.publish_date"
+        label="Publish Date"
+        type="date"
       />
     </VCol>
     <VCol cols="12" md="3">
@@ -121,6 +158,13 @@ onMounted(() => {
         clear-icon="ri-close-line"
       />
     </VCol>
+    <VCol cols="12">
+      <VTextarea
+        v-model="formData.content"
+        :error-messages="validationErrors.content"
+        label="Content"
+      />
+    </VCol>
   </SaveFileDialog>
 
   <VRow>
@@ -142,7 +186,7 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Berita"
+        title="Prestasi"
         :path="baseUrl"
         :with-actions="true"
         :headers="headers"
@@ -156,6 +200,9 @@ onMounted(() => {
                   console.log(item);
                   dialogSave.show({
                     ...item,
+                    publish_date: new Date(item.publish_date)
+                      .toISOString()
+                      .split('T')[0],
                   });
                 }
               "
@@ -166,8 +213,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Berita',
-                  message: `Anda yakin ingin menghapus berita ini?`,
+                  title: 'Hapus Prestasi',
+                  message: `Anda yakin ingin menghapus prestasi ini?`,
                   onConfirm: () => remove((item as any).id),
                 })
               "

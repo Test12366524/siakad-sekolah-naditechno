@@ -63,7 +63,7 @@ const isDataNotValid = computed(
 
 const headers = [
   { title: "Nama", key: "name", sortable: false },
-  { title: "NIM", key: "nim", sortable: false },
+  { title: "NISN", key: "nisn", sortable: false },
   { title: "Kelas", key: "kelas_name", sortable: false },
   { title: "Periode saat ini", key: "periode_name", sortable: false },
   { title: "Semester saat ini", key: "semester_name", sortable: false },
@@ -139,20 +139,21 @@ const fetchRequirementDatas = () => {
     kelasList.value = data;
   });
 
-  useApi("master/periode/all").then(({ data }) => {
+  useApi("master/periode/all/0").then(({ data }) => {
     periodeList.value = data;
   });
 
-  useApi("master/semester/all").then(({ data }) => {
+  useApi("master/semester/all/0").then(({ data }) => {
     semesterList.value = data;
   });
 };
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`kenaikan-kelas/${data.role_id}`).then(({ data }) => {
-      if (data == 0) navigateTo("/");
-    });
+  const { user } = useAuthStore();
+  useApi(`level/kenaikan-kelas/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
   fetchRequirementDatas();
 });
@@ -362,8 +363,8 @@ onMounted(() => {
             sortable: false,
           },
           {
-            title: 'NIM',
-            key: 'nim',
+            title: 'NISN',
+            key: 'nisn',
             sortable: false,
           },
           {

@@ -21,17 +21,16 @@ const role_id = ref();
 const status_action = ref();
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    role_id.value = data.role_id;
-    if (data.role_id == 1 || data.role_id == 2) status_action.value = true;
-    else status_action.value = true;
-
-    useApi(`prasarana/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/prasarana/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
+
+  if (user.role_id == 1 || user.role_id == 2) status_action.value = true;
+  else status_action.value = true;
+
 });
 </script>
 

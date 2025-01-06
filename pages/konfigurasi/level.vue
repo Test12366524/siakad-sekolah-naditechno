@@ -25,12 +25,11 @@ const handleEdit = (item: any) => {
 };
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`konfigurasi/level/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/konfigurasi-level/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
   useApi("/menu").then(({ data }) => {
     permissions.value = data;

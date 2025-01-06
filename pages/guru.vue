@@ -45,7 +45,11 @@ const { user } = useAuthStore();
 const previewPhoto = ref("");
 
 onMounted(() => {
-  if (user.role_id !== 1) return navigateTo("/not-authorized");
+  useApi(`level/guru/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
   getTugasTambahan();
   getMataPelajaran();
 });

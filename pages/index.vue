@@ -53,14 +53,16 @@ const mappingData = (dataObject, icon = "ri-wallet-line") => {
 
 const mappingDataSiswa = (dataObject, icon = "ri-wallet-line") => {
   const titleMapping = {
+    total_lms_start: "Total LMS",
     total_lms_not_done: "LMS Yang Belum Dikerjakan",
-    total_hadir: "Total Pembayaran PMB",
-    total_izin: "Total Siswa",
-    total_sakit: "Total Guru",
-    total_alpa: "Total Guru",
+    total_hadir: "Total Hadir",
+    total_izin: "Total Izin",
+    total_sakit: "Total Sakit",
+    total_alpa: "Total Alpa",
   };
 
   const iconMapping = {
+    total_lms_start: "ri-user-add-line",
     total_lms_not_done: "ri-user-add-line",
     total_hadir: "ri-currency-line",
     total_izin: "ri-user-follow-fill",

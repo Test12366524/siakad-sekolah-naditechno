@@ -13,12 +13,11 @@ const form = {
 };
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`master/tahun-ajaran/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/master-tahun-ajaran/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
 });
 </script>

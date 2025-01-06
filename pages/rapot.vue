@@ -12,25 +12,24 @@ const form = ref({
 
 const role_id = ref();
 onMounted(() => {
-  
-  useApi("auth/me").then(({ data }) => {
-    useApi(`rapot/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });  
-    useApi("siswa/getID/" + data.id).then(({ data }) => {
-        const siswa_id = data;
-        useApi("rapot/" + siswa_id).then(({ data }) => {
-            form.value.name = data.siswa.siswa_name;
-            form.value.nim = data.siswa.siswa_nim;
-            form.value.periode = data.siswa.periode_name;
-            form.value.semester = data.siswa.semester_name;
-            // Simpan data rapot
-            rapots.value = data.rapot;
-        });
-    })
+  const { user } = useAuthStore();
+  useApi(`level/rapot/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
+
+  useApi("siswa/getID/" + user.id).then(({ data }) => {
+    const siswa_id = data;
+    useApi("rapot/" + siswa_id).then(({ data }) => {
+      form.value.name = data.siswa.siswa_name;
+      form.value.nim = data.siswa.siswa_nim;
+      form.value.periode = data.siswa.periode_name;
+      form.value.semester = data.siswa.semester_name;
+      // Simpan data rapot
+      rapots.value = data.rapot;
+    });
+  })
 });
 </script>
 

@@ -6,6 +6,7 @@ const { confirmDialog } = useCommonStore();
 const { user } = useAuthStore();
 
 const taskEditDialog = ref();
+const taskEditNilaiDialog = ref();
 const taskAssignmentDialog = ref();
 const tableRef = ref();
 const guru = ref();
@@ -179,13 +180,12 @@ const guru_id = ref<number | null>(null);
         <VBtn
           :disabled="!formData.lms_link"
           class="d-flex justify-center items-center"
-          @click="
-            () => {
-              window.open(formData.lms_link, '_blank');
-            }
-          "
+          :href="formData.lms_link"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <VIcon icon="ri-eye-line" class="mr-2" />Open Link
+          <VIcon icon="ri-eye-line" class="mr-2" />
+          Open Link
         </VBtn>
         <VBtn
           :disabled="!formData.file"
@@ -254,7 +254,7 @@ const guru_id = ref<number | null>(null);
       <VTextField v-model="formData.lms_subtitle" label="Sub Judul" readonly />
     </VCol>
     <VCol cols="12">
-      <VTextarea v-model="formData.description" label="Deskripsi Soal" />
+      <VTextarea v-model="formData.description" label="Deskripsi Guru" disabled/>
     </VCol>
     <VCol cols="12" md="7">
       <div class="d-flex justify-between items-center gap-4">
@@ -287,13 +287,12 @@ const guru_id = ref<number | null>(null);
         <VBtn
           :disabled="!formData.lms_link"
           class="d-flex justify-center items-center"
-          @click="
-            () => {
-              window.open(formData.lms_link, '_blank');
-            }
-          "
+          :href="formData.lms_link"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <VIcon icon="ri-eye-line" class="mr-2" />Open Link
+          <VIcon icon="ri-eye-line" class="mr-2" />
+          Open Link
         </VBtn>
       </div>
     </VCol>
@@ -309,7 +308,100 @@ const guru_id = ref<number | null>(null);
       />
     </VCol>
   </SaveFileDialog>
-
+  <SaveFileDetailDialog
+    v-if="tableRef"
+    v-slot="{ formData, validationErrors, isEditing }"
+    ref="taskEditNilaiDialog"
+    width="1000"
+    path="lms-tugas"
+    title="Edit Tugas"
+    edit-title="Edit Tugas"
+    :refresh-callback="tableRef.refresh"
+    :request-form="formUploadTugas"
+    custom-button-text="Upload"
+  >
+    <VCol cols="12" md="6">
+      <VTextField
+        v-model="formData.mata_pelajaran_name"
+        label="Mata Pelajaran"
+        readonly
+      />
+    </VCol>
+    <VCol cols="12" md="3">
+      <VTextField
+        v-model="formData.lms_start_date"
+        label="Dari Tanggal"
+        readonly
+      />
+    </VCol>
+    <VCol cols="12" md="3">
+      <VTextField
+        v-model="formData.lms_until_date"
+        label="Sampai Tanggal"
+        readonly
+      />
+    </VCol>
+    <VCol cols="12" md="6">
+      <VTextField v-model="formData.lms_title" label="Judul" readonly />
+    </VCol>
+    <VCol cols="12" md="6">
+      <VTextField v-model="formData.lms_subtitle" label="Sub Judul" readonly />
+    </VCol>
+    <VCol cols="12">
+      <VTextarea v-model="formData.description" label="Deskripsi Guru" disabled/>
+    </VCol>
+    <VCol cols="12" md="7">
+      <div class="d-flex justify-between items-center gap-4">
+        <VBtn
+          :disabled="!formData.lms_file_pdf"
+          class="d-flex justify-center items-center"
+          @click="
+            () => {
+              openFileHandler(formData.lms_file_pdf);
+            }
+          "
+        >
+          <VIcon icon="ri-eye-line" class="mr-2" />{{
+            formData.lms_file_pdf ? "Soal 1 (PDF)" : "Soal 1 (Kosong)"
+          }}
+        </VBtn>
+        <VBtn
+          :disabled="!formData.lms_file_image"
+          class="d-flex justify-center items-center"
+          @click="
+            () => {
+              openFileHandler(formData.lms_file_image);
+            }
+          "
+        >
+          <VIcon icon="ri-eye-line" class="mr-2" />{{
+            formData.lms_file_image ? "Soal 2 (Image)" : "Soal 2 (Kosong)"
+          }}
+        </VBtn>
+        <VBtn
+          :disabled="!formData.lms_link"
+          class="d-flex justify-center items-center"
+          :href="formData.lms_link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <VIcon icon="ri-eye-line" class="mr-2" />
+          Open Link
+        </VBtn>
+      </div>
+    </VCol>
+    <VCol cols="12" md="5">
+      <FileInput
+        v-model="formData.file"
+        :label="
+          typeof formData.file === 'string' ? formData.file : 'Upload Jawaban'
+        "
+        small-chips
+        show-preview
+        chips
+      />
+    </VCol>
+  </SaveFileDetailDialog>
   <VRow>
     <VCol cols="12">
       <VCard>
@@ -373,7 +465,19 @@ const guru_id = ref<number | null>(null);
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              v-if="!isGuruOrAdmin"
+              v-if="!isGuruOrAdmin && item.nilai >= 0 && item.nilai != undefined"
+              size="small"
+              @click="
+                () => {
+                  taskEditNilaiDialog.show(item);
+                }
+              "
+            >
+              <VIcon icon="ri-eye-line" />
+            </IconBtn>
+
+            <IconBtn
+              v-if="!isGuruOrAdmin && item.nilai == undefined"
               size="small"
               @click="
                 () => {
@@ -383,6 +487,7 @@ const guru_id = ref<number | null>(null);
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
+            
             <IconBtn
               v-if="isGuruOrAdmin"
               size="small"
@@ -416,3 +521,9 @@ const guru_id = ref<number | null>(null);
     </VCol>
   </VRow>
 </template>
+
+<style scoped>
+  :deep(.v-field__input) {
+    color-scheme: none;
+  }
+</style>

@@ -9,13 +9,11 @@ const tableRef = ref();
 
 const form = {
   name: "",
-  description: "",
-  status: 1,
 };
 
 onMounted(() => {
   const { user } = useAuthStore();
-  useApi(`level/perpustakaan-kategori-buku/${user.role_id}`).then(({ data }) => {
+  useApi(`level/web-kategori-prestasi/${user.role_id}`).then(({ data }) => {
     if(data == 0){
       navigateTo(`/not-authorized`);
     }
@@ -26,9 +24,9 @@ onMounted(() => {
 <template>
   <SaveDialog
     v-if="tableRef"
-    path="master/category-book"
-    title="Tambah Kategori Buku"
-    edit-title="Edit Kategori Buku"
+    path="prestasi-category"
+    title="Tambah Kategori Prestasi"
+    edit-title="Edit Kategori Prestasi"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     :default-form="form"
@@ -41,26 +39,7 @@ onMounted(() => {
         label="Nama"
       />
     </VCol>
-    
-    <VCol cols="12">
-      <VTextarea
-        :error-messages="validationErrors.description"
-        v-model="formData.description"
-        label="Deskripsi"
-      />
-    </VCol>
 
-    <VCol cols="12">
-      <VLabel>Status</VLabel>
-      <VRadioGroup
-        inline
-        v-model="formData.status"
-        :error-messages="validationErrors.status"
-      >
-        <VRadio label="Aktif" :value="1"></VRadio>
-        <VRadio label="Nonaktif" :value="0"></VRadio>
-      </VRadioGroup>
-    </VCol>
 
   </SaveDialog>
 
@@ -83,23 +62,13 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Kategori Buku"
-        path="master/category-book"
+        title="Data Kategori Prestasi"
+        path="prestasi-category"
         :with-actions="true"
         :headers="[
           {
             title: 'Nama',
             key: 'name',
-            sortable: false,
-          },
-          {
-            title: 'Deskripsi',
-            key: 'description',
-            sortable: false,
-          },
-          {
-            title: 'Status',
-            key: 'status_desc',
             sortable: false,
           },
         ]"
@@ -115,8 +84,8 @@ onMounted(() => {
             <IconBtn
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Kategori Buku',
-                  message: `Anda yakin ingin menghapus Kategori Buku ${
+                  title: 'Hapus Kategori Prestasi',
+                  message: `Anda yakin ingin menghapus Kategori Prestasi ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

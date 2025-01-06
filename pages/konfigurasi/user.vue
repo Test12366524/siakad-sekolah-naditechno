@@ -20,12 +20,11 @@ const form = {
 };
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`konfigurasi/user/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/konfigurasi-user/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
   useApi("level/all").then(({ data }) => {
     roles.value = data;

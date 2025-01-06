@@ -10,6 +10,11 @@ const baseUrl = "article";
 
 const headers = [
   {
+    title: "Kategori",
+    key: "category_name",
+    sortable: false,
+  },
+  {
     title: "Title",
     key: "title",
     sortable: false,
@@ -46,13 +51,16 @@ const form = {
   status: "",
 };
 
+const category = ref();
+useApi("article-category/all").then(({ data }) => {
+  category.value = data;
+});
+
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`web/berita/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  useApi(`level/web-berita/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
 });
 </script>
@@ -69,6 +77,21 @@ onMounted(() => {
     :refresh-callback="tableRef.refresh"
     :width="1000"
   >
+    <VCol cols="12">
+      <VAutocomplete
+        v-model="formData.article_category_id"
+        label="Kategori Berita"
+        density="compact"
+        :error-messages="validationErrors.article_category_id"
+        placeholder="Pilih Kategori Berita"
+        :items="category"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+      />
+    </VCol>
     <VCol cols="12">
       <VTextField
         v-model="formData.title"

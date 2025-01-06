@@ -4,11 +4,14 @@ const { confirmDialog } = useCommonStore()
 const dialogSave = ref()
 
 const tableRef = ref()
+const periode = ref()
+const filter_periode = ref()
 
 const form = ref({
   guru_id: null,
   mata_pelajaran_id: null,
   semester_id: null,
+  periode_id: null,
   hari: '0', // 0 sampe 6
   dari_jam: null,
   ke_jam: null,
@@ -19,6 +22,10 @@ const form = ref({
 const teacherList = ref([])
 const mataPelajaranList = ref([])
 const semesterList = ref([])
+const filterSemesterList = ref([])
+
+const semester_id = ref<number | null>(null);
+const periode_id = ref<number | null>(null);
 
 const dayList = ref([
   { id: '0', text: 'Senin' },
@@ -43,11 +50,22 @@ const getAllMataPelajaran = async () => {
 }
 
 const getAllSemester = async () => {
-  useApi('master/semester/all').then(({ data }) => {
-    console.log('semester', data)
+  useApi('master/semester/all/1').then(({ data }) => {
     semesterList.value = data
   })
+
+  useApi('master/semester/all/0').then(({ data }) => {
+    filterSemesterList.value = data
+  })
 }
+
+useApi("master/periode/all/1").then(({ data }) => {
+  periode.value = data;
+});
+
+useApi("master/periode/all/0").then(({ data }) => {
+  filter_periode.value = data;
+});
 
 const handleExportPdf = item => {
   const payload = { ...item }
@@ -59,7 +77,15 @@ onMounted(() => {
   getAllTeacher()
   getAllMataPelajaran()
   getAllSemester()
+
+  const { user } = useAuthStore();
+  useApi(`level/penjadwalan/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
 })
+
 </script>
 
 <template>
@@ -137,6 +163,25 @@ onMounted(() => {
       md="6"
     >
       <VAutocomplete
+        v-model="formData.periode_id"
+        label="Periode"
+        :error-messages="validationErrors.periode_id"
+        placeholder="Pilih Periode"
+        :items="periode"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :readonly="isDetail"
+        density="compact"
+      />
+    </VCol>
+    <VCol
+      cols="12"
+      md="6"
+    >
+      <VAutocomplete
         v-model="formData.hari"
         label="Hari"
         density="compact"
@@ -150,7 +195,7 @@ onMounted(() => {
         clear-icon="ri-close-line"
       />
     </VCol>
-    <VCol cols="6">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.dari_jam"
         type="time"
@@ -160,7 +205,7 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="6">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.ke_jam"
         type="time"
@@ -206,20 +251,52 @@ onMounted(() => {
     <VCol cols="12">
       <VCard>
         <VCardItem>
-          <VBtn
-            color="primary"
-            @click="
-              () => {
-                dialogSave.show();
-              }
-            "
-          >
-            <VIcon
-              end
-              icon="ri-add-fill"
-            />
-            Tambah Data
-          </VBtn>
+          <VRow>
+            <VCol cols="12" md="6">
+              <VBtn
+                color="primary"
+                @click="
+                  () => {
+                    dialogSave.show();
+                  }
+                "
+              >
+                <VIcon
+                  end
+                  icon="ri-add-fill"
+                />
+                Tambah Data
+              </VBtn>
+            </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
+            </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
+              <VAutocomplete
+                v-model="periode_id"
+                label="Tahun Ajaran"
+                placeholder="Pilih Tahun Ajaran"
+                :items="filter_periode"
+                item-title="text"
+                item-value="id"
+                required
+                clearable
+                clear-icon="ri-close-line"
+              />
+            </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
+              <VAutocomplete
+                v-model="semester_id"
+                label="Semester"
+                placeholder="Pilih Semester"
+                :items="filterSemesterList"
+                item-title="text"
+                item-value="id"
+                required
+                clearable
+                clear-icon="ri-close-line"
+              />
+            </VCol>
+          </VRow>
         </VCardItem>
       </VCard>
     </VCol>
@@ -229,6 +306,8 @@ onMounted(() => {
         ref="tableRef"
         title="Data Jadwal Guru"
         path="jadwal-mata-pelajaran"
+        :periode_id="periode_id"
+        :semester_id="semester_id"
         :with-actions="true"
         :headers="[
           {
@@ -244,6 +323,11 @@ onMounted(() => {
           {
             title: 'Semester',
             key: 'semester_name',
+            sortable: false,
+          },
+          {
+            title: 'Tahun Ajar',
+            key: 'periode_name',
             sortable: false,
           },
           {

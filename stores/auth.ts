@@ -5,6 +5,7 @@ const DEFAULT_USER = {
   email: "",
   name: "",
   role: "",
+  role_id: 0,
 };
 
 export const useAuthStore = defineStore("auth", () => {

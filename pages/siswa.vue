@@ -6,22 +6,22 @@ const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
 const tableRef = ref();
-const fakultas = ref();
 const kelas = ref();
 const semester = ref();
+const filter_semester = ref();
 const periode = ref();
+const filter_periode = ref();
 
 const jurusans = ref();
 const angkatans = ref();
 
 const form = ref({
-  id: "",
-  user_id: "",
-  angkatan_id: "",
-  semester_id: "",
-  periode_id: "",
-  jurusan_id: "",
-  kelas_id: "",
+  user_id: undefined,
+  angkatan_id: undefined,
+  semester_id: undefined,
+  periode_id: undefined,
+  jurusan_id: undefined,
+  kelas_id: undefined,
   name: "",
   photo: "",
   birth_date: "",
@@ -58,18 +58,11 @@ const form = ref({
   nik_ibu: "",
   no_kk: "",
   asal_sekolah: "",
-  jurusan_name: "",
-  jurusan_code: "",
-  periode_name: "",
-  angkatan_name: "",
-  semester_name: "",
-  kelas_name: "",
-  kelas_code: "",
 });
 
 const religions = ref([
   { id: "Islam", text: "Islam" },
-  { id: "Kristen", text: "Kristen" },
+  { id: "Protestan", text: "Protestan" },
   { id: "Katolik", text: "Katolik" },
   { id: "Hindu", text: "Hindu" },
   { id: "Budha", text: "Budha" },
@@ -90,12 +83,20 @@ useApi("master/kelas/all").then(({ data }) => {
   kelas.value = data;
 });
 
-useApi("master/semester/all").then(({ data }) => {
+useApi("master/semester/all/1").then(({ data }) => {
   semester.value = data;
 });
 
-useApi("master/periode/all").then(({ data }) => {
+useApi("master/semester/all/0").then(({ data }) => {
+  filter_semester.value = data;
+});
+
+useApi("master/periode/all/1").then(({ data }) => {
   periode.value = data;
+});
+
+useApi("master/periode/all/0").then(({ data }) => {
+  filter_periode.value = data;
 });
 
 useApi("master/jurusan/all").then(({ data }) => {
@@ -126,7 +127,7 @@ const getProvinceList = async () => {
 
   const resetKeys = ["city_id", "district_id", "subdistrict_id"];
 
-  dialogSave.value.resetData(form.value, resetKeys);
+  // dialogSave.value.resetData(form.value, resetKeys);
 };
 
 const getCityList = async (province_id: number) => {
@@ -140,7 +141,7 @@ const getCityList = async (province_id: number) => {
 
   const resetKeys = ["district_id", "subdistrict_id"];
 
-  dialogSave.value.resetData(form.value, resetKeys);
+  // dialogSave.value.resetData(form.value, resetKeys);
 };
 
 const getDistrictList = async (city_id: number) => {
@@ -153,7 +154,7 @@ const getDistrictList = async (city_id: number) => {
 
   const resetKeys = ["subdistrict_id"];
 
-  dialogSave.value.resetData(form.value, resetKeys);
+  // dialogSave.value.resetData(form.value, resetKeys);
 };
 
 const getSubDistrictList = async (district_id: number) => {
@@ -242,31 +243,6 @@ const handleShowDialog = async (data, isDetail) => {
             <VRow>
               <VCol cols="12" md="6">
                 <VTextField
-                  v-model="formData.name"
-                  :error-messages="validationErrors.name"
-                  label="Nama Siswa"
-                  :readonly="isDetail"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
-                <VTextField
-                  v-model="formData.place_of_birth"
-                  :error-messages="validationErrors.place_of_birth"
-                  label="Tempat Lahir"
-                  :readonly="isDetail"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
-                <VTextField
-                  v-model="formData.birth_date"
-                  type="date"
-                  :error-messages="validationErrors.birth_date"
-                  label="Tanggal Lahir"
-                  :readonly="isDetail"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
-                <VTextField
                   v-model="formData.nis"
                   :error-messages="validationErrors.nis"
                   label="No Induk Siswa"
@@ -305,6 +281,107 @@ const handleShowDialog = async (data, isDetail) => {
                   :readonly="isDetail"
                 />
               </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.name"
+                  :error-messages="validationErrors.name"
+                  label="Nama Siswa"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.place_of_birth"
+                  :error-messages="validationErrors.place_of_birth"
+                  label="Tempat Lahir"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.birth_date"
+                  type="date"
+                  :error-messages="validationErrors.birth_date"
+                  label="Tanggal Lahir"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.semester_id"
+                  label="Semester"
+                  :error-messages="validationErrors.semester_id"
+                  placeholder="Pilih Semester"
+                  :items="semester"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.angkatan_id"
+                  label="Angkatan"
+                  :error-messages="validationErrors.angkatan_id"
+                  placeholder="Pilih Angkatan"
+                  :items="angkatans"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.periode_id"
+                  label="Periode"
+                  :error-messages="validationErrors.periode_id"
+                  placeholder="Pilih Periode"
+                  :items="periode"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.jurusan_id"
+                  label="Jurusan"
+                  :error-messages="validationErrors.jurusan_id"
+                  placeholder="Pilih Jurusan"
+                  :items="jurusans"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.kelas_id"
+                  label="Kelas"
+                  :error-messages="validationErrors.kelas_id"
+                  placeholder="Pilih Kelas"
+                  :items="kelas"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+             
             </VRow>
           </VCardText>
         </VCard>
@@ -613,7 +690,7 @@ const handleShowDialog = async (data, isDetail) => {
                 v-model="periode_id"
                 label="Tahun Ajaran"
                 placeholder="Pilih Tahun Ajaran"
-                :items="periode"
+                :items="filter_periode"
                 item-title="text"
                 item-value="id"
                 required
@@ -626,7 +703,7 @@ const handleShowDialog = async (data, isDetail) => {
                 v-model="semester_id"
                 label="Semester"
                 placeholder="Pilih Semester"
-                :items="semester"
+                :items="filter_semester"
                 item-title="text"
                 item-value="id"
                 required

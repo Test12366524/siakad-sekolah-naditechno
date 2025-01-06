@@ -13,6 +13,7 @@ const form = {
   jurusan_id: undefined,
   name: "",
   code: "",
+  tingkat: "",
 };
 
 useApi("master/jurusan/all").then(({ data }) => {
@@ -24,12 +25,11 @@ useApi("master/guru/all").then(({ data }) => {
 });
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`master/kelas/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/master-kelas/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
 });
 </script>
@@ -75,14 +75,21 @@ onMounted(() => {
         clear-icon="ri-close-line"
       />
     </VCol>
-    <VCol cols="12">
+    <VCol cols="12" md="6">
+      <VTextField
+        :error-messages="validationErrors.tingkat"
+        v-model="formData.tingkat"
+        label="Tingkat"
+        type="number"
+      />
+    </VCol>
+    <VCol cols="12" md="6">
       <VTextField
         :error-messages="validationErrors.code"
         v-model="formData.code"
         label="Kode"
       />
     </VCol>
-
     <VCol cols="12">
       <VTextField
         :error-messages="validationErrors.name"
@@ -117,13 +124,18 @@ onMounted(() => {
         :with-actions="true"
         :headers="[
           {
-            title: 'Wali KElas',
+            title: 'Wali Kelas',
             key: 'wali_kelas_name',
             sortable: false,
           },
           {
             title: 'Jurusan',
             key: 'jurusan_name',
+            sortable: false,
+          },
+          {
+            title: 'Tingkat',
+            key: 'tingkat',
             sortable: false,
           },
           {

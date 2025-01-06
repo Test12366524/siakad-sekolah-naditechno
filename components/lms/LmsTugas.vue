@@ -22,7 +22,6 @@ const form = {
   description: "",
   start_date: "",
   until_date: "",
-  order: "",
   status: "",
 };
 
@@ -35,7 +34,7 @@ const formUploadTugas = ref({
 
 
 
-const getMataKuliahByClass = (guru_id: number) => {
+const getMataPelajaranByClass = (guru_id: number) => {
   useApi("master/mata-pelajaran/all/" + guru_id).then(({ data }) => {
     mata_pelajaran.value = data;
   });
@@ -80,19 +79,26 @@ const getGuruDetails = () => {
   useApi(url).then(({ data }) => {
     if (data.items){
       form.guru_id = data.items[0].id;
-      getMataKuliahByClass(data.items[0].id)
+      getMataPelajaranByClass(data.items[0].id)
     }  
   });
 };
 
 onMounted(() => {
   if (isGuru.value) getGuruDetails();
-  if (form.guru_id > 0) getMataKuliahByClass(form.guru_id)
+  if (form.guru_id > 0) getMataPelajaranByClass(form.guru_id)
   tableRef.value.refresh();
 });
 
 const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
+
+const resetTime = (date: any) => {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
 </script>
 
 <template>
@@ -166,13 +172,12 @@ const guru_id = ref<number | null>(null);
         <VBtn
           :disabled="!formData.link"
           class="d-flex justify-center items-center"
-          @click="
-            () => {
-              window.open(formData.link, '_blank');
-            }
-          "
+          :href="formData.link"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <VIcon icon="ri-eye-line" class="mr-2" />Open Link
+          <VIcon icon="ri-eye-line" class="mr-2" />
+          Open Link
         </VBtn>
       </div>
     </VCol>
@@ -213,7 +218,7 @@ const guru_id = ref<number | null>(null);
         clear-icon="ri-close-line"
         @update:model-value="
           (guru_id: number) => {
-            getMataKuliahByClass(guru_id);
+            getMataPelajaranByClass(guru_id);
           }
         "
       />
@@ -295,14 +300,6 @@ const guru_id = ref<number | null>(null);
         type="date"
         :error-messages="validationErrors.until_date"
         label="Tanggal Akhir"
-      />
-    </VCol>
-    <VCol cols="12" md="3">
-      <VTextField
-        v-model="formData.order"
-        type="number"
-        :error-messages="validationErrors.order"
-        label="Urutan"
       />
     </VCol>
     <VCol cols="12" md="3">
@@ -439,7 +436,7 @@ const guru_id = ref<number | null>(null);
               <VIcon icon="ri-delete-bin-line" />
             </IconBtn>
             <IconBtn
-              v-if="isSiswa"
+              v-if="isSiswa && resetTime(new Date(item.until_date)) >= resetTime(new Date())"
               label="Upload Jawaban"
               size="small"
               @click="handleUploadTugas(item)"
@@ -452,3 +449,9 @@ const guru_id = ref<number | null>(null);
     </VCol>
   </VRow>
 </template>
+
+<style scoped>
+  :deep(.v-field__input) {
+    color-scheme: none;
+  }
+</style>

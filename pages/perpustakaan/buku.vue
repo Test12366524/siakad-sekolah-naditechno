@@ -30,12 +30,11 @@ useApi("master/category-book/all").then(({ data }) => {
 });
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`perpustakaan/buku/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/perpustakaan-buku/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
 });
 </script>

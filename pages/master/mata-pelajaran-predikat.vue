@@ -25,8 +25,11 @@ useApi('master/mata-pelajaran/all').then(({ data }) => {
 const { user } = useAuthStore()
 
 onMounted(() => {
-  if (user.role_id !== 1)
-    navigateTo('/not-authorized')
+  useApi(`level/master-mata-pelajaran-predikat/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
 })
 </script>
 

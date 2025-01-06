@@ -12,6 +12,15 @@ const form = {
   code: "",
   status: 1,
 };
+
+onMounted(() => {
+  const { user } = useAuthStore();
+  useApi(`level/bendahara-bank/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
+});
 </script>
 
 <template>

@@ -20,6 +20,13 @@ const form = ref({
 });
 
 onMounted(() => {
+  const { user } = useAuthStore();
+  useApi(`level/bendahara-pemasukan/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
+
   useApi("bank-mitra/all").then(({ data }) => {
     banks.value = data;
   });

@@ -28,31 +28,30 @@ const user_id = ref<number | null>(null);
 const user_name = ref<string | null>(null);
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    user_id.value = data.id;
-    user_name.value = data.name;
-    // Automatically set publish_by to user_id
-    form.value.publish_by = data.id.toString();
-
-    // Update list_to based on user's role
-    if (data.role_id === 1) {
-      list_to.value = [
-        { id: "semua", text: "semua" },
-        { id: "guru", text: "guru" },
-        { id: "siswa", text: "siswa" },
-      ];
-    } else if (data.role_id === 2) {
-      list_to.value = [
-        { id: "siswa", text: "siswa" },
-      ];
+  const { user } = useAuthStore();
+  useApi(`level/pengumuman/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
     }
-
-    useApi(`pengumuman/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
   });
+
+  user_id.value = Number(user.id);
+  user_name.value = user.name;
+  // Automatically set publish_by to user_id
+  form.value.publish_by = user.id.toString();
+
+  // Update list_to based on user's role
+  if (user.role_id === 1) {
+    list_to.value = [
+      { id: "semua", text: "semua" },
+      { id: "guru", text: "guru" },
+      { id: "siswa", text: "siswa" },
+    ];
+  } else if (user.role_id === 2) {
+    list_to.value = [
+      { id: "siswa", text: "siswa" },
+    ];
+  }
 });
 
 </script>

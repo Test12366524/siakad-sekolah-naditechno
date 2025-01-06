@@ -55,6 +55,13 @@ const handleExportPdf = item => {
 }
 
 onMounted(() => {
+  const { user } = useAuthStore();
+  useApi(`level/jadwal-guru/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
+
   getAllTeacher()
   getAllMataPelajaran()
   getAllSemester()

@@ -10,6 +10,15 @@ const tableRef = ref();
 const form = {
   name: "",
 };
+
+onMounted(() => {
+  const { user } = useAuthStore();
+  useApi(`level/bendahara-kategori-pengeluaran/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
+});
 </script>
 
 <template>

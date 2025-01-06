@@ -1,28 +1,168 @@
 <script setup lang="ts">
-import { VCol, VTextField, VTextarea } from 'vuetify/lib/components/index.mjs'
+import { VCol, VTextField } from 'vuetify/lib/components/index.mjs';
 
 const { confirmDialog } = useCommonStore()
 
 const dialogSave = ref()
 const tableRef = ref()
 
-const form = {
-  email: '',
-  name: '',
-  nik: '',
-  gender: '',
-  mariage_status: '',
-  pekerjaan: '',
-  address: '',
-  phone: '',
-  pendidikan_terakhir: '',
-  foto: '',
-  foto_copy_ktp: '',
-  foto_copy_ijazah: '',
-  surat_rekomendasi: '',
-  pengalaman_kursus: '',
-  pengalaman_organisasi: '',
-}
+const kelas = ref();
+const semester = ref();
+const filter_semester = ref();
+const periode = ref();
+const filter_periode = ref();
+
+const jurusans = ref();
+const angkatans = ref();
+
+const form = ref({
+  user_id: undefined,
+  angkatan_id: undefined,
+  semester_id: undefined,
+  periode_id: undefined,
+  jurusan_id: undefined,
+  kelas_id: undefined,
+  name: "",
+  photo: "",
+  birth_date: "",
+  place_of_birth: "",
+  gender: "",
+  religion: "",
+  nik: "",
+  entrance_date: "",
+  email: "",
+  phone_1: "",
+  phone_2: "",
+  address: "",
+  created_at: "",
+  updated_at: "",
+  nisn: "",
+  keterangan: "",
+  status: "",
+  nis: "",
+  nis_number: "",
+  kip: "",
+  kks: "",
+  province_id: "",
+  city_id: "",
+  district_id: "",
+  subdistrict_id: "",
+  post_code: "",
+  anak_ke: "",
+  dari_jumlah_anak: "",
+  nama_ayah: "",
+  nama_ibu: "",
+  pekerjaan_ayah: "",
+  pekerjaan_ibu: "",
+  nik_ayah: "",
+  nik_ibu: "",
+  no_kk: "",
+  asal_sekolah: "",
+});
+
+const religions = ref([
+  { id: "Islam", text: "Islam" },
+  { id: "Katolik", text: "Katolik" },
+  { id: "Protestan", text: "Protestan" },
+  { id: "Hindu", text: "Hindu" },
+  { id: "Budha", text: "Budha" },
+  { id: "Konghucu", text: "Konghucu" },
+]);
+
+const genders = ref([
+  { id: "L", text: "Laki-laki" },
+  { id: "P", text: "Perempuan" },
+]);
+
+const kelas_id = ref<number | null>(null);
+const semester_id = ref<number | null>(null);
+const periode_id = ref<number | null>(null);
+const gender = ref("");
+
+useApi("master/kelas/all").then(({ data }) => {
+  kelas.value = data;
+});
+
+useApi("master/semester/all/1").then(({ data }) => {
+  semester.value = data;
+});
+
+useApi("master/semester/all/0").then(({ data }) => {
+  filter_semester.value = data;
+});
+
+useApi("master/periode/all/1").then(({ data }) => {
+  periode.value = data;
+});
+
+useApi("master/periode/all/0").then(({ data }) => {
+  filter_periode.value = data;
+});
+
+useApi("master/jurusan/all").then(({ data }) => {
+  jurusans.value = data;
+});
+
+useApi("master/angkatan/all").then(({ data }) => {
+  angkatans.value = data;
+});
+
+const role_id = ref();
+const status_action = ref();
+const provinceList = ref([]);
+const cityList = ref([]);
+const districtList = ref([]);
+const subDistrictList = ref([]);
+const previewPhoto = ref(null);
+const getProvinceList = async () => {
+  const { data } = await useApi("province/all", {
+    withLoader: false,
+  });
+
+  provinceList.value = data;
+  cityList.value = [];
+  districtList.value = [];
+  subDistrictList.value = [];
+
+  const resetKeys = ["city_id", "district_id", "subdistrict_id"];
+
+  // dialogSave.value.resetData(form.value, resetKeys);
+};
+
+const getCityList = async (province_id: number) => {
+  const { data } = await useApi(`city/all/${province_id}`, {
+    withLoader: false,
+  });
+
+  cityList.value = data;
+  districtList.value = [];
+  subDistrictList.value = [];
+
+  const resetKeys = ["district_id", "subdistrict_id"];
+
+  // dialogSave.value.resetData(form.value, resetKeys);
+};
+
+const getDistrictList = async (city_id: number) => {
+  const { data } = await useApi(`district/all/${city_id}`, {
+    withLoader: false,
+  });
+
+  districtList.value = data;
+  subDistrictList.value = [];
+
+  const resetKeys = ["subdistrict_id"];
+
+  // dialogSave.value.resetData(form.value, resetKeys);
+};
+
+const getSubDistrictList = async (district_id: number) => {
+  const { data } = await useApi(`subdistrict/all/${district_id}`, {
+    withLoader: false,
+  });
+
+  subDistrictList.value = data;
+};
 
 const handleAction = async (status, type, data) => {
   const url = `ppdb/change-status/${type}/${status}/${data.id}`
@@ -43,13 +183,13 @@ const handleAction = async (status, type, data) => {
 const { user } = useAuthStore()
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`pmb-siswa/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/ppdb/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
+  getProvinceList();
 });
 </script>
 
@@ -66,223 +206,440 @@ onMounted(() => {
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <VTextField
-        v-model="formData.name"
-        :error-messages="validationErrors.name"
-        label="Nama"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <VTextField
-        v-model="formData.nik"
-        :error-messages="validationErrors.nik"
-        label="NIK"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <VLabel>Jenis Kelamin</VLabel>
-      <VRadioGroup
-        v-model="formData.gender"
-        inline
-        :error-messages="validationErrors.gender"
-        :readonly="isDetail"
-      >
-        <VRadio
-          label="Laki-laki"
-          value="L"
+    <VCol cols="12" md="3">
+      <VCol cols="12">
+        <VImg
+          class="mb-3"
+          rounded
+          border
+          max-height="300"
+          :src="
+            previewPhoto ||
+            'https://placehold.jp/30/fff/555/300x150.png?text=Foto'
+          "
         />
-        <VRadio
-          label="Perempuan"
-          value="P"
+        <FileInput
+          v-if="!isDetail"
+          v-model="formData.photo"
+          accept="image/*"
+          label="Upload Foto"
+          @change="(data) => (previewPhoto = data.previewImageUrl)"
         />
-      </VRadioGroup>
-    </VCol>
+      </VCol>
+      </VCol>
+      <VCol cols="12" md="9">
+        <VCard>
+          <VCardTitle class="mb-2"> Data Siswa </VCardTitle>
+          <VCardText>
+            <VRow>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.nis"
+                  :error-messages="validationErrors.nis"
+                  label="No Induk Siswa"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.nisn"
+                  :error-messages="validationErrors.nisn"
+                  label="NISN"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.kip"
+                  :error-messages="validationErrors.kip"
+                  label="KIP"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.kks"
+                  :error-messages="validationErrors.kks"
+                  label="KKS"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.nik"
+                  :error-messages="validationErrors.nik"
+                  label="NIK Siswa"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.name"
+                  :error-messages="validationErrors.name"
+                  label="Nama Siswa"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.place_of_birth"
+                  :error-messages="validationErrors.place_of_birth"
+                  label="Tempat Lahir"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.birth_date"
+                  type="date"
+                  :error-messages="validationErrors.birth_date"
+                  label="Tanggal Lahir"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.semester_id"
+                  label="Semester"
+                  :error-messages="validationErrors.semester_id"
+                  placeholder="Pilih Semester"
+                  :items="semester"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.angkatan_id"
+                  label="Angkatan"
+                  :error-messages="validationErrors.angkatan_id"
+                  placeholder="Pilih Angkatan"
+                  :items="angkatans"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.periode_id"
+                  label="Periode"
+                  :error-messages="validationErrors.periode_id"
+                  placeholder="Pilih Periode"
+                  :items="periode"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.jurusan_id"
+                  label="Jurusan"
+                  :error-messages="validationErrors.jurusan_id"
+                  placeholder="Pilih Jurusan"
+                  :items="jurusans"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.kelas_id"
+                  label="Kelas"
+                  :error-messages="validationErrors.kelas_id"
+                  placeholder="Pilih Kelas"
+                  :items="kelas"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+             
+            </VRow>
+          </VCardText>
+        </VCard>
 
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <VTextField
-        v-model="formData.phone"
-        :error-messages="validationErrors.phone"
-        label="No. Handphone"
-        :readonly="isDetail"
-      />
-    </VCol>
+        <VCard class="mt-4">
+          <VCardTitle class="mb-2"> Alamat Siswa </VCardTitle>
+          <VCardText>
+            <VRow>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.address"
+                  :error-messages="validationErrors.address"
+                  label="Jalan"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.province_id"
+                  label="Provinsi"
+                  :error-messages="validationErrors.province_id"
+                  placeholder="Pilih Provinsi"
+                  :items="provinceList"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                  @update:model-value="getCityList"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.city_id"
+                  label="Kota/Kabupaten"
+                  :error-messages="validationErrors.city_id"
+                  placeholder="Pilih Kota/Kabupaten"
+                  :items="cityList"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :disabled="!formData.province_id"
+                  :readonly="isDetail"
+                  @update:model-value="getDistrictList"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.district_id"
+                  label="Kecamatan"
+                  :error-messages="validationErrors.district_id"
+                  placeholder="Pilih Kecamatan"
+                  :items="districtList"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :disabled="!formData.city_id"
+                  :readonly="isDetail"
+                  @update:model-value="getSubDistrictList"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VAutocomplete
+                  v-model="formData.subdistrict_id"
+                  label="Desa/Kelurahan"
+                  :error-messages="validationErrors.subdistrict_id"
+                  placeholder="Pilih Desa/Kelurahan"
+                  :items="subDistrictList"
+                  item-title="text"
+                  item-value="id"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :disabled="!formData.district_id"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.post_code"
+                  :error-messages="validationErrors.post_code"
+                  label="Kode Pos"
+                  :readonly="isDetail"
+                />
+              </VCol>
+            </VRow>
+          </VCardText>
+        </VCard>
 
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <VTextField
-        v-model="formData.pekerjaan"
-        :error-messages="validationErrors.pekerjaan"
-        label="Pekerjaan"
-        :readonly="isDetail"
-      />
-    </VCol>
+        <VCard class="mt-4">
+          <VCardTitle class="mb-2"> Informasi Lainnya </VCardTitle>
+          <VCardText>
+            <VRow>
+              <VCol cols="12" md="4">
+                <VAutocomplete
+                  v-model="formData.religion"
+                  label="Agama"
+                  :error-messages="validationErrors.religion"
+                  placeholder="Pilih Agama"
+                  :items="religions"
+                  item-title="text"
+                  item-value="text"
+                  required
+                  clearable
+                  clear-icon="ri-close-line"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="4">
+                <VTextField
+                  v-model="formData.anak_ke"
+                  :error-messages="validationErrors.anak_ke"
+                  label="Anak Ke"
+                  type="number"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="4">
+                <VTextField
+                  v-model="formData.dari_jumlah_anak"
+                  :error-messages="validationErrors.dari_jumlah_anak"
+                  label="Dari Jumlah Anak"
+                  type="number"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="4">
+                <VLabel>Jenis Kelamin</VLabel>
+                <VRadioGroup
+                  v-model="formData.gender"
+                  inline
+                  :error-messages="validationErrors.gender"
+                  :readonly="isDetail"
+                >
+                  <VRadio label="Laki-laki" value="L" />
+                  <VRadio label="Perempuan" value="P" />
+                </VRadioGroup>
+              </VCol>
+              <VCol cols="12" md="4">
+                <VTextField
+                  v-model="formData.asal_sekolah"
+                  :error-messages="validationErrors.asal_sekolah"
+                  label="Asal Sekolah"
+                  :readonly="isDetail"
+                />
+              </VCol>
 
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <VLabel>Status Nikah</VLabel>
-      <VRadioGroup
-        v-model="formData.mariage_status"
-        inline
-        :error-messages="validationErrors.mariage_status"
-        :readonly="isDetail"
-      >
-        <VRadio
-          label="Belum Kawin"
-          value="1"
-        />
-        <VRadio
-          label="Menikah"
-          value="2"
-        />
-        <VRadio
-          label="Janda / Duda"
-          value="3"
-        />
-      </VRadioGroup>
-    </VCol>
+              <VCol cols="12" md="4">
+                <VTextField
+                  v-model="formData.entrance_date"
+                  type="date"
+                  :error-messages="validationErrors.entrance_date"
+                  label="Tanggal Masuk"
+                  :readonly="isDetail"
+                />
+              </VCol>
+            </VRow>
+          </VCardText>
+        </VCard>
 
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <VTextField
-        v-model="formData.email"
-        type="email"
-        :error-messages="validationErrors.email"
-        label="Email"
-        :readonly="isDetail"
-      />
-    </VCol>
+        <VCard class="mt-4">
+          <VCardTitle class="mb-2"> Data Orang Tua </VCardTitle>
+          <VCardText>
+            <VRow>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.nama_ayah"
+                  :error-messages="validationErrors.nama_ayah"
+                  label="Nama Ayah"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.pekerjaan_ayah"
+                  :error-messages="validationErrors.pekerjaan_ayah"
+                  label="Pekerjaan Ayah"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.nik_ayah"
+                  :error-messages="validationErrors.nik_ayah"
+                  label="NIK Ayah"
+                  :readonly="isDetail"
+                  type="number"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.nama_ibu"
+                  :error-messages="validationErrors.nama_ibu"
+                  label="Nama Ibu"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.pekerjaan_ibu"
+                  :error-messages="validationErrors.pekerjaan_ibu"
+                  label="Pekerjaan Ibu"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.nik_ibu"
+                  :error-messages="validationErrors.nik_ibu"
+                  label="NIK Ibu"
+                  :readonly="isDetail"
+                  type="number"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VTextField
+                  v-model="formData.no_kk"
+                  :error-messages="validationErrors.no_kk"
+                  label="No KK"
+                  :readonly="isDetail"
+                  type="number"
+                />
+              </VCol>
+            </VRow>
+          </VCardText>
+        </VCard>
 
-    <VCol
-      cols="12"
-      md="2"
-    >
-      <VTextField
-        v-model="formData.pendidikan_terakhir"
-        :error-messages="validationErrors.pendidikan_terakhir"
-        label="Pendidikan Terakhir"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="2"
-    >
-      <VTextField
-        v-model="formData.pengalaman_kursus"
-        :error-messages="validationErrors.pengalaman_kursus"
-        label="Pengalaman Kursus"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <VTextField
-        v-model="formData.pengalaman_organisasi"
-        :error-messages="validationErrors.pengalaman_organisasi"
-        label="Pengalaman Organisasi"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="12"
-    >
-      <VTextarea
-        v-model="formData.address"
-        :error-messages="validationErrors.address"
-        label="Alamat"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="3"
-      class="grid grid-cols-2"
-    >
-      <FileInput
-        v-model="formData.foto_1"
-        accept="image/*"
-        label="Upload Foto"
-        small-chips
-        chips
-        show-preview
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="3"
-    >
-      <FileInput
-        v-model="formData.foto_copy_ijazah"
-        accept="pdf/*"
-        label="Foto Copy Ijazah"
-        small-chips
-        chips
-        show-preview
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="3"
-    >
-      <FileInput
-        v-model="formData.surat_rekomendasi"
-        accept="pdf/*"
-        label="Surat Rekomendasi"
-        small-chips
-        chips
-        show-preview
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="3"
-    >
-      <FileInput
-        v-model="formData.foto_copy_ktp"
-        accept="image/*"
-        label="Foto Copy KTP"
-        small-chips
-        chips
-        show-preview
-        :readonly="isDetail"
-      />
-    </VCol>
+        <VCard class="mt-4">
+          <VCardTitle class="mb-2"> Kontak dan Email </VCardTitle>
+          <VCardText>
+            <VRow>
+              <VCol cols="12" md="4">
+                <VTextField
+                  v-model="formData.email"
+                  type="email"
+                  :error-messages="validationErrors.email"
+                  label="Email"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="4">
+                <VTextField
+                  v-model="formData.phone_1"
+                  :error-messages="validationErrors.phone_1"
+                  label="No. Handphone 1"
+                  type="number"
+                  :readonly="isDetail"
+                />
+              </VCol>
+              <VCol cols="12" md="4">
+                <VTextField
+                  v-model="formData.phone_2"
+                  :error-messages="validationErrors.phone_2"
+                  label="No. Handphone 2"
+                  type="number"
+                  :readonly="isDetail"
+                />
+              </VCol>
+            </VRow>
+          </VCardText>
+        </VCard>
+      </VCol>
   </SaveFileDialog>
 
   <VRow>
@@ -290,7 +647,7 @@ onMounted(() => {
       <VCard>
         <VCardItem>
           <VRow>
-            <VCol>
+            <VCol cols="12" md="6">
               <VBtn
                 color="primary"
                 @click="dialogSave.show()"
@@ -301,6 +658,34 @@ onMounted(() => {
                 />
                 Tambah Data
               </VBtn>
+            </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
+            </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
+              <VAutocomplete
+                v-model="periode_id"
+                label="Tahun Ajaran"
+                placeholder="Pilih Tahun Ajaran"
+                :items="filter_periode"
+                item-title="text"
+                item-value="id"
+                required
+                clearable
+                clear-icon="ri-close-line"
+              />
+            </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
+              <VAutocomplete
+                v-model="semester_id"
+                label="Semester"
+                placeholder="Pilih Semester"
+                :items="filter_semester"
+                item-title="text"
+                item-value="id"
+                required
+                clearable
+                clear-icon="ri-close-line"
+              />
             </VCol>
           </VRow>
         </VCardItem>
@@ -313,6 +698,8 @@ onMounted(() => {
         title="Data PPDB"
         path="ppdb"
         :with-actions="true"
+        :periode_id="periode_id"
+        :semester_id="semester_id"
         :headers="[
           {
             title: 'Kode',
@@ -336,7 +723,7 @@ onMounted(() => {
           },
           {
             title: 'No. Handphone',
-            key: 'phone',
+            key: 'phone_1',
             sortable: false,
           },
           // {
@@ -449,7 +836,6 @@ onMounted(() => {
                 }
               "
             >
-              >
               <VIcon
                 start
                 icon="ri-checkbox-circle-line"
@@ -471,7 +857,6 @@ onMounted(() => {
                 }
               "
             >
-              >
               <VIcon
                 start
                 icon="ri-subtract-line"

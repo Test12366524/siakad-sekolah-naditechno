@@ -28,27 +28,25 @@ const getMataKuliahByClass = (guru_id: number) => {
 }
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-
-    if (data.role_id == 1){
-      useApi("master/guru/all").then(({ data }) => {
-        guru.value = data;
-      });
-    } else if (data.role_id == 2){
-      useApi("master/guru/all/" + data.id).then(({ data }) => {
-        guru.value = data;
-      });
-    } else {
-      useApi("master/guru/all").then(({ data }) => {
-        guru.value = data;
-      });
+  const { user } = useAuthStore();
+  useApi(`level/silabus/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
     }
-    useApi(`silabus/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
   });
+  if (user.role_id == 1){
+    useApi("master/guru/all").then(({ data }) => {
+      guru.value = data;
+    });
+  } else if (user.role_id == 2){
+    useApi("master/guru/all/" + user.id).then(({ data }) => {
+      guru.value = data;
+    });
+  } else {
+    useApi("master/guru/all").then(({ data }) => {
+      guru.value = data;
+    });
+  }
 });
 
 const mata_pelajaran_id = ref<number | null>(null);

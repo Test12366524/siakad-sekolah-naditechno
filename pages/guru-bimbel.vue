@@ -27,6 +27,12 @@ const getAllMataPelajaran = async () => {
 };
 
 onMounted(() => {
+  const { user } = useAuthStore();
+  useApi(`level/guru-bimbel/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
   getAllTeacher();
   getAllMataPelajaran();
 });

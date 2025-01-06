@@ -16,13 +16,13 @@ const tabs = [
   { title: "Jawaban", icon: "ri-question-answer-line", tab: "jawaban" },
 ];
 
+
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`lms/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/lms/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
 });
 </script>

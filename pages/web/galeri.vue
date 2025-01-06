@@ -1,29 +1,32 @@
 <script setup lang="ts">
+import { VCol, VTextField } from "vuetify/lib/components/index.mjs";
+
 const { confirmDialog } = useCommonStore();
+const { user } = useAuthStore();
 
 const dialogSave = ref();
 const tableRef = ref();
-const baseUrl = "slider";
+const baseUrl = "gallery";
 
 const headers = [
   {
-    title: "Title",
+    title: "Judul",
     key: "title",
     sortable: false,
   },
   {
-    title: "Description",
+    title: "Deskripsi",
     key: "description",
     sortable: false,
   },
   {
-    title: "Order",
-    key: "order",
+    title: "Publish Date",
+    key: "publish_date",
     sortable: false,
   },
   {
     title: "Status",
-    key: "status",
+    key: "status_desc",
     sortable: false,
   },
 ];
@@ -32,14 +35,18 @@ const form = {
   title: "",
   image: "",
   description: "",
-  content: "",
+  publish_date: "",
   status: "",
-  order: "",
 };
+
+const category = ref();
+useApi("gallery-category/all").then(({ data }) => {
+  category.value = data;
+});
 
 onMounted(() => {
   const { user } = useAuthStore();
-  useApi(`level/web-slider/${user.role_id}`).then(({ data }) => {
+  useApi(`level/web-galeri/${user.role_id}`).then(({ data }) => {
     if(data == 0){
       navigateTo(`/not-authorized`);
     }
@@ -50,11 +57,11 @@ onMounted(() => {
 <template>
   <SaveFileDialog
     v-if="tableRef"
-    v-slot="{ formData, validationErrors }"
+    v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     :path="baseUrl"
-    title="Tambah Ekstrakulikuler"
-    edit-title="Edit Ekstrakulikuler"
+    title="Tambah Galeri"
+    edit-title="Edit Galeri"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
     :width="1000"
@@ -66,20 +73,7 @@ onMounted(() => {
         label="Title"
       />
     </VCol>
-    <VCol cols="12">
-      <VTextarea
-        v-model="formData.description"
-        :error-messages="validationErrors.description"
-        label="Description"
-      />
-    </VCol>
-    <VCol cols="12">
-      <VTextarea
-        v-model="formData.content"
-        :error-messages="validationErrors.content"
-        label="Content"
-      />
-    </VCol>
+
     <VCol cols="12" md="6">
       <FileInput
         v-model="formData.image"
@@ -92,10 +86,10 @@ onMounted(() => {
     </VCol>
     <VCol cols="12" md="3">
       <VTextField
-        v-model="formData.order"
-        :error-messages="validationErrors.order"
-        label="Order"
-        type="number"
+        v-model="formData.publish_date"
+        :error-messages="validationErrors.publish_date"
+        label="Publish Date"
+        type="date"
       />
     </VCol>
     <VCol cols="12" md="3">
@@ -121,6 +115,13 @@ onMounted(() => {
         clear-icon="ri-close-line"
       />
     </VCol>
+    <VCol cols="12">
+      <VTextarea
+        v-model="formData.description"
+        :error-messages="validationErrors.description"
+        label="Deskripsi"
+      />
+    </VCol>
   </SaveFileDialog>
 
   <VRow>
@@ -142,7 +143,7 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Berita"
+        title="Galeri"
         :path="baseUrl"
         :with-actions="true"
         :headers="headers"
@@ -156,6 +157,9 @@ onMounted(() => {
                   console.log(item);
                   dialogSave.show({
                     ...item,
+                    publish_date: new Date(item.publish_date)
+                      .toISOString()
+                      .split('T')[0],
                   });
                 }
               "
@@ -166,8 +170,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Berita',
-                  message: `Anda yakin ingin menghapus berita ini?`,
+                  title: 'Hapus Galeri',
+                  message: `Anda yakin ingin menghapus galeri ini?`,
                   onConfirm: () => remove((item as any).id),
                 })
               "

@@ -22,11 +22,11 @@ definePageMeta({
       status-code="401"
       title="You are not authorized! 🔐"
       description="You don't have permission to access this page. Go Home!"
-      class="mb-10"
+      class="mb-2"
     />
 
     <!-- 👉 Image -->
-    <div class="misc-avatar w-100 text-center">
+    <div class="misc-avatar w-100 text-center" style="margin-top: -20px;">
       <VImg
         :src="pages401"
         alt="Coming Soon"
@@ -36,7 +36,7 @@ definePageMeta({
 
       <VBtn
         to="/"
-        class="mt-10"
+        class="mt-2"
       >
         Back to Home
       </VBtn>

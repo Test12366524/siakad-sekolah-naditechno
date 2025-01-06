@@ -16,12 +16,11 @@ const form = {
 
 
 onMounted(() => {
-  useApi("auth/me").then(({ data }) => {
-    useApi(`master/jurusan/${data.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
+  const { user } = useAuthStore();
+  useApi(`level/master-jurusan/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
 });
 </script>

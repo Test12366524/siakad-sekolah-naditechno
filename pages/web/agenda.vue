@@ -1,45 +1,40 @@
 <script setup lang="ts">
+import { VCol, VTextField } from "vuetify/lib/components/index.mjs";
+
 const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
 const tableRef = ref();
-const baseUrl = "slider";
+const baseUrl = "agenda";
 
 const headers = [
   {
-    title: "Title",
+    title: "Judul",
     key: "title",
     sortable: false,
   },
   {
-    title: "Description",
-    key: "description",
-    sortable: false,
-  },
-  {
-    title: "Order",
-    key: "order",
-    sortable: false,
-  },
-  {
-    title: "Status",
-    key: "status",
+    title: "Tanggal",
+    key: "created_at",
     sortable: false,
   },
 ];
 
 const form = {
   title: "",
-  image: "",
-  description: "",
+  cover: "",
   content: "",
   status: "",
-  order: "",
 };
+
+const category = ref();
+useApi("agenda-category/all").then(({ data }) => {
+  category.value = data;
+});
 
 onMounted(() => {
   const { user } = useAuthStore();
-  useApi(`level/web-slider/${user.role_id}`).then(({ data }) => {
+  useApi(`level/web-agenda/${user.role_id}`).then(({ data }) => {
     if(data == 0){
       navigateTo(`/not-authorized`);
     }
@@ -50,11 +45,11 @@ onMounted(() => {
 <template>
   <SaveFileDialog
     v-if="tableRef"
-    v-slot="{ formData, validationErrors }"
+    v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     :path="baseUrl"
-    title="Tambah Ekstrakulikuler"
-    edit-title="Edit Ekstrakulikuler"
+    title="Tambah Agenda"
+    edit-title="Edit Agenda"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
     :width="1000"
@@ -63,26 +58,13 @@ onMounted(() => {
       <VTextField
         v-model="formData.title"
         :error-messages="validationErrors.title"
-        label="Title"
+        label="Judul"
       />
     </VCol>
-    <VCol cols="12">
-      <VTextarea
-        v-model="formData.description"
-        :error-messages="validationErrors.description"
-        label="Description"
-      />
-    </VCol>
-    <VCol cols="12">
-      <VTextarea
-        v-model="formData.content"
-        :error-messages="validationErrors.content"
-        label="Content"
-      />
-    </VCol>
+
     <VCol cols="12" md="6">
       <FileInput
-        v-model="formData.image"
+        v-model="formData.cover"
         accept="image/*"
         label="Cover"
         small-chips
@@ -90,15 +72,8 @@ onMounted(() => {
         show-preview
       />
     </VCol>
-    <VCol cols="12" md="3">
-      <VTextField
-        v-model="formData.order"
-        :error-messages="validationErrors.order"
-        label="Order"
-        type="number"
-      />
-    </VCol>
-    <VCol cols="12" md="3">
+    
+    <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.status"
         label="Status"
@@ -119,6 +94,13 @@ onMounted(() => {
         required
         clearable
         clear-icon="ri-close-line"
+      />
+    </VCol>
+    <VCol cols="12">
+      <VTextarea
+        v-model="formData.content"
+        :error-messages="validationErrors.content"
+        label="Content"
       />
     </VCol>
   </SaveFileDialog>
@@ -142,7 +124,7 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Berita"
+        title="Agenda"
         :path="baseUrl"
         :with-actions="true"
         :headers="headers"
@@ -153,7 +135,6 @@ onMounted(() => {
               size="small"
               @click="
                 () => {
-                  console.log(item);
                   dialogSave.show({
                     ...item,
                   });
@@ -166,8 +147,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Berita',
-                  message: `Anda yakin ingin menghapus berita ini?`,
+                  title: 'Hapus Agenda',
+                  message: `Anda yakin ingin menghapus agenda ini?`,
                   onConfirm: () => remove((item as any).id),
                 })
               "

@@ -35,8 +35,15 @@ const handleImportData = () => {
 }
 
 onMounted(() => {
-  getAllStudent()
-})
+  const { user } = useAuthStore();
+  useApi(`level/surat-keterangan-aktif/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
+
+  getAllStudent();
+});
 </script>
 
 <template>
