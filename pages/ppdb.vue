@@ -520,7 +520,7 @@ onMounted(() => {
                 <VTextField
                   v-model="formData.asal_sekolah"
                   :error-messages="validationErrors.asal_sekolah"
-                  label="Asal Sekolah"
+                  label="Asal Madrasah"
                   :readonly="isDetail"
                 />
               </VCol>

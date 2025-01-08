@@ -111,7 +111,6 @@ onMounted(() => {
           <VRow>
             <VCol cols="12" md="6">
               <VBtn
-                v-if="role_id == 1"
                 color="primary"
                 @click="dialogSave.show()"
               >

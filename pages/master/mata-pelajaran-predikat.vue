@@ -22,14 +22,14 @@ useApi('master/mata-pelajaran/all').then(({ data }) => {
   mataPelajaranList.value = data
 })
 
-const { user } = useAuthStore()
+// const { user } = useAuthStore()
 
 onMounted(() => {
-  useApi(`level/master-mata-pelajaran-predikat/${user.role_id}`).then(({ data }) => {
-    if(data == 0){
-      navigateTo(`/not-authorized`);
-    }
-  });
+  // useApi(`level/master-mata-pelajaran-predikat/${user.role_id}`).then(({ data }) => {
+  //   if(data == 0){
+  //     navigateTo(`/not-authorized`);
+  //   }
+  // });
 })
 </script>
 

@@ -168,7 +168,11 @@ const getSubDistrictList = async (district_id: number) => {
 const { user } = useAuthStore();
 
 onMounted(() => {
-  if (user.role_id !== 1) return navigateTo("/not-authorized");
+  useApi(`level/siswa/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
   role_id.value = user.role_id;
   getProvinceList();
 });
@@ -529,7 +533,7 @@ const handleShowDialog = async (data, isDetail) => {
                 <VTextField
                   v-model="formData.asal_sekolah"
                   :error-messages="validationErrors.asal_sekolah"
-                  label="Asal Sekolah"
+                  label="Asal Madrasah"
                   :readonly="isDetail"
                 />
               </VCol>
@@ -671,6 +675,10 @@ const handleShowDialog = async (data, isDetail) => {
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
+              <ImportFileExcel
+                @done="tableRef.refresh()"
+                path="siswa/import-excel"
+              ></ImportFileExcel>
             </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
