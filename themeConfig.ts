@@ -8,15 +8,15 @@ import { VIcon } from "vuetify/components/VIcon";
 import logo from "@images/logo.svg?raw";
 
 import {
-    AppContentLayoutNav,
-    ContentWidth,
-    FooterType,
-    NavbarType,
+  AppContentLayoutNav,
+  ContentWidth,
+  FooterType,
+  NavbarType,
 } from "@layouts/enums";
 
 export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
-    title: "SIAKAD MADRASAH",
+    title: "MASBETTET",
 
     // ❗ if you have SVG logo and want it to adapt according to theme color, you have to apply color as `color: rgb(var(--v-global-theme-primary))`
     logo: h("div", {

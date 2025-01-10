@@ -8,10 +8,13 @@ const tableRef = ref();
 const form = ref({
   user_id: null,
   tanggal: "",
-  jam_masuk: "",
-  jam_keluar: "",
-  kehadiran: "",
+  jam_mulai: "",
+  jam_selesai: "",
+  materi: "",
+  catatan: "",
+  photo: "",
 });
+const previewPhoto = ref(null);
 
 const teacherList = ref([]);
 
@@ -24,7 +27,7 @@ const getAllTeacher = async () => {
 
 onMounted(() => {
   const { user } = useAuthStore();
-//   useApi(`level/absen-guru/${user.role_id}`).then(({ data }) => {
+//   useApi(`level/jurnal-mengajar/${user.role_id}`).then(({ data }) => {
 //     if(data == 0){
 //       navigateTo(`/not-authorized`);
 //     }
@@ -34,75 +37,100 @@ onMounted(() => {
 </script>
 
 <template>
-  <SaveDialog
+  <SaveFileDialog
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
+    width="1200"
     ref="dialogSave"
-    path="absen-guru"
-    title="Tambah Absen Guru"
-    edit-title="Edit Absen Guru"
+    path="jurnal-mengajar"
+    title="Tambah Jurnal Mengajar"
+    edit-title="Edit Jurnal Mengajar"
     :default-form="form"
     :request-form="form"
     :refresh-callback="tableRef.refresh"
-    width="600"
   >
-    <VCol cols="12">
-      <VAutocomplete
-        v-model="formData.user_id"
-        label="Guru"
-        :error-messages="validationErrors.user_id"
-        placeholder="Pilih Guru"
-        :items="teacherList"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
-      />
+    <VCol cols="12" md="3">
+      <VCol cols="12">
+        <VImg
+          class="mb-3"
+          rounded
+          border
+          max-height="300"
+          :src="
+            previewPhoto ||
+            'https://placehold.jp/30/fff/555/300x150.png?text=Foto'
+          "
+        />
+        <FileInput
+          v-model="formData.photo"
+          accept="image/*"
+          label="Upload Foto"
+          @change="(data) => (previewPhoto = data.previewImageUrl)"
+        />
+      </VCol>
     </VCol>
+    <VCol cols="12" md="9">
+      <VRow>
+        <VCol cols="12" md="12">
+          <VAutocomplete
+            v-model="formData.user_id"
+            label="Guru"
+            :error-messages="validationErrors.user_id"
+            placeholder="Pilih Guru"
+            :items="teacherList"
+            item-title="text"
+            item-value="id"
+            required
+            clearable
+            clear-icon="ri-close-line"
+          />
+        </VCol>
 
-    <VCol cols="12" md="12">
-        <VTextField
+        <VCol cols="12" md="12">
+          <VTextField
             v-model="formData.tanggal"
             type="date"
             :error-messages="validationErrors.tanggal"
             label="Tanggal"
-        />
-    </VCol>
+          />
+        </VCol>
 
-    <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.jam_masuk"
+        <VCol cols="12" md="6">
+          <VTextField
+            v-model="formData.jam_mulai"
             type="time"
-            :error-messages="validationErrors.jam_masuk"
-            label="Jam Masuk"
-        />
-    </VCol>
+            :error-messages="validationErrors.jam_mulai"
+            label="Jam Mulai"
+          />
+        </VCol>
 
-    <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.jam_keluar"
+        <VCol cols="12" md="6">
+          <VTextField
+            v-model="formData.jam_selesai"
             type="time"
-            :error-messages="validationErrors.jam_keluar"
-            label="Jam Keluar"
-        />
-    </VCol>
+            :error-messages="validationErrors.jam_selesai"
+            label="Jam Selesai"
+          />
+        </VCol>
 
-    <VCol cols="12" md="12">
-      <VLabel>Kehadiran</VLabel>
-      <VRadioGroup
-        v-model="formData.kehadiran"
-        inline
-        :error-messages="validationErrors.kehadiran"
-      >
-        <VRadio label="Hadir" value="Hadir" />
-        <VRadio label="Izin" value="Izin" />
-        <VRadio label="Sakit" value="Sakit" />
-        <VRadio label="Alpa" value="Alpa" />
-      </VRadioGroup>
-    </VCol>
+        <VCol cols="12" md="12">
+          <VTextField
+            v-model="formData.materi"
+            :error-messages="validationErrors.materi"
+            label="Materi"
+          />
+        </VCol>
 
-  </SaveDialog>
+        <VCol cols="12" md="12">
+          <VTextField
+            v-model="formData.catatan"
+            :error-messages="validationErrors.catatan"
+            label="Catatan"
+          />
+        </VCol>
+      </VRow>
+    </VCol>
+  </SaveFileDialog>
 
   <VRow>
     <VCol cols="12">
@@ -126,8 +154,8 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Absen Guru"
-        path="absen-guru"
+        title="Data Jurnal Mengajar"
+        path="jurnal-mengajar"
         :with-actions="true"
         :headers="[
           {
@@ -141,18 +169,23 @@ onMounted(() => {
             sortable: false,
           },
           {
-            title: 'Jam Masuk',
-            key: 'jam_masuk',
+            title: 'Jam Mulai',
+            key: 'jam_mulai',
             sortable: false,
           },
           {
-            title: 'Jam Keluar',
-            key: 'jam_keluar',
+            title: 'Jam Selesai',
+            key: 'jam_selesai',
             sortable: false,
           },
           {
-            title: 'Kehadiran',
-            key: 'kehadiran',
+            title: 'Materi',
+            key: 'materi',
+            sortable: false,
+          },
+          {
+            title: 'Catatan',
+            key: 'catatan',
             sortable: false,
           },
         ]"

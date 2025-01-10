@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { VTextField } from 'vuetify/lib/components/index.mjs';
+
 const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
@@ -6,41 +8,49 @@ const dialogSave = ref();
 const tableRef = ref();
 
 const form = ref({
-  user_id: null,
-  tanggal: "",
-  jam_masuk: "",
-  jam_keluar: "",
-  kehadiran: "",
+    user_id: null, // guruid
+    kelas_id: null, // guruid
+    mata_pelajaran_id: null, // guruid
+    pertemuan_ke: 0, // guruid
+    catatan: "", // guruid
+    file: null, // guruid
 });
 
-const teacherList = ref([]);
+const guru = ref([]);
+const kelas = ref([]);
+const mata_pelajaran = ref([]);
 
-const getAllTeacher = async () => {
-  useApi("user/all-guru").then(({ data }) => {
-    console.log(data);
-    teacherList.value = data;
-  });
-};
 
 onMounted(() => {
   const { user } = useAuthStore();
-//   useApi(`level/absen-guru/${user.role_id}`).then(({ data }) => {
+//   useApi(`level/progres-kerja/${user.role_id}`).then(({ data }) => {
 //     if(data == 0){
 //       navigateTo(`/not-authorized`);
 //     }
 //   });
-  getAllTeacher();
+
+    useApi("user/all-guru").then(({ data }) => {
+        guru.value = data;
+    });
+
+    useApi("master/kelas/all").then(({ data }) => {
+        kelas.value = data;
+    });
+
+    useApi("master/mata-pelajaran/all").then(({ data }) => {
+        mata_pelajaran.value = data;
+    });
 });
 </script>
 
 <template>
-  <SaveDialog
+  <SaveFileDialog
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
-    path="absen-guru"
-    title="Tambah Absen Guru"
-    edit-title="Edit Absen Guru"
+    path="progres-kerja"
+    title="Tambah Progress Kerja"
+    edit-title="Edit Progress Kerja"
     :default-form="form"
     :request-form="form"
     :refresh-callback="tableRef.refresh"
@@ -52,7 +62,7 @@ onMounted(() => {
         label="Guru"
         :error-messages="validationErrors.user_id"
         placeholder="Pilih Guru"
-        :items="teacherList"
+        :items="guru"
         item-title="text"
         item-value="id"
         required
@@ -61,55 +71,66 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.tanggal"
-            type="date"
-            :error-messages="validationErrors.tanggal"
-            label="Tanggal"
+    <VCol cols="12">
+      <VAutocomplete
+        v-model="formData.kelas_id"
+        label="Kelas"
+        :error-messages="validationErrors.kelas_id"
+        placeholder="Pilih Kelas"
+        :items="kelas"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+      />
+    </VCol>
+
+    <VCol cols="12">
+      <VAutocomplete
+        v-model="formData.mata_pelajaran_id"
+        label="Mata Pelajaran"
+        :error-messages="validationErrors.mata_pelajaran_id"
+        placeholder="Pilih Mata Pelajaran"
+        :items="mata_pelajaran"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+      />
+    </VCol>
+
+    <VCol cols="12">
+      <VTextField
+        v-model="formData.pertemuan_ke"
+        type="number"
+        :error-messages="validationErrors.pertemuan_ke"
+        label="Pertemuan Ke"
+      />
+    </VCol>
+
+    <VCol cols="12">
+      <VTextField
+        v-model="formData.catatan"
+        :error-messages="validationErrors.catatan"
+        label="Catatan"
+      />
+    </VCol>
+    <VCol cols="12">
+        <FileInput
+            v-model="formData.file"
+            label="Upload File"
         />
     </VCol>
-
-    <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.jam_masuk"
-            type="time"
-            :error-messages="validationErrors.jam_masuk"
-            label="Jam Masuk"
-        />
-    </VCol>
-
-    <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.jam_keluar"
-            type="time"
-            :error-messages="validationErrors.jam_keluar"
-            label="Jam Keluar"
-        />
-    </VCol>
-
-    <VCol cols="12" md="12">
-      <VLabel>Kehadiran</VLabel>
-      <VRadioGroup
-        v-model="formData.kehadiran"
-        inline
-        :error-messages="validationErrors.kehadiran"
-      >
-        <VRadio label="Hadir" value="Hadir" />
-        <VRadio label="Izin" value="Izin" />
-        <VRadio label="Sakit" value="Sakit" />
-        <VRadio label="Alpa" value="Alpa" />
-      </VRadioGroup>
-    </VCol>
-
-  </SaveDialog>
+  </SaveFileDialog>
 
   <VRow>
     <VCol cols="12">
       <VCard>
         <VCardItem>
           <VBtn
-            color="primary"
+            color="primary" 
             @click="
               () => {
                 dialogSave.show();
@@ -126,8 +147,8 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Absen Guru"
-        path="absen-guru"
+        title="Data Progress Kerja"
+        path="progres-kerja"
         :with-actions="true"
         :headers="[
           {
@@ -136,23 +157,18 @@ onMounted(() => {
             sortable: false,
           },
           {
-            title: 'Tanggal',
-            key: 'tanggal',
+            title: 'Kelas',
+            key: 'kelas_name',
             sortable: false,
           },
           {
-            title: 'Jam Masuk',
-            key: 'jam_masuk',
+            title: 'Mata Pelajaran',
+            key: 'mata_pelajaran_name',
             sortable: false,
           },
           {
-            title: 'Jam Keluar',
-            key: 'jam_keluar',
-            sortable: false,
-          },
-          {
-            title: 'Kehadiran',
-            key: 'kehadiran',
+            title: 'Catatan',
+            key: 'catatan',
             sortable: false,
           },
         ]"
@@ -165,9 +181,6 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.tanggal = new Date(payload.tanggal)
-                    .toISOString()
-                    .substring(0, 10);
                   dialogSave.show(payload, false);
                 }
               "
@@ -179,8 +192,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Surat Masuk',
-                  message: `Anda yakin ingin menghapus Surat Masuk ${
+                  title: 'Hapus Progress Kerja',
+                  message: `Anda yakin ingin menghapus Progress Kerja ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

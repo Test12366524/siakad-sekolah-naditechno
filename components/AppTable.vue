@@ -20,6 +20,7 @@ const props = defineProps<{
   mata_pelajaran_id?: string | number | null;
   periode_id?: string | number | null;
   semester_id?: string | number | null;
+  notulen_kegiatan_id?: string | number | null;
   showSelect?: boolean;
 }>();
 
@@ -40,6 +41,7 @@ const appTable = useAppTable({
   guru_id: props.guru_id,
   semester_id: props.semester_id,
   periode_id: props.periode_id,
+  notulen_kegiatan_id: props.notulen_kegiatan_id,
 });
 
 // Watch for changes in prop and update the internal kelas_id
@@ -94,6 +96,15 @@ watch(
   () => props.periode_id,
   (newValue) => {
     appTable.periode_id.value = newValue;
+    appTable.fetchItems(true);
+  },
+  { immediate: true }
+);
+
+watch(
+  () => props.notulen_kegiatan_id,
+  (newValue) => {
+    appTable.notulen_kegiatan_id.value = newValue;
     appTable.fetchItems(true);
   },
   { immediate: true }

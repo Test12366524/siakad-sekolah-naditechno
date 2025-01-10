@@ -98,7 +98,7 @@ onMounted(() => {
       <VTextField
         v-model="formData.sekolah"
         :error-messages="validationErrors.sekolah"
-        label="Madrasah"
+        label="MADRASAH"
         :readonly="isDetail"
       />
     </VCol>
@@ -178,7 +178,7 @@ onMounted(() => {
             sortable: false,
           },
           {
-            title: 'Madrasah',
+            title: 'MADRASAH',
             key: 'sekolah',
             sortable: false,
           },

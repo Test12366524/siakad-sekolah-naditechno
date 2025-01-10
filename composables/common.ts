@@ -7,6 +7,7 @@ export function useAppTable(conf: {
   mata_pelajaran_id?: string | number | null;
   periode_id?: string | number | null;
   semester_id?: string | number | null;
+  notulen_kegiatan_id?: string | number | null;
 }) {
   const loading = ref(false);
   const limit = ref(conf.limit || 15);
@@ -20,6 +21,7 @@ export function useAppTable(conf: {
   const mata_pelajaran_id = ref(conf.mata_pelajaran_id || "");
   const periode_id = ref(conf.periode_id || "");
   const semester_id = ref(conf.semester_id || "");
+  const notulen_kegiatan_id = ref(conf.notulen_kegiatan_id || "");
 
   const { snackbar } = useCommonStore();
 
@@ -83,6 +85,14 @@ export function useAppTable(conf: {
     )
       params.mata_pelajaran_id = mata_pelajaran_id.value;
 
+    // Only add kelas_id if it has a valid value
+    if (
+      notulen_kegiatan_id.value &&
+      notulen_kegiatan_id.value !== "" &&
+      Number(notulen_kegiatan_id.value) > 0
+    )
+      params.notulen_kegiatan_id = notulen_kegiatan_id.value;
+
     const { data, success, message } = await useApi(conf.path, {
       withLoader: false,
       params,
@@ -110,6 +120,7 @@ export function useAppTable(conf: {
     mata_pelajaran_id,
     periode_id,
     semester_id,
+    notulen_kegiatan_id,
   };
 }
 

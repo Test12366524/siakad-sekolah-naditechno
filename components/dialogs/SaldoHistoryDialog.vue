@@ -44,7 +44,7 @@ const data = [
     status: 1,
     cabang_id: 1,
     bank_id: 1,
-    bank_name: "PT. SIAKAD Kampus",
+    bank_name: "PT. SMK Kampus",
     cabang_name: "Yogyakarta",
     status_desc: "AKTIF",
   },

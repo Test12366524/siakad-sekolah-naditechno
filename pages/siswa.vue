@@ -533,7 +533,7 @@ const handleShowDialog = async (data, isDetail) => {
                 <VTextField
                   v-model="formData.asal_sekolah"
                   :error-messages="validationErrors.asal_sekolah"
-                  label="Asal Madrasah"
+                  label="Asal MADRASAH"
                   :readonly="isDetail"
                 />
               </VCol>
@@ -661,7 +661,7 @@ const handleShowDialog = async (data, isDetail) => {
       <VCard>
         <VCardItem>
           <VRow>
-            <VCol cols="12" md="6">
+            <VCol cols="12" md="6" class="d-flex align-center gap-4">
               <VBtn
                 v-if="role_id == 1"
                 color="primary"
@@ -675,11 +675,13 @@ const handleShowDialog = async (data, isDetail) => {
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
+
               <ImportFileExcel
                 @done="tableRef.refresh()"
                 path="siswa/import-excel"
               ></ImportFileExcel>
             </VCol>
+            
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="kelas_id"
@@ -693,6 +695,7 @@ const handleShowDialog = async (data, isDetail) => {
                 clear-icon="ri-close-line"
               />
             </VCol>
+
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="periode_id"
@@ -706,6 +709,7 @@ const handleShowDialog = async (data, isDetail) => {
                 clear-icon="ri-close-line"
               />
             </VCol>
+
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="semester_id"
@@ -723,6 +727,7 @@ const handleShowDialog = async (data, isDetail) => {
         </VCardItem>
       </VCard>
     </VCol>
+
 
     <VCol cols="12">
       <AppTable

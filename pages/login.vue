@@ -11,7 +11,7 @@ import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
 const { pageLoader } = useCommonStore();
 const { login } = useAuthStore();
 
-import img from "@images/login-page.jpeg";
+import img from "@images/bg-login.jpg";
 
 const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationLight,
@@ -92,7 +92,7 @@ const onSubmit = () => {
     >
       <VCard flat :width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
         <VCardText>
-          <h4 class="text-h4 mb-1 text-center">SIAKAD MADRASAH</h4>
+          <h4 class="text-h4 mb-1 text-center">MASBETTET</h4>
           <p class="mb-0 text-center">Silahkan login menggunakan akun anda</p>
         </VCardText>
 

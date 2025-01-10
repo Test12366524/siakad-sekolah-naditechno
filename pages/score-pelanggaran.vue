@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { VTextField } from 'vuetify/lib/components/index.mjs';
+
 const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
@@ -6,30 +8,28 @@ const dialogSave = ref();
 const tableRef = ref();
 
 const form = ref({
-  user_id: null,
+  siswa_id: null, // guruid
   tanggal: "",
-  jam_masuk: "",
-  jam_keluar: "",
-  kehadiran: "",
+  score: 0,
+  catatan: "",
 });
 
-const teacherList = ref([]);
+const studentList = ref([]);
 
-const getAllTeacher = async () => {
-  useApi("user/all-guru").then(({ data }) => {
-    console.log(data);
-    teacherList.value = data;
+const getAllStudent = async () => {
+  useApi("siswa/all").then(({ data }) => {
+    studentList.value = data;
   });
 };
 
 onMounted(() => {
   const { user } = useAuthStore();
-//   useApi(`level/absen-guru/${user.role_id}`).then(({ data }) => {
+//   useApi(`level/score-pelanggaran/${user.role_id}`).then(({ data }) => {
 //     if(data == 0){
 //       navigateTo(`/not-authorized`);
 //     }
 //   });
-  getAllTeacher();
+  getAllStudent();
 });
 </script>
 
@@ -38,9 +38,9 @@ onMounted(() => {
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
-    path="absen-guru"
-    title="Tambah Absen Guru"
-    edit-title="Edit Absen Guru"
+    path="score-pelanggaran"
+    title="Tambah Score Pelanggaran Siswa"
+    edit-title="Edit Score Pelanggaran Siswa"
     :default-form="form"
     :request-form="form"
     :refresh-callback="tableRef.refresh"
@@ -48,11 +48,11 @@ onMounted(() => {
   >
     <VCol cols="12">
       <VAutocomplete
-        v-model="formData.user_id"
-        label="Guru"
-        :error-messages="validationErrors.user_id"
-        placeholder="Pilih Guru"
-        :items="teacherList"
+        v-model="formData.siswa_id"
+        label="Siswa"
+        :error-messages="validationErrors.siswa_id"
+        placeholder="Pilih Siswa"
+        :items="studentList"
         item-title="text"
         item-value="id"
         required
@@ -61,47 +61,31 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.tanggal"
-            type="date"
-            :error-messages="validationErrors.tanggal"
-            label="Tanggal"
-        />
+    <VCol cols="12">
+      <VTextField
+        v-model="formData.tanggal"
+        type="date"
+        :error-messages="validationErrors.tanggal"
+        label="Tanggal"
+      />
     </VCol>
 
-    <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.jam_masuk"
-            type="time"
-            :error-messages="validationErrors.jam_masuk"
-            label="Jam Masuk"
-        />
+    <VCol cols="12">
+      <VTextField
+        v-model="formData.score"
+        type="number"
+        :error-messages="validationErrors.score"
+        label="Score"
+      />
     </VCol>
 
-    <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.jam_keluar"
-            type="time"
-            :error-messages="validationErrors.jam_keluar"
-            label="Jam Keluar"
-        />
+    <VCol cols="12">
+      <VTextField
+        v-model="formData.catatan"
+        :error-messages="validationErrors.catatan"
+        label="Catatan"
+      />
     </VCol>
-
-    <VCol cols="12" md="12">
-      <VLabel>Kehadiran</VLabel>
-      <VRadioGroup
-        v-model="formData.kehadiran"
-        inline
-        :error-messages="validationErrors.kehadiran"
-      >
-        <VRadio label="Hadir" value="Hadir" />
-        <VRadio label="Izin" value="Izin" />
-        <VRadio label="Sakit" value="Sakit" />
-        <VRadio label="Alpa" value="Alpa" />
-      </VRadioGroup>
-    </VCol>
-
   </SaveDialog>
 
   <VRow>
@@ -126,13 +110,13 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Absen Guru"
-        path="absen-guru"
+        title="Data Score Pelanggaran Siswa"
+        path="score-pelanggaran"
         :with-actions="true"
         :headers="[
           {
-            title: 'Guru',
-            key: 'user_name',
+            title: 'Siswa',
+            key: 'siswa_name',
             sortable: false,
           },
           {
@@ -141,18 +125,13 @@ onMounted(() => {
             sortable: false,
           },
           {
-            title: 'Jam Masuk',
-            key: 'jam_masuk',
+            title: 'Score',
+            key: 'score',
             sortable: false,
           },
           {
-            title: 'Jam Keluar',
-            key: 'jam_keluar',
-            sortable: false,
-          },
-          {
-            title: 'Kehadiran',
-            key: 'kehadiran',
+            title: 'Catatan',
+            key: 'catatan',
             sortable: false,
           },
         ]"
@@ -179,8 +158,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Surat Masuk',
-                  message: `Anda yakin ingin menghapus Surat Masuk ${
+                  title: 'Hapus Score Pelanggaran',
+                  message: `Anda yakin ingin menghapus Score Pelanggaran ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),
