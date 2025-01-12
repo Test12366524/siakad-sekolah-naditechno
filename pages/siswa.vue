@@ -169,7 +169,7 @@ const { user } = useAuthStore();
 
 onMounted(() => {
   useApi(`level/siswa/${user.role_id}`).then(({ data }) => {
-    if(data == 0){
+    if (data == 0) {
       navigateTo(`/not-authorized`);
     }
   });
@@ -387,7 +387,6 @@ const handleShowDialog = async (data, isDetail) => {
                   :readonly="isDetail"
                 />
               </VCol>
-             
             </VRow>
           </VCardText>
         </VCard>
@@ -665,7 +664,7 @@ const handleShowDialog = async (data, isDetail) => {
           <VRow>
             <VCol cols="12" md="6" class="d-flex align-center gap-4">
               <VBtn
-                v-if="role_id == 1"
+                v-if="role_id === 1 || role_id === 5"
                 color="primary"
                 @click="
                   () => {
@@ -683,7 +682,7 @@ const handleShowDialog = async (data, isDetail) => {
                 path="siswa/import-excel"
               ></ImportFileExcel>
             </VCol>
-            
+
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="kelas_id"
@@ -729,7 +728,6 @@ const handleShowDialog = async (data, isDetail) => {
         </VCardItem>
       </VCard>
     </VCol>
-
 
     <VCol cols="12">
       <AppTable

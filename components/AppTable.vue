@@ -21,6 +21,7 @@ const props = defineProps<{
   periode_id?: string | number | null;
   semester_id?: string | number | null;
   notulen_kegiatan_id?: string | number | null;
+  jadwal_upacara_id?: string | number | null;
   showSelect?: boolean;
 }>();
 
@@ -42,6 +43,7 @@ const appTable = useAppTable({
   semester_id: props.semester_id,
   periode_id: props.periode_id,
   notulen_kegiatan_id: props.notulen_kegiatan_id,
+  jadwal_upacara_id: props.jadwal_upacara_id,
 });
 
 // Watch for changes in prop and update the internal kelas_id
@@ -183,6 +185,9 @@ defineExpose({
       </template>
       <template #item.date="{ item }">
         {{ formatFullDate(item.date)?.dateOnly }}
+      </template>
+      <template #item.jadwal_upacara_date="{ item }">
+        {{ formatFullDate(item.jadwal_upacara_date)?.dateOnly }}
       </template>
       <template #item.until_date="{ item }">
         {{ formatFullDate(item.until_date)?.dateOnly }}

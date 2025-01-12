@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { VTextarea, VTextField } from 'vuetify/lib/components/index.mjs';
-
 const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
@@ -8,90 +6,75 @@ const dialogSave = ref();
 const tableRef = ref();
 
 const form = ref({
-    tanggal: "", // guruid
-    title: "", // guruid
-    catatan: "", // guruid
-    file: null, // guruid
-    gambar_1: null, // guruid
-    gambar_2: null, // guruid
+  pembina_id: null, // guruid
+  date: null,
 });
 
+const teacherList = ref([]);
+
+const getAllTeacher = async () => {
+  useApi("master/guru/all").then(({ data }) => {
+    teacherList.value = data;
+  });
+};
 
 onMounted(() => {
   const { user } = useAuthStore();
-//   useApi(`level/notulen-kegiatan/${user.role_id}`).then(({ data }) => {
-//     if(data == 0){
-//       navigateTo(`/not-authorized`);
-//     }
-//   });
+  useApi(`level/jadwal-upacara/${user.role_id}`).then(({ data }) => {
+    if (data == 0) {
+      navigateTo(`/not-authorized`);
+    }
+  });
 
+  getAllTeacher();
 });
 </script>
 
 <template>
-  <SaveFileDialog
+  <SaveDialog
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
-    path="notulen-kegiatan"
-    title="Tambah Notulen Kegiatan"
-    edit-title="Edit Notulen Kegiatan"
+    path="jadwal-upacara"
+    title="Tambah Pembina Upacara"
+    edit-title="Edit Pembina Upacara"
     :default-form="form"
     :request-form="form"
     :refresh-callback="tableRef.refresh"
     width="600"
   >
+    <VCol cols="12">
+      <VAutocomplete
+        v-model="formData.pembina_id"
+        label="Guru"
+        :error-messages="validationErrors.pembina_id"
+        placeholder="Pilih Guru"
+        :items="teacherList"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :readonly="isDetail"
+      />
+    </VCol>
 
     <VCol cols="12">
       <VTextField
-        v-model="formData.tanggal"
+        v-model="formData.date"
         type="date"
-        :error-messages="validationErrors.tanggal"
+        :error-messages="validationErrors.date"
         label="Tanggal"
       />
     </VCol>
-
-    <VCol cols="12">
-      <VTextField
-        v-model="formData.title"
-        :error-messages="validationErrors.title"
-        label="Judul"
-      />
-    </VCol>
-
-    <VCol cols="12">
-      <VTextarea
-        v-model="formData.catatan"
-        :error-messages="validationErrors.catatan"
-        label="Catatan"
-      />
-    </VCol>
-    <VCol cols="12" md="4">
-        <FileInput
-            v-model="formData.file"
-            label="Upload File"
-        />
-    </VCol>
-    <VCol cols="12" md="4">
-        <FileInput
-            v-model="formData.gambar_1"
-            label="Upload Gambar 1"
-        />
-    </VCol>
-    <VCol cols="12" md="4">
-        <FileInput
-            v-model="formData.gambar_2"
-            label="Upload Gambar 2"
-        />
-    </VCol>
-  </SaveFileDialog>
+  </SaveDialog>
 
   <VRow>
     <VCol cols="12">
       <VCard>
         <VCardItem>
           <VBtn
-            color="primary" 
+            color="primary"
             @click="
               () => {
                 dialogSave.show();
@@ -108,23 +91,18 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Notulen Kegiatan"
-        path="notulen-kegiatan"
+        title="Data Pembina Upacara"
+        path="jadwal-upacara"
         :with-actions="true"
         :headers="[
           {
+            title: 'Pembina',
+            key: 'pembina_name',
+            sortable: false,
+          },
+          {
             title: 'Tanggal',
-            key: 'tanggal',
-            sortable: false,
-          },
-          {
-            title: 'Judul',
-            key: 'title',
-            sortable: false,
-          },
-          {
-            title: 'Catatan',
-            key: 'catatan',
+            key: 'date',
             sortable: false,
           },
         ]"
@@ -132,15 +110,15 @@ onMounted(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              label="Tambah Guru"
+              label="Detail"
               size="small"
               @click="
                 () => {
-                  navigateTo(`/notulen-kegiatan-detail?id=${item.id}`);
+                  navigateTo(`/jadwal-upacara/${item.id}`);
                 }
               "
             >
-              <VIcon icon="ri-add-box-fill" />
+              <VIcon icon="ri-file-list-line" />
             </IconBtn>
             <IconBtn
               label="Edit"
@@ -148,6 +126,10 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
+                  payload.date = addDaysToDate(
+                    convertToSimpleDate(payload.date),
+                    1
+                  );
                   dialogSave.show(payload, false);
                 }
               "
@@ -159,8 +141,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Notulen Kegiatan',
-                  message: `Anda yakin ingin menghapus Notulen Kegiatan ${
+                  title: 'Hapus Surat Masuk',
+                  message: `Anda yakin ingin menghapus Surat Masuk ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

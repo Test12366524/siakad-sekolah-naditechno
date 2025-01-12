@@ -126,20 +126,21 @@ useApi("master/mata-pelajaran/all").then(({ data }) => {
   mata_pelajaran.value = data;
 });
 
-const role_id = ref();
+const role_id = ref(null);
 const status_action = ref();
 
 onMounted(() => {
   const { user } = useAuthStore();
   useApi(`level/absensi/${user.role_id}`).then(({ data }) => {
-    if(data == 0){
+    if (data == 0) {
       navigateTo(`/not-authorized`);
     }
   });
 
   role_id.value = user.role_id;
   user_id.value = user.id;
-  if (user.role_id == 1){
+  console.log(user.role_id);
+  if (user.role_id == 1) {
     status_action.value = true;
     useApi("master/guru/all").then(({ data }) => {
       guru.value = data;
@@ -147,7 +148,7 @@ onMounted(() => {
     useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
       jadwal_mata_pelajaran.value = data;
     });
-  } else if(user.role_id == 2){
+  } else if (user.role_id == 2) {
     status_action.value = true;
     useApi("master/guru/byUserID/" + user_id.value).then(({ data }) => {
       guru.value = data;
@@ -165,8 +166,6 @@ onMounted(() => {
     status_action.value = false;
   }
 });
-
-
 
 const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
@@ -556,16 +555,6 @@ const isDataNotValid = computed(() => {
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6" class="d-flex gap-4">
-              <!--
-                <VBtn
-                v-if="role_id == 1 || role_id == 2"
-                color="primary"
-                @click="dialogSave.show()"
-                >
-                <VIcon end icon="ri-add-fill" />
-                Tambah Data Single
-                </VBtn>
-              -->
               <VBtn
                 v-if="role_id == 1 || role_id == 2"
                 color="primary"
@@ -625,6 +614,7 @@ const isDataNotValid = computed(() => {
 
     <VCol cols="12">
       <AppTable
+        v-if="role_id"
         ref="tableRef"
         title="Data Absensi"
         path="absensi"

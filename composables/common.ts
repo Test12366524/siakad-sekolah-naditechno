@@ -8,6 +8,7 @@ export function useAppTable(conf: {
   periode_id?: string | number | null;
   semester_id?: string | number | null;
   notulen_kegiatan_id?: string | number | null;
+  jadwal_upacara_id?: string | number | null;
 }) {
   const loading = ref(false);
   const limit = ref(conf.limit || 15);
@@ -22,6 +23,7 @@ export function useAppTable(conf: {
   const periode_id = ref(conf.periode_id || "");
   const semester_id = ref(conf.semester_id || "");
   const notulen_kegiatan_id = ref(conf.notulen_kegiatan_id || "");
+  const jadwal_upacara_id = ref(conf.jadwal_upacara_id || "");
 
   const { snackbar } = useCommonStore();
 
@@ -92,6 +94,13 @@ export function useAppTable(conf: {
       Number(notulen_kegiatan_id.value) > 0
     )
       params.notulen_kegiatan_id = notulen_kegiatan_id.value;
+
+    if (
+      jadwal_upacara_id.value &&
+      jadwal_upacara_id.value !== "" &&
+      Number(jadwal_upacara_id.value) > 0
+    )
+      params.jadwal_upacara_id = jadwal_upacara_id.value;
 
     const { data, success, message } = await useApi(conf.path, {
       withLoader: false,
