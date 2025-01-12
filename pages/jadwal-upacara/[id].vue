@@ -1,36 +1,33 @@
 <script setup lang="ts">
-
 const { confirmDialog } = useCommonStore();
-const route = useRoute(); // Untuk membaca route saat ini
 
 const dialogSave = ref();
 
 const tableRef = ref();
 
+const route = useRoute();
 
-
-const guru = ref([]);
-const id = route.query.id || null;
-const url = 'notulen-kegiatan-detail';
-
+const jadwalUpacaraId = computed(() => route.params.id);
 
 const form = ref({
-    notulen_kegiatan_id: id, // guruid
-    guru_id: "", // guruid
+  jadwal_upacara_id: jadwalUpacaraId.value, // guruid
+  guru_id: null,
 });
+
+const teacherList = ref([]);
+
+const getAllTeacher = async () => {
+  useApi("master/guru/all").then(({ data }) => {
+    teacherList.value = data;
+  });
+};
 
 onMounted(() => {
   const { user } = useAuthStore();
-//   useApi(`level/notulen-kegiatan/${user.role_id}`).then(({ data }) => {
-//     if(data == 0){
-//       navigateTo(`/not-authorized`);
-//     }
-//   });
 
-    useApi("master/guru").then(({ data }) => {
-        guru.value = data;
-    });
+  if (user.role_id !== 1) return navigateTo(`/not-authorized`);
 
+  getAllTeacher();
 });
 </script>
 
@@ -39,28 +36,28 @@ onMounted(() => {
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
-    path="notulen-kegiatan-kegiatan"
-    title="Tambah Absen Notulen Kegiatan Guru"
-    edit-title="Edit Absen Notulen Kegiatan Guru"
+    path="jadwal-upacara-detail"
+    title="Tambah Kehadiran Upacara"
+    edit-title="Edit Kehadiran Upacara"
     :default-form="form"
     :request-form="form"
     :refresh-callback="tableRef.refresh"
     width="600"
   >
-
     <VCol cols="12">
-        <VAutocomplete
-            v-model="formData.user_id"
-            label="Guru"
-            :error-messages="validationErrors.user_id"
-            placeholder="Pilih Guru"
-            :items="guru"
-            item-title="text"
-            item-value="id"
-            required
-            clearable
-            clear-icon="ri-close-line"
-        />
+      <VAutocomplete
+        v-model="formData.guru_id"
+        label="Guru"
+        :error-messages="validationErrors.guru_id"
+        placeholder="Pilih Guru"
+        :items="teacherList"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :readonly="isDetail"
+      />
     </VCol>
   </SaveDialog>
 
@@ -69,7 +66,7 @@ onMounted(() => {
       <VCard>
         <VCardItem>
           <VBtn
-            color="primary" 
+            color="primary"
             @click="
               () => {
                 dialogSave.show();
@@ -83,22 +80,22 @@ onMounted(() => {
       </VCard>
     </VCol>
 
-    <VCol cols="12">
+    <VCol cols="12" v-if="jadwalUpacaraId">
       <AppTable
         ref="tableRef"
-        title="Data Notulen Kegiatan"
-        :path="url"
-        :notulen_kegiatan_id="id"
+        title="Daftar Hadir Guru"
+        path="jadwal-upacara-detail"
+        :jadwal_upacara_id="jadwalUpacaraId"
         :with-actions="true"
         :headers="[
           {
             title: 'Tanggal',
-            key: 'kegiatan_tanggal',
+            key: 'jadwal_upacara_date',
             sortable: false,
           },
           {
-            title: 'Judul',
-            key: 'kegiatan_title',
+            title: 'Pembina',
+            key: 'pembina_name',
             sortable: false,
           },
           {
@@ -116,6 +113,10 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
+                  payload.date = addDaysToDate(
+                    convertToSimpleDate(payload.date),
+                    1
+                  );
                   dialogSave.show(payload, false);
                 }
               "
@@ -127,8 +128,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Notulen Kegiatan',
-                  message: `Anda yakin ingin menghapus Notulen Kegiatan ${
+                  title: 'Hapus Surat Masuk',
+                  message: `Anda yakin ingin menghapus Surat Masuk ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

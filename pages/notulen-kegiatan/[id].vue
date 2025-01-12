@@ -1,33 +1,34 @@
 <script setup lang="ts">
-const { confirmDialog } = useCommonStore()
+const { confirmDialog } = useCommonStore();
+const route = useRoute(); // Untuk membaca route saat ini
 
-const dialogSave = ref()
+const dialogSave = ref();
 
-const tableRef = ref()
+const tableRef = ref();
+
+const guru = ref([]);
+const notulenId = computed(() => route.params.id);
+const url = "notulen-kegiatan-detail";
 
 const form = ref({
-  pembina_id: null, // guruid
-  date: null,
-})
-
-const teacherList = ref([])
-
-const getAllTeacher = async () => {
-  useApi('master/guru/all').then(({ data }) => {
-    teacherList.value = data
-  })
-}
+  notulen_kegiatan_id: notulenId.value, // guruid
+  guru_id: "", // guruid
+});
 
 onMounted(() => {
   const { user } = useAuthStore();
-  useApi(`level/jadwal-upacara/${user.role_id}`).then(({ data }) => {
-    if(data == 0){
-      navigateTo(`/not-authorized`);
-    }
-  });
+  //   useApi(`level/notulen-kegiatan/${user.role_id}`).then(({ data }) => {
+  //     if(data == 0){
+  //       navigateTo(`/not-authorized`);
+  //     }
+  //   });
 
-  getAllTeacher()
-})
+  console.log("notulenId", notulenId.value);
+  if (user.role_id !== 1) return navigateTo(`/not-authorized`);
+  useApi("master/guru/all").then(({ data }) => {
+    guru.value = data;
+  });
+});
 </script>
 
 <template>
@@ -35,9 +36,9 @@ onMounted(() => {
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
-    path="jadwal-upacara"
-    title="Tambah Pembina Upacara"
-    edit-title="Edit Pembina Upacara"
+    :path="url"
+    title="Tambah Absen Notulen Kegiatan Guru"
+    edit-title="Edit Absen Notulen Kegiatan Guru"
     :default-form="form"
     :request-form="form"
     :refresh-callback="tableRef.refresh"
@@ -45,26 +46,16 @@ onMounted(() => {
   >
     <VCol cols="12">
       <VAutocomplete
-        v-model="formData.pembina_id"
+        v-model="formData.guru_id"
         label="Guru"
-        :error-messages="validationErrors.pembina_id"
+        :error-messages="validationErrors.guru_id"
         placeholder="Pilih Guru"
-        :items="teacherList"
+        :items="guru"
         item-title="text"
         item-value="id"
         required
         clearable
         clear-icon="ri-close-line"
-        :readonly="isDetail"
-      />
-    </VCol>
-
-    <VCol cols="12">
-      <VTextField
-        v-model="formData.date"
-        type="date"
-        :error-messages="validationErrors.date"
-        label="Tanggal"
       />
     </VCol>
   </SaveDialog>
@@ -81,31 +72,34 @@ onMounted(() => {
               }
             "
           >
-            <VIcon
-              end
-              icon="ri-add-fill"
-            />
+            <VIcon end icon="ri-add-fill" />
             Tambah Data
           </VBtn>
         </VCardItem>
       </VCard>
     </VCol>
 
-    <VCol cols="12">
+    <VCol cols="12" v-if="notulenId">
       <AppTable
         ref="tableRef"
-        title="Data Pembina Upacara"
-        path="jadwal-upacara"
+        title="Data Notulen Kegiatan"
+        :path="url"
+        :notulen_kegiatan_id="notulenId"
         :with-actions="true"
         :headers="[
           {
-            title: 'Pembina',
-            key: 'pembina_name',
+            title: 'Tanggal',
+            key: 'created_at',
             sortable: false,
           },
           {
-            title: 'Tanggal',
-            key: 'date',
+            title: 'Judul',
+            key: 'kegiatan_title',
+            sortable: false,
+          },
+          {
+            title: 'Guru',
+            key: 'guru_name',
             sortable: false,
           },
         ]"
@@ -118,7 +112,6 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.date = addDaysToDate(convertToSimpleDate(payload.date), 1)
                   dialogSave.show(payload, false);
                 }
               "
@@ -130,8 +123,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Surat Masuk',
-                  message: `Anda yakin ingin menghapus Surat Masuk ${
+                  title: 'Hapus Notulen Kegiatan',
+                  message: `Anda yakin ingin menghapus Notulen Kegiatan ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

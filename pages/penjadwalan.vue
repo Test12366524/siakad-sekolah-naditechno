@@ -1,63 +1,63 @@
 <script setup lang="ts">
-const { confirmDialog } = useCommonStore()
+const { confirmDialog } = useCommonStore();
 
-const dialogSave = ref()
+const dialogSave = ref();
 
-const tableRef = ref()
-const periode = ref()
-const filter_periode = ref()
+const tableRef = ref();
+const periode = ref();
+const filter_periode = ref();
 
 const form = ref({
   guru_id: null,
   mata_pelajaran_id: null,
   semester_id: null,
   periode_id: null,
-  hari: '0', // 0 sampe 6
+  hari: "0", // 0 sampe 6
   dari_jam: null,
   ke_jam: null,
   jumlah_jam: null,
   status: 1, // 0 atau 1
-})
+});
 
-const teacherList = ref([])
-const mataPelajaranList = ref([])
-const semesterList = ref([])
-const filterSemesterList = ref([])
+const teacherList = ref([]);
+const mataPelajaranList = ref([]);
+const semesterList = ref([]);
+const filterSemesterList = ref([]);
 
 const semester_id = ref<number | null>(null);
 const periode_id = ref<number | null>(null);
 
 const dayList = ref([
-  { id: '0', text: 'Senin' },
-  { id: '1', text: 'Selasa' },
-  { id: '2', text: 'Rabu' },
-  { id: '3', text: 'Kamis' },
-  { id: '4', text: 'Jumat' },
-  { id: '5', text: 'Sabtu' },
-  { id: '6', text: 'Minggu' },
-])
+  { id: "0", text: "Senin" },
+  { id: "1", text: "Selasa" },
+  { id: "2", text: "Rabu" },
+  { id: "3", text: "Kamis" },
+  { id: "4", text: "Jumat" },
+  { id: "5", text: "Sabtu" },
+  { id: "6", text: "Minggu" },
+]);
 
 const getAllTeacher = async () => {
-  useApi('master/guru/all').then(({ data }) => {
-    teacherList.value = data
-  })
-}
+  useApi("master/guru/all").then(({ data }) => {
+    teacherList.value = data;
+  });
+};
 
 const getAllMataPelajaran = async () => {
-  useApi('master/mata-pelajaran/all').then(({ data }) => {
-    mataPelajaranList.value = data
-  })
-}
+  useApi("master/mata-pelajaran/all").then(({ data }) => {
+    mataPelajaranList.value = data;
+  });
+};
 
 const getAllSemester = async () => {
-  useApi('master/semester/all/1').then(({ data }) => {
-    semesterList.value = data
-  })
+  useApi("master/semester/all/1").then(({ data }) => {
+    semesterList.value = data;
+  });
 
-  useApi('master/semester/all/0').then(({ data }) => {
-    filterSemesterList.value = data
-  })
-}
+  useApi("master/semester/all/0").then(({ data }) => {
+    filterSemesterList.value = data;
+  });
+};
 
 useApi("master/periode/all/1").then(({ data }) => {
   periode.value = data;
@@ -67,31 +67,31 @@ useApi("master/periode/all/0").then(({ data }) => {
   filter_periode.value = data;
 });
 
-const handleExportPdf = item => {
-  const payload = { ...item }
+const handleExportPdf = (item) => {
+  const payload = { ...item };
 
-  console.log(payload)
-}
+  console.log(payload);
+};
 
 const role_id = ref();
 const status_action = ref();
 
 onMounted(() => {
-  getAllTeacher()
-  getAllMataPelajaran()
-  getAllSemester()
+  getAllTeacher();
+  getAllMataPelajaran();
+  getAllSemester();
 
   const { user } = useAuthStore();
   useApi(`level/penjadwalan/${user.role_id}`).then(({ data }) => {
-    if(data == 0){
+    if (data == 0) {
       navigateTo(`/not-authorized`);
     }
   });
 
   role_id.value = user.role_id;
-  status_action.value = user.role_id == 1;
-})
-
+  console.log("role_id", user.role_id);
+  status_action.value = user.role_id === 1 || user.role_id === 6
+});
 </script>
 
 <template>
@@ -107,10 +107,7 @@ onMounted(() => {
     :request-form="form"
     width="900"
   >
-    <VCol
-      cols="12"
-      md="6"
-    >
+    <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.guru_id"
         label="Guru"
@@ -126,10 +123,7 @@ onMounted(() => {
         density="compact"
       />
     </VCol>
-    <VCol
-      cols="12"
-      md="6"
-    >
+    <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.mata_pelajaran_id"
         label="Mata Pelajaran"
@@ -145,10 +139,7 @@ onMounted(() => {
         density="compact"
       />
     </VCol>
-    <VCol
-      cols="12"
-      md="6"
-    >
+    <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.semester_id"
         label="Semester"
@@ -164,10 +155,7 @@ onMounted(() => {
         density="compact"
       />
     </VCol>
-    <VCol
-      cols="12"
-      md="6"
-    >
+    <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.periode_id"
         label="Periode"
@@ -183,10 +171,7 @@ onMounted(() => {
         density="compact"
       />
     </VCol>
-    <VCol
-      cols="12"
-      md="6"
-    >
+    <VCol cols="12" md="6">
       <VAutocomplete
         v-model="formData.hari"
         label="Hari"
@@ -231,24 +216,15 @@ onMounted(() => {
       />
     </VCol>
 
-    <VCol
-      cols="12"
-      md="6"
-    >
+    <VCol cols="12" md="6">
       <VLabel>Status</VLabel>
       <VRadioGroup
         v-model="formData.status"
         inline
         :error-messages="validationErrors.status"
       >
-        <VRadio
-          label="Aktif"
-          :value="1"
-        />
-        <VRadio
-          label="Nonaktif"
-          :value="0"
-        />
+        <VRadio label="Aktif" :value="1" />
+        <VRadio label="Nonaktif" :value="0" />
       </VRadioGroup>
     </VCol>
   </SaveDialog>
@@ -260,7 +236,7 @@ onMounted(() => {
           <VRow>
             <VCol cols="12" md="6">
               <VBtn
-                v-if="role_id == 1"
+                v-if="role_id === 1 || role_id === 6"
                 color="primary"
                 @click="
                   () => {
@@ -268,15 +244,11 @@ onMounted(() => {
                   }
                 "
               >
-                <VIcon
-                  end
-                  icon="ri-add-fill"
-                />
+                <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
             </VCol>
-            <VCol cols="12" md="2" style="margin-block-start: 5px">
-            </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px"> </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="periode_id"

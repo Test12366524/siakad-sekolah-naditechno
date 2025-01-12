@@ -74,7 +74,8 @@ onMounted(() => {
     }
   });
   role_id.value = user.role_id;
-  status_action.value = user.role_id == 1;
+  console.log(role_id.value);
+  status_action.value = user.role_id === 1 || user.role_id === 6
 });
 
 const mata_pelajaran_id = ref<number | null>(null);
@@ -230,7 +231,7 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number, 
         <VCardItem>
           <VRow>
             <VCol cols="12" md="2">
-              <VBtn v-if="role_id == 1" @click="dialogSave.show()" color="primary">
+              <VBtn v-if="role_id === 1 || role_id === 6" @click="dialogSave.show()" color="primary">
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -315,7 +316,7 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number, 
         ref="tableRef"
         title="Data Kelas Jadwal"
         path="kelas-jadwal"
-        :with-actions="status_action"
+        :with-actions="role_id === 1 || role_id === 6"
         :kelas_id="kelas_id"
         :guru_id="guru_id"
         :mata_pelajaran_id="mata_pelajaran_id"
@@ -357,14 +358,14 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number, 
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              v-if="role_id == 1"
+              
               @click="dialogSave.show({ ...item })"
               size="small"
             >
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
-              v-if="role_id == 1"
+             
               @click="
                 confirmDialog.show({
                   title: 'Hapus Kelas Jadwal',
