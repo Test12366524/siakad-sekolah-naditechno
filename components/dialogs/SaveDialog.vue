@@ -11,6 +11,7 @@ const props = defineProps({
   width: null || Number,
   itemKey: null || String,
   requestForm: Object,
+  actionBtnText: null || String,
 });
 
 const emits = defineEmits(["update:modelValue", "saved"]);
@@ -115,7 +116,9 @@ defineExpose({
           class="overflow-visible d-flex justify-end flex-wrap gap-4"
         >
           <VBtn type="submit">
-            {{ isEditing ? "Update" : "Create" }}
+            {{
+              isEditing ? actionBtnText || "Update" : actionBtnText || "Create"
+            }}
           </VBtn>
         </VCardText>
       </VCard>

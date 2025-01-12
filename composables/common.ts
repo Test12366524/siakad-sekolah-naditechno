@@ -218,6 +218,15 @@ export const formatFullDate = (date) => {
 
   const simpleDate = dateObj.toISOString().substring(0, 10);
 
+  const localDateNow = `${dateObj.getFullYear()}-${String(
+    dateObj.getMonth() + 1
+  ).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`;
+
+  // Get the local time in HH:MM format
+  const localTimeNow = `${String(dateObj.getHours()).padStart(2, "0")}:${String(
+    dateObj.getMinutes()
+  ).padStart(2, "0")}`;
+
   return {
     simpleDate,
     dateOnly,
@@ -229,5 +238,7 @@ export const formatFullDate = (date) => {
     dateTimeShort,
     dateTimeWithSeconds,
     numeric,
+    localDateNow,
+    localTimeNow,
   };
 };

@@ -4,7 +4,8 @@ const { confirmDialog } = useCommonStore();
 const dialogSave = ref();
 
 const tableRef = ref();
-
+const { user } = useAuthStore();
+const role_id = ref(null);
 const form = ref({
   user_id: null,
   tanggal: "",
@@ -12,6 +13,7 @@ const form = ref({
   jam_keluar: "",
   kehadiran: "",
 });
+const isAttendanceIn = ref(true);
 
 const teacherList = ref([]);
 
@@ -23,13 +25,16 @@ const getAllTeacher = async () => {
 };
 
 onMounted(() => {
-  const { user } = useAuthStore();
-//   useApi(`level/absen-guru/${user.role_id}`).then(({ data }) => {
-//     if(data == 0){
-//       navigateTo(`/not-authorized`);
-//     }
-//   });
-  getAllTeacher();
+  const roleId = Number(user.role_id);
+  console.log(roleId);
+  if (roleId !== 1 && roleId !== 2) return navigateTo(`/not-authorized`);
+  role_id.value = roleId;
+  if (roleId === 2) {
+    form.value.user_id = user.id;
+    form.value.kehadiran = "Hadir";
+  } else {
+    getAllTeacher();
+  }
 });
 </script>
 
@@ -39,14 +44,15 @@ onMounted(() => {
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     path="absen-guru"
-    title="Tambah Absen Guru"
-    edit-title="Edit Absen Guru"
+    :title="role_id === 2 ? 'Absen Masuk' : 'Tambah Absen Guru'"
+    :edit-title="role_id === 2 ? 'Absen Keluar' : 'Edit Absen Guru'"
     :default-form="form"
     :request-form="form"
     :refresh-callback="tableRef.refresh"
+    :action-btn-text="role_id === 2 ? 'Submit' : null"
     width="600"
   >
-    <VCol cols="12">
+    <VCol cols="12" v-if="role_id === 1">
       <VAutocomplete
         v-model="formData.user_id"
         label="Guru"
@@ -62,33 +68,34 @@ onMounted(() => {
     </VCol>
 
     <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.tanggal"
-            type="date"
-            :error-messages="validationErrors.tanggal"
-            label="Tanggal"
-        />
+      <VTextField
+        v-model="formData.tanggal"
+        type="date"
+        :error-messages="validationErrors.tanggal"
+        label="Tanggal"
+        :readonly="role_id === 2"
+      />
+    </VCol>
+    <VCol cols="12" md="12" v-if="role_id === 2 ? isAttendanceIn : true">
+      <VTextField
+        v-model="formData.jam_masuk"
+        type="time"
+        :error-messages="validationErrors.jam_masuk"
+        label="Jam Masuk"
+        :readonly="role_id === 2"
+      />
     </VCol>
 
-    <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.jam_masuk"
-            type="time"
-            :error-messages="validationErrors.jam_masuk"
-            label="Jam Masuk"
-        />
+    <VCol cols="12" md="12" v-if="role_id === 2 ? !isAttendanceIn : true">
+      <VTextField
+        v-model="formData.jam_keluar"
+        type="time"
+        :error-messages="validationErrors.jam_keluar"
+        label="Jam Keluar"
+      />
     </VCol>
 
-    <VCol cols="12" md="12">
-        <VTextField
-            v-model="formData.jam_keluar"
-            type="time"
-            :error-messages="validationErrors.jam_keluar"
-            label="Jam Keluar"
-        />
-    </VCol>
-
-    <VCol cols="12" md="12">
+    <VCol cols="12" md="12" v-if="role_id === 1">
       <VLabel>Kehadiran</VLabel>
       <VRadioGroup
         v-model="formData.kehadiran"
@@ -101,7 +108,6 @@ onMounted(() => {
         <VRadio label="Alpa" value="Alpa" />
       </VRadioGroup>
     </VCol>
-
   </SaveDialog>
 
   <VRow>
@@ -112,6 +118,13 @@ onMounted(() => {
             color="primary"
             @click="
               () => {
+                if (role_id === 2) {
+                  isAttendanceIn = true;
+                  form.tanggal = formatFullDate(new Date()).localDateNow;
+                  console.log(form.tanggal);
+                  form.jam_masuk = formatFullDate(new Date()).localTimeNow;
+                  console.log(form.jam_masuk);
+                }
                 dialogSave.show();
               }
             "
@@ -165,9 +178,14 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.tanggal = new Date(payload.tanggal)
-                    .toISOString()
-                    .substring(0, 10);
+                  payload.tanggal = formatFullDate(payload.tanggal).simpleDate;
+                  if (role_id === 2) {
+                    isAttendanceIn = false;
+
+                    payload.jam_keluar = formatFullDate(
+                      new Date()
+                    ).localTimeNow;
+                  }
                   dialogSave.show(payload, false);
                 }
               "
