@@ -191,6 +191,8 @@ const handleShowDialog = async (data, isDetail) => {
   await getDistrictList(payload.city_id);
   payload.subdistrict_id = payload.subdistrict_id.toString();
   await getSubDistrictList(payload.district_id);
+
+  
   if (payload.photo) previewPhoto.value = getFileUrl(payload.photo);
 
   payload.entrance_date = new Date(payload.entrance_date)

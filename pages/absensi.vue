@@ -13,6 +13,7 @@ const siswaByClass = ref([]);
 const jadwal_mata_pelajaran = ref();
 const kelas = ref();
 const semester = ref();
+const periode = ref();
 const mata_pelajaran = ref();
 const guru = ref();
 const user_id = ref();
@@ -21,6 +22,7 @@ const form = ref({
   kelas_id: null,
   jadwal_id: "",
   semester_id: "",
+  periode_id: "",
   pertemuan_ke: "",
   siswa_id: "",
   kehadiran: "Hadir",
@@ -44,6 +46,7 @@ const bulkData = ref([
     kelas_id: 2,
     jadwal_id: 4,
     semester_id: 2,
+    periode_id: 2,
     siswa_id: 3,
     kehadiran: "Hadir", // Hadir, Izin, Sakit, Alpa
     pertemuan_ke: 5,
@@ -67,6 +70,7 @@ const getSiswaByClass = (classId: number) => {
         kelas_id: form.value.kelas_id || classId,
         jadwal_id: form.value.jadwal_id,
         semester_id: form.value.semester_id,
+        periode_id: form.value.periode_id,
         siswa_id: item.id,
         kehadiran: "Hadir",
         pertemuan_ke: form.value.pertemuan_ke,
@@ -78,6 +82,7 @@ const getSiswaByClass = (classId: number) => {
         kelas_id: form.value.kelas_id || classId,
         jadwal_id: form.value.jadwal_id,
         semester_id: form.value.semester_id,
+        periode_id: form.value.periode_id,
         siswa_id: item.id,
         kehadiran: 1,
         pertemuan_ke: form.value.pertemuan_ke,
@@ -105,8 +110,12 @@ useApi("master/kelas/all").then(({ data }) => {
   kelas.value = data;
 });
 
-useApi("master/semester/all").then(({ data }) => {
+useApi("master/semester/all/1").then(({ data }) => {
   semester.value = data;
+});
+
+useApi("master/periode/all/1").then(({ data }) => {
+  periode.value = data;
 });
 
 useApi("siswa/all").then(({ data }) => {
@@ -176,6 +185,7 @@ const handleInsertBulk = async () => {
       kelas_id: Number(form.value.kelas_id),
       jadwal_id: form.value.jadwal_id,
       semester_id: form.value.semester_id,
+      periode_id: form.value.periode_id,
       siswa_id: item.id,
       kehadiran: item.kehadiran,
       pertemuan_ke: form.value.pertemuan_ke,
@@ -206,6 +216,7 @@ const handleShowBulkDialog = () => {
     kelas_id: "",
     jadwal_id: "",
     semester_id: "",
+    periode_id: "",
     pertemuan_ke: "",
     siswa_id: "",
     kehadiran: "Hadir",
@@ -268,7 +279,7 @@ const isDataNotValid = computed(() => {
         :readonly="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="3">
+    <VCol cols="12" md="2">
       <VTextField
         v-model="formData.pertemuan_ke"
         type="number"
@@ -278,7 +289,7 @@ const isDataNotValid = computed(() => {
         :readonly="isDetail"
       />
     </VCol>
-    <VCol cols="12" md="3">
+    <VCol cols="12" md="2">
       <VAutocomplete
         v-model="formData.semester_id"
         label="Semester"
@@ -286,6 +297,22 @@ const isDataNotValid = computed(() => {
         :error-messages="validationErrors.semester_id"
         placeholder="Pilih Semester"
         :items="semester"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :readonly="isDetail"
+      />
+    </VCol>
+    <VCol cols="12" md="2">
+      <VAutocomplete
+        v-model="formData.periode_id"
+        label="Periode"
+        density="compact"
+        :error-messages="validationErrors.periode_id"
+        placeholder="Pilih Periode"
+        :items="periode"
         item-title="text"
         item-value="id"
         required
@@ -397,7 +424,7 @@ const isDataNotValid = computed(() => {
         "
       />
     </VCol>
-    <VCol cols="12" md="3">
+    <VCol cols="12" md="2">
       <VTextField
         v-model="formData.pertemuan_ke"
         type="number"
@@ -411,7 +438,7 @@ const isDataNotValid = computed(() => {
         "
       />
     </VCol>
-    <VCol cols="12" md="3">
+    <VCol cols="12" md="2">
       <VAutocomplete
         v-model="formData.semester_id"
         label="Semester"
@@ -427,6 +454,26 @@ const isDataNotValid = computed(() => {
         @update:model-value="
           (semester_id) => {
             form.semester_id = semester_id;
+          }
+        "
+      />
+    </VCol>
+    <VCol cols="12" md="2">
+      <VAutocomplete
+        v-model="formData.periode_id"
+        label="Periode"
+        density="compact"
+        :error-messages="validationErrors.periode_id"
+        placeholder="Pilih Periode"
+        :items="semester"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        @update:model-value="
+          (periode_id) => {
+            form.periode_id = periode_id;
           }
         "
       />
@@ -606,11 +653,11 @@ const isDataNotValid = computed(() => {
             key: 'hari_desc',
             sortable: false,
           },
-          {
-            title: 'Jam',
-            key: 'jam_desc',
-            sortable: false,
-          },
+          // {
+          //   title: 'Jam',
+          //   key: 'jam_desc',
+          //   sortable: false,
+          // },
           {
             title: 'Pertemuan Ke',
             key: 'pertemuan_ke',

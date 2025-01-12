@@ -41,7 +41,7 @@ const getMataPelajaran = () => {
 };
 
 const { user } = useAuthStore();
-
+const role_id = ref();
 const previewPhoto = ref("");
 
 onMounted(() => {
@@ -50,6 +50,7 @@ onMounted(() => {
       navigateTo(`/not-authorized`);
     }
   });
+  role_id.value = user.role_id;
   getTugasTambahan();
   getMataPelajaran();
 });
@@ -262,8 +263,9 @@ onMounted(() => {
       <VCard>
         <VCardItem>
           <VRow>
-            <VCol>
+            <VCol cols="12" md="6" class="d-flex align-center gap-4">
               <VBtn
+                v-if="role_id == 1"
                 color="primary"
                 @click="
                   () => {
@@ -275,6 +277,11 @@ onMounted(() => {
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
+
+              <ImportFileExcel
+                @done="tableRef.refresh()"
+                path="master/guru/import-excel"
+              ></ImportFileExcel>
             </VCol>
           </VRow>
         </VCardItem>

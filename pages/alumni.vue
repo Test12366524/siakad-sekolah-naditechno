@@ -21,11 +21,11 @@ useApi("siswa/all").then(({ data }) => {
 
 onMounted(() => {
   const { user } = useAuthStore();
-  useApi(`level/alumni/${user.role_id}`).then(({ data }) => {
-    if(data == 0){
-      navigateTo(`/not-authorized`);
-    }
-  });
+  // useApi(`level/alumni/${user.role_id}`).then(({ data }) => {
+  //   if(data == 0){
+  //     navigateTo(`/not-authorized`);
+  //   }
+  // });
 });
 </script>
 

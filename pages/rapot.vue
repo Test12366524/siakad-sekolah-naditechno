@@ -13,11 +13,11 @@ const form = ref({
 const role_id = ref();
 onMounted(() => {
   const { user } = useAuthStore();
-  useApi(`level/rapot/${user.role_id}`).then(({ data }) => {
-    if(data == 0){
-      navigateTo(`/not-authorized`);
-    }
-  });
+//   useApi(`level/rapot/${user.role_id}`).then(({ data }) => {
+//     if(data == 0){
+//       navigateTo(`/not-authorized`);
+//     }
+//   });
 
   useApi("siswa/getID/" + user.id).then(({ data }) => {
     const siswa_id = data;
