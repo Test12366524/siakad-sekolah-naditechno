@@ -1,34 +1,52 @@
 <script lang="ts" setup>
 import { ref } from "vue"; // Tambahkan nextTick dari Vue
-import { VTextField } from "vuetify/lib/components/index.mjs";
 
 const formRef = ref();
 const { user, validateLogin } = useAuthStore();
 
-const isStudent = computed(() => user.role_id === 3);
-const isTeacher = computed(() => user.role_id === 2);
+const formData = ref({
+  mata_pelajaran_id: null,
+  name: "",
+  nik: "",
+  nuptk: "",
+  nip: "",
+  birth_date: "",
+  place_of_birth: "",
+  gender: "",
+  email: "",
+  phone: "",
+  join_date: "",
+  pendidikan_terakhir: "",
+  tugas_tambahan_id: null,
+  status_kepegawaian: "",
+  address: "",
+  photo: null,
+});
 
-const listCategory = ref([]);
+const previewPhoto = ref(null);
+const validationErrors = ref({});
+const refVForm = ref(null);
+const tugasTambahanList = ref([]);
+const mataPelajaranList = ref([]);
 
-const fetchListCategory = async () => {
-  try {
-    const response = await useApi("/category/all");
-    const data = response.data;
+const getTugasTambahan = () => {
+  useApi("master/tugas-tambahan/all").then(({ data }) => {
+    tugasTambahanList.value = data;
+  });
+};
 
-    listCategory.value = [
-      ...data.map((category: any) => ({
-        text: category.name,
-        value: category.id,
-      })),
-    ];
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
+const getMataPelajaran = () => {
+  useApi("master/mata-pelajaran/all").then(({ data }) => {
+    mataPelajaranList.value = data;
+  });
 };
 
 onMounted(async () => {
-  await fetchListCategory(); // Tunggu sampai daftar provinsi diambil
+  getTugasTambahan();
+  getMataPelajaran();
 });
+
+const updateData = () => {};
 
 watchEffect(() => {
   if (formRef.value) formRef.value.init(user);
@@ -37,65 +55,187 @@ watchEffect(() => {
 
 <template>
   <VRow>
-    <VCol cols="12">
+    <VForm ref="refVForm" @submit.prevent="updateData">
       <VCard>
-        <VCardText>
-          <VContainer>
-            <SaveForm
-              ref="formRef"
-              v-slot="{ formData, validationErrors }"
-              custom-path="/auth"
-              :default-form="user"
-              @saved="validateLogin"
-            >
-              <VRow>
-                <VCol cols="12">
-                  <VTextField
-                    v-model="formData.name"
-                    :error-messages="validationErrors.name"
-                    label="Nama"
-                  />
-                </VCol>
+        <VCardText class="py-6">
+          <VRow>
+            <VCol cols="12">
+              <VCol cols="12" align-self="center">
+                <VImg
+                  max-height="300"
+                  class="mb-3"
+                  rounded
+                  border
+                  :src="
+                    previewPhoto ||
+                    'https://placehold.jp/30/fff/555/300x150.png?text=Foto'
+                  "
+                />
+                <FileInput
+                  v-if="!isDetail"
+                  v-model="formData.photo"
+                  accept="image/*"
+                  label="Upload Foto"
+                  @change="(data) => (previewPhoto = data.previewImageUrl)"
+                />
+              </VCol>
+            </VCol>
+            <VCol cols="12">
+              <VCard>
+                <VCardTitle class="mb-2"> Data Guru </VCardTitle>
+                <VCardText>
+                  <VRow>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.name"
+                        :error-messages="validationErrors.name"
+                        label="Nama Guru"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.nik"
+                        type="number"
+                        :error-messages="validationErrors.nik"
+                        label="NIK"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.nuptk"
+                        :error-messages="validationErrors.nuptk"
+                        label="NUPTK"
+                        type="number"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.nip"
+                        :error-messages="validationErrors.nip"
+                        label="NIP"
+                        type="number"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.birth_date"
+                        type="date"
+                        :error-messages="validationErrors.birth_date"
+                        label="Tanggal Lahir"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.place_of_birth"
+                        :error-messages="validationErrors.place_of_birth"
+                        label="Tempat Lahir"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VLabel>Jenis Kelamin</VLabel>
+                      <VRadioGroup
+                        v-model="formData.gender"
+                        inline
+                        :error-messages="validationErrors.gender"
+                      >
+                        <VRadio label="Laki-laki" value="L" />
+                        <VRadio label="Perempuan" value="P" />
+                      </VRadioGroup>
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.email"
+                        type="email"
+                        :error-messages="validationErrors.email"
+                        label="Email"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.phone"
+                        :error-messages="validationErrors.phone"
+                        label="No. Handphone"
+                        type="number"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.join_date"
+                        type="date"
+                        :error-messages="validationErrors.join_date"
+                        label="Tanggal Bergabung"
+                      />
+                    </VCol>
+                    <VCol cols="12">
+                      <VTextarea
+                        v-model="formData.address"
+                        :error-messages="validationErrors.address"
+                        label="Alamat"
+                        rows="2"
+                      />
+                    </VCol>
+                  </VRow>
+                </VCardText>
+              </VCard>
 
-                <VCol cols="12">
-                  <VTextField
-                    v-model="formData.email"
-                    :rules="[requiredValidator, emailValidator]"
-                    :error-messages="validationErrors.email"
-                    label="Email"
-                  />
-                </VCol>
+              <VCard class="mt-4">
+                <VCardTitle class="mb-2"> Pendidikan dan Tugas </VCardTitle>
+                <VCardText>
+                  <VRow>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.pendidikan_terakhir"
+                        :error-messages="validationErrors.pendidikan_terakhir"
+                        label="Pendidikan Terakhir"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VAutocomplete
+                        v-model="formData.mata_pelajaran_id"
+                        label="Mata Pelajaran"
+                        :error-messages="validationErrors.mata_pelajaran_id"
+                        placeholder="Pilih Mata Pelajaran"
+                        :items="mataPelajaranList"
+                        item-title="text"
+                        item-value="id"
+                        required
+                        clearable
+                        clear-icon="ri-close-line"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VAutocomplete
+                        v-model="formData.tugas_tambahan_id"
+                        label="Tugas Tambahan"
+                        :error-messages="validationErrors.tugas_tambahan_id"
+                        placeholder="Pilih Tugas Tambahan"
+                        :items="tugasTambahanList"
+                        item-title="text"
+                        item-value="id"
+                        required
+                        clearable
+                        clear-icon="ri-close-line"
+                      />
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="formData.status_kepegawaian"
+                        :error-messages="validationErrors.status_kepegawaian"
+                        label="Status Kepegawaian"
+                      />
+                    </VCol>
+                  </VRow>
+                </VCardText>
+              </VCard>
+            </VCol>
+          </VRow>
+        </VCardText>
+        <VDivider />
 
-                <VCol cols="12">
-                  <VTextField
-                    v-model="formData.phone_number"
-                    :error-messages="validationErrors.phone_number"
-                    type="number"
-                    label="No. HP / Whatsapp"
-                  />
-                </VCol>
-
-                <VCol cols="3">
-                  <VLabel>Jenis Kelamin</VLabel>
-                  <VRadioGroup v-model="formData.gender" inline>
-                    <VRadio label="Laki-laki" value="M" />
-                    <VRadio label="Perempuan" value="F" />
-                  </VRadioGroup>
-                </VCol>
-
-                <VCol cols="12">
-                  <VTextarea
-                    v-model="formData.address"
-                    :error-messages="validationErrors.address"
-                    label="Alamat"
-                  />
-                </VCol>
-              </VRow>
-            </SaveForm>
-          </VContainer>
-          <!-- 👉 Form -->
+        <VCardText class="overflow-visible d-flex justify-end flex-wrap gap-4">
+          <VBtn type="submit"> Update </VBtn>
         </VCardText>
       </VCard>
-    </VCol>
+    </VForm>
   </VRow>
 </template>
