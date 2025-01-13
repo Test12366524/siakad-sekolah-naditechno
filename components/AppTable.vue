@@ -189,6 +189,12 @@ defineExpose({
       <template #item.jadwal_upacara_date="{ item }">
         {{ formatFullDate(item.jadwal_upacara_date)?.dateOnly }}
       </template>
+      <template #item.created_at="{ item }">
+        {{ formatFullDate(item.created_at)?.dateOnly }}
+      </template>
+      <template #item.updated_at="{ item }">
+        {{ formatFullDate(item.updated_at)?.dateOnly }}
+      </template>
       <template #item.until_date="{ item }">
         {{ formatFullDate(item.until_date)?.dateOnly }}
       </template>

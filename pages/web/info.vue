@@ -6,32 +6,17 @@ const { user } = useAuthStore();
 
 const dialogSave = ref();
 const tableRef = ref();
-const baseUrl = "prestasi";
+const baseUrl = "info";
 
 const headers = [
-  {
-    title: "Kategori",
-    key: "category_name",
-    sortable: false,
-  },
   {
     title: "Judul",
     key: "title",
     sortable: false,
   },
   {
-    title: "Kompetisi",
-    key: "kompetisi",
-    sortable: false,
-  },
-  {
-    title: "Atas Nama",
-    key: "atas_nama",
-    sortable: false,
-  },
-  {
-    title: "Publish Date",
-    key: "publish_date",
+    title: "Tanggal dibuat",
+    key: "created_at",
     sortable: false,
   },
   {
@@ -41,22 +26,14 @@ const headers = [
   },
 ];
 
-const form = {
+const form = ref({
   title: "",
-  kompetisi: "",
-  atas_nama: "",
-  cover: "",
-  content: "",
-  publish_date: "",
-  author_id: user.id,
-  status: "",
-};
-
-const category = ref();
-
-useApi("prestasi-category/all").then(({ data }) => {
-  category.value = data;
+  image: "",
+  description: "",
+  status: 1,
 });
+
+const previewPhoto = ref(null);
 
 onMounted(() => {
   if (user.role_id !== 1) return navigateTo("/not-authorized");
@@ -69,70 +46,35 @@ onMounted(() => {
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
     :path="baseUrl"
-    title="Tambah Prestasi"
-    edit-title="Edit Prestasi"
+    title="Tambah Info"
+    edit-title="Edit Info"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
     :width="1000"
   >
     <VCol cols="12">
-      <VAutocomplete
-        v-model="formData.prestasi_category_id"
-        label="Kategori Prestasi"
-        density="compact"
-        :error-messages="validationErrors.prestasi_category_id"
-        placeholder="Pilih Kategori Prestasi"
-        :items="category"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
+      <VImg
+        class="mb-3"
+        rounded
+        border
+        max-height="300"
+        :src="
+          previewPhoto ||
+          'https://placehold.jp/30/fff/555/300x150.png?text=Foto'
+        "
       />
-    </VCol>
-    <VCol cols="12">
-      <VTextField
-        v-model="formData.title"
-        :error-messages="validationErrors.title"
-        label="Judul"
-      />
-    </VCol>
-
-    <VCol cols="12">
-      <VTextField
-        v-model="formData.kompetisi"
-        :error-messages="validationErrors.kompetisi"
-        label="Kompetisi"
-      />
-    </VCol>
-
-    <VCol cols="12">
-      <VTextField
-        v-model="formData.atas_nama"
-        :error-messages="validationErrors.atas_nama"
-        label="Atas Nama"
-      />
-    </VCol>
-
-    <VCol cols="12" md="6">
       <FileInput
-        v-model="formData.cover"
+        v-model="formData.image"
         accept="image/*"
-        label="Cover"
-        small-chips
-        chips
-        show-preview
+        label="Upload Foto (Optional)"
+        @change="
+          (data) => {
+            previewPhoto = data.previewImageUrl;
+          }
+        "
       />
     </VCol>
-    <VCol cols="12" md="3">
-      <VTextField
-        v-model="formData.publish_date"
-        :error-messages="validationErrors.publish_date"
-        label="Publish Date"
-        type="date"
-      />
-    </VCol>
-    <VCol cols="12" md="3">
+    <VCol cols="12">
       <VAutocomplete
         v-model="formData.status"
         label="Status"
@@ -156,10 +98,18 @@ onMounted(() => {
       />
     </VCol>
     <VCol cols="12">
+      <VTextField
+        v-model="formData.title"
+        :error-messages="validationErrors.title"
+        label="Judul"
+      />
+    </VCol>
+
+    <VCol cols="12">
       <VTextarea
-        v-model="formData.content"
-        :error-messages="validationErrors.content"
-        label="Content"
+        v-model="formData.description"
+        :error-messages="validationErrors.description"
+        label="Deskripsi"
       />
     </VCol>
   </SaveFileDialog>
@@ -170,7 +120,15 @@ onMounted(() => {
         <VCardItem>
           <VRow>
             <VCol>
-              <VBtn color="primary" @click="dialogSave.show()">
+              <VBtn
+                color="primary"
+                @click="
+                  () => {
+                    previewPhoto = null;
+                    dialogSave.show();
+                  }
+                "
+              >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
@@ -195,12 +153,8 @@ onMounted(() => {
               @click="
                 () => {
                   console.log(item);
-                  dialogSave.show({
-                    ...item,
-                    publish_date: new Date(item.publish_date)
-                      .toISOString()
-                      .split('T')[0],
-                  });
+                  previewPhoto = item.image ? getFileUrl(item.image) : null;
+                  dialogSave.show(item);
                 }
               "
             >
@@ -211,7 +165,7 @@ onMounted(() => {
               @click="
                 confirmDialog.show({
                   title: 'Hapus Prestasi',
-                  message: `Anda yakin ingin menghapus prestasi ini?`,
+                  message: `Anda yakin ingin menghapus info ini?`,
                   onConfirm: () => remove((item as any).id),
                 })
               "
