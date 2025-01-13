@@ -130,6 +130,7 @@ const fetchingDataGuru = () => {
 };
 
 const role_id = ref(0);
+const isTeacher = computed(() => role_id.value === 2);
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
@@ -143,6 +144,9 @@ onMounted(() => {
 
 <template>
   <VRow>
+    <VCol v-if="isTeacher" cols="12">
+      <DashboardWaliKelas />
+    </VCol>
     <VCol cols="12" md="12">
       <DashboardAnnouncement />
     </VCol>

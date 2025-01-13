@@ -4,8 +4,14 @@ import AccountSettingsBillingAndPlans from "@/views/pages/account-settings/Accou
 import AccountSettingsConnections from "@/views/pages/account-settings/AccountSettingsConnections.vue";
 import AccountSettingsNotification from "@/views/pages/account-settings/AccountSettingsNotification.vue";
 import AccountSettingsSecurity from "@/views/pages/account-settings/AccountSettingsSecurity.vue";
+import AccountSettingsStudent from "@/views/pages/account-settings/AccountSettingsStudent.vue";
+import AccountSettingsTeacher from "@/views/pages/account-settings/AccountSettingsTeacher.vue";
 
 const route = useRoute("pages-account-settings-tab");
+const { user } = useAuthStore();
+
+const isStudent = computed(() => user.role_id === 3);
+const isTeacher = computed(() => user.role_id === 2);
 
 const activeTab = computed({
   get: () => route.params.tab,
@@ -45,7 +51,9 @@ definePageMeta({
       >
         <!-- Account -->
         <VWindowItem value="account">
-          <AccountSettingsAccount />
+          <AccountSettingsStudent v-if="isStudent" />
+          <AccountSettingsTeacher v-else-if="isTeacher" />
+          <AccountSettingsAccount v-else />
         </VWindowItem>
 
         <!-- Security -->
