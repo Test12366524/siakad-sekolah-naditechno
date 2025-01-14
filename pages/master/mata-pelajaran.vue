@@ -24,7 +24,7 @@ useApi("master/jurusan/all").then(({ data }) => {
   jurusans.value = data;
 });
 
-useApi("master/semester/all").then(({ data }) => {
+useApi("master/semester/all/1").then(({ data }) => {
   semesters.value = data;
 });
 
