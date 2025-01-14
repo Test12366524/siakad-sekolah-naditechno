@@ -29,24 +29,49 @@ const refVForm = ref(null);
 const tugasTambahanList = ref([]);
 const mataPelajaranList = ref([]);
 
-const getTugasTambahan = () => {
-  useApi("master/tugas-tambahan/all").then(({ data }) => {
-    tugasTambahanList.value = data;
-  });
+const getTugasTambahan = async () => {
+  await useApi("master/tugas-tambahan/all", { withLoader: false }).then(
+    ({ data }) => {
+      tugasTambahanList.value = data;
+    }
+  );
 };
 
-const getMataPelajaran = () => {
-  useApi("master/mata-pelajaran/all").then(({ data }) => {
-    mataPelajaranList.value = data;
+const getMataPelajaran = async () => {
+  await useApi("master/mata-pelajaran/all", { withLoader: false }).then(
+    ({ data }) => {
+      mataPelajaranList.value = data;
+    }
+  );
+};
+
+const getDetails = (userId) => {
+  useApi(`master/guru/user/${userId}`).then(({ data }) => {
+    console.log("getDetails", data);
+    formData.value = data;
+    formData.value.photo = data.photo ? getFileUrl(data.photo) : null;
+    previewPhoto.value = formData.value.photo;
   });
 };
 
 onMounted(async () => {
+  getDetails(user.id);
   getTugasTambahan();
   getMataPelajaran();
 });
 
-const updateData = () => {};
+const updateData = () => {
+  const payload = formData.value;
+
+  const { errors, success } = useApi(`master/guru/${formData.value.id}`, {
+    withNotif: true,
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: payload,
+  });
+};
 
 watchEffect(() => {
   if (formRef.value) formRef.value.init(user);
