@@ -15,12 +15,12 @@
             color="primary"
             @click="
               () => {
-                navigateTo('/kelas-wali-kelas');
+                navigateTo('/nilai-wali-kelas');
               }
             "
           >
             <VIcon start icon="ri-calendar-todo-fill" />
-            Kelas
+            Nilai
           </VBtn>
 
           <VBtn

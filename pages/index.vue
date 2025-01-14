@@ -83,6 +83,10 @@ const mappingDataSiswa = (dataObject, icon = "ri-wallet-line") => {
   }));
 };
 
+const role_id = ref(0);
+const isTeacher = computed(() => role_id.value === 2);
+const waliKelasData = ref(null);
+
 const mappingDataGuru = (dataObject, icon = "ri-wallet-line") => {
   const titleMapping = {
     total_lms: "Total LMS",
@@ -129,22 +133,35 @@ const fetchingDataGuru = () => {
   });
 };
 
-const role_id = ref(0);
-const isTeacher = computed(() => role_id.value === 2);
+const userStore = useUserStore();
+
+const checkWaliKelasData = (id) => {
+  useApi(`/master/kelas/wali-kelas/${id}`).then(({ data }) => {
+    waliKelasData.value = data;
+    userStore.setWaliKelasData(data);
+  });
+};
+
+const { user } = useAuthStore();
 
 onMounted(() => {
   useApi("auth/me").then(({ data }) => {
     role_id.value = data.role_id;
-    if (data.role_id === 1) fetchingData();
-    else if (data.role_id === 3) fetchingDataSiswa();
-    else if (data.role_id === 2) fetchingDataGuru();
+    if (data.role_id === 1) {
+      fetchingData();
+    } else if (data.role_id === 3) {
+      fetchingDataSiswa();
+    } else if (data.role_id === 2) {
+      fetchingDataGuru();
+      checkWaliKelasData(user.id);
+    }
   });
 });
 </script>
 
 <template>
   <VRow>
-    <VCol v-if="isTeacher" cols="12">
+    <VCol v-if="waliKelasData" cols="12">
       <DashboardWaliKelas />
     </VCol>
     <VCol cols="12" md="12">

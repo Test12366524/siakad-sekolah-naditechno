@@ -18,6 +18,9 @@ const mata_pelajaran = ref();
 const guru = ref();
 const user_id = ref();
 
+const userStore = useUserStore();
+const waliKelasData = computed(() => userStore.waliKelasData);
+
 const form = ref({
   kelas_id: null,
   jadwal_id: "",
@@ -128,11 +131,18 @@ useApi("master/mata-pelajaran/all").then(({ data }) => {
 
 const role_id = ref(null);
 const status_action = ref();
+const { user } = useAuthStore();
+
+const checkWaliKelasData = (id) => {
+  useApi(`/master/kelas/wali-kelas/${id}`).then(({ data }) => {
+    userStore.setWaliKelasData(data);
+    form.value.kelas_id = data.id;
+  });
+};
 
 onMounted(() => {
-  const { user } = useAuthStore();
-
   if (user.role_id !== 2) return navigateTo("/not-authorized");
+  checkWaliKelasData(user.id);
 
   role_id.value = user.role_id;
   user_id.value = user.id;
@@ -208,7 +218,7 @@ const handleInsertBulk = async () => {
 
 const handleShowBulkDialog = () => {
   form.value = {
-    kelas_id: "",
+    kelas_id: form.value.kelas_id || waliKelasData.value.id,
     jadwal_id: "",
     semester_id: "",
     periode_id: "",
@@ -373,32 +383,39 @@ const isDataNotValid = computed(() => {
       }
     "
   >
-    <VCol cols="12" md="3">
+    <!--
+      <VCol
+      cols="12"
+      md="3"
+      >
+
       <VAutocomplete
-        v-model="formData.kelas_id"
-        label="Kelas"
-        density="compact"
-        :error-messages="validationErrors.kelas_id"
-        placeholder="Pilih Kelas"
-        :items="kelas"
-        item-title="text"
-        item-value="id"
-        required
-        clearable
-        clear-icon="ri-close-line"
-        @update:model-value="
-          (kelas_id: number) => {
-            if (kelas_id) {
-              getSiswaByClass(kelas_id);
-            }
-            else {
-              siswaByClass = [];
-            }
-            form.kelas_id = Number(kelas_id);
-          }
-        "
+      v-model="formData.kelas_id"
+      label="Kelas"
+      density="compact"
+      :error-messages="validationErrors.kelas_id"
+      placeholder="Pilih Kelas"
+      :items="kelas"
+      item-title="text"
+      item-value="id"
+      required
+      clearable
+      clear-icon="ri-close-line"
+      @update:model-value="
+      (kelas_id: number) => {
+      if (kelas_id) {
+      getSiswaByClass(kelas_id);
+      }
+      else {
+      siswaByClass = [];
+      }
+      form.kelas_id = Number(kelas_id);
+      }
+      "
       />
-    </VCol>
+
+      </VCol>
+    -->
     <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.jadwal_id"
@@ -419,7 +436,7 @@ const isDataNotValid = computed(() => {
         "
       />
     </VCol>
-    <VCol cols="12" md="2">
+    <VCol cols="12" md="3">
       <VTextField
         v-model="formData.pertemuan_ke"
         type="number"
@@ -433,7 +450,7 @@ const isDataNotValid = computed(() => {
         "
       />
     </VCol>
-    <VCol cols="12" md="2">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.semester_id"
         label="Semester"
@@ -453,7 +470,7 @@ const isDataNotValid = computed(() => {
         "
       />
     </VCol>
-    <VCol cols="12" md="2">
+    <VCol cols="12" md="3">
       <VAutocomplete
         v-model="formData.periode_id"
         label="Periode"
@@ -551,45 +568,20 @@ const isDataNotValid = computed(() => {
         <VCardItem>
           <VRow>
             <VCol cols="12" md="6" class="d-flex gap-4">
-              <VBtn
+              <!--
+                <VBtn
                 v-if="role_id == 1 || role_id == 2"
                 color="primary"
                 @click="handleShowBulkDialog"
-              >
+                >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Absensi
-              </VBtn>
+                </VBtn>
+              -->
               <ExportFileExcel path="absensi/export-excel" />
             </VCol>
-            <VCol cols="12" md="2" style="margin-block-start: 5px">
-              <VAutocomplete
-                v-model="kelas_id"
-                label="Kelas"
-                density="compact"
-                placeholder="Pilih Kelas"
-                :items="kelas"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="2" style="margin-block-start: 5px">
-              <VAutocomplete
-                v-model="guru_id"
-                label="Guru"
-                density="compact"
-                placeholder="Pilih Guru"
-                :items="guru"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="2" style="margin-block-start: 5px">
+            <VCol cols="12" md="2" style="margin-block-start: 5px" />
+            <VCol cols="12" md="4" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="mata_pelajaran_id"
                 label="Mata Pelajaran"
@@ -612,8 +604,8 @@ const isDataNotValid = computed(() => {
       <AppTable
         v-if="role_id"
         ref="tableRef"
-        title="Data Absensi Siswa"
-        path="absensi"
+        :title="`Data Absensi Siswa Kelas ${waliKelasData.name}`"
+        path="absensi/wali-kelas"
         :with-actions="status_action"
         :kelas_id="kelas_id"
         :guru_id="guru_id"
@@ -684,21 +676,23 @@ const isDataNotValid = computed(() => {
             <IconBtn size="small" @click="dialogSave.show({ ...item })">
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
-            <IconBtn
+            <!--
+              <IconBtn
               v-if="role_id == 1 || role_id == 2"
               size="small"
               @click="
-                confirmDialog.show({
-                  title: 'Hapus Absensi',
-                  message: `Anda yakin ingin menghapus Absensi ${
-                    (item as any).name
-                  }?`,
-                  onConfirm: () => remove((item as any).id),
-                })
+              confirmDialog.show({
+              title: 'Hapus Absensi',
+              message: `Anda yakin ingin menghapus Absensi ${
+              (item as any).name
+              }?`,
+              onConfirm: () => remove((item as any).id),
+              })
               "
-            >
+              >
               <VIcon icon="ri-delete-bin-line" />
-            </IconBtn>
+              </IconBtn>
+            -->
           </div>
         </template>
       </AppTable>

@@ -111,8 +111,6 @@ onMounted(async () => {
   getProvinceList();
 });
 
-const updateData = () => {};
-
 watchEffect(() => {
   if (formRef.value) formRef.value.init(user);
 });
