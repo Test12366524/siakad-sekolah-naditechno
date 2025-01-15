@@ -390,17 +390,12 @@ const isDataNotValid = computed(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        @update:model-value="
-          (kelas_id: number) => {
-            if (kelas_id) {
-              getSiswaByClass(kelas_id);
-            }
-            else {
-              siswaByClass = [];
-            }
-            form.kelas_id = Number(kelas_id);
-          }
-        "
+        @update:model-value="(kelas_id) => {
+          form.kelas_id = kelas_id;
+          $nextTick(() => {
+            getSiswaByClass(kelas_id);
+          });
+        }"
       />
     </VCol>
     <VCol cols="12" md="3">
@@ -464,7 +459,7 @@ const isDataNotValid = computed(() => {
         density="compact"
         :error-messages="validationErrors.periode_id"
         placeholder="Pilih Periode"
-        :items="semester"
+        :items="periode"
         item-title="text"
         item-value="id"
         required

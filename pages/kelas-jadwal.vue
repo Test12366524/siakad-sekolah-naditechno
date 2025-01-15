@@ -238,6 +238,7 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number, 
             </VCol>
             <VCol cols="12" md="2">
               <VAutocomplete
+                v-if="role_id != 3"
                 v-model="kelas_id"
                 label="Kelas"
                 density="compact"

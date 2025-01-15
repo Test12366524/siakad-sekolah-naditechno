@@ -15,7 +15,7 @@ const form = {
 
 const periodes = ref();
 
-useApi("master/periode/all").then(({ data }) => {
+useApi("master/periode/all/0").then(({ data }) => {
     periodes.value = data;
 });
 
