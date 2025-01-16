@@ -704,7 +704,7 @@ const handleShowDialog = async (data, isDetail) => {
           clearable
           clear-icon="ri-close-line"
           :readonly="isDetail"
-        />
+        /> 
       </VCol>
       <VCol cols="12">
         <FileInput
