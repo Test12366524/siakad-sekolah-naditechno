@@ -163,77 +163,11 @@ useApi("master/angkatan/all").then(({ data }) => {
   angkatans.value = data;
 });
 
-const getDetails = (userId) => {
+const getDetails = (userId: any) => {
   useApi(`siswa/user/${userId}`).then(async ({ data }) => {
     const payload = { ...data };
 
     await getProvinceList();
-    payload.province_id = payload.province_id.toString();
-    payload.city_id = payload.city_id.toString();
-    await getCityList(payload.province_id);
-    payload.district_id = payload.district_id.toString();
-    await getDistrictList(payload.city_id);
-    payload.subdistrict_id = payload.subdistrict_id.toString();
-    await getSubDistrictList(payload.district_id);
-
-    if (payload.photo) previewPhoto.value = getFileUrl(payload.photo);
-
-    payload.entrance_date = new Date(payload.entrance_date)
-      .toISOString()
-      .substring(0, 10);
-    payload.birth_date = new Date(payload.birth_date)
-      .toISOString()
-      .substring(0, 10);
-
-    formData.value = payload;
-  });
-};
-
-const updateData = () => {
-  const payload = formData.value;
-
-  const { errors, success } = useApi(`siswa/${formData.value.id}`, {
-    withNotif: true,
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    data: payload,
-  });
-};
-
-useApi("master/kelas/all").then(({ data }) => {
-  kelas.value = data;
-});
-
-useApi("master/semester/all/1").then(({ data }) => {
-  semester.value = data;
-});
-
-useApi("master/semester/all/0").then(({ data }) => {
-  filter_semester.value = data;
-});
-
-useApi("master/periode/all/1").then(({ data }) => {
-  periode.value = data;
-});
-
-useApi("master/periode/all/0").then(({ data }) => {
-  filter_periode.value = data;
-});
-
-useApi("master/jurusan/all").then(({ data }) => {
-  jurusans.value = data;
-});
-
-useApi("master/angkatan/all").then(({ data }) => {
-  angkatans.value = data;
-});
-
-const getDetails = (userId) => {
-  useApi(`siswa/user/${userId}`).then(async ({ data }) => {
-    const payload = { ...data };
-
     payload.province_id = payload.province_id.toString();
     payload.city_id = payload.city_id.toString();
     await getCityList(payload.province_id);
