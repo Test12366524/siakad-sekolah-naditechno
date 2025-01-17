@@ -17,14 +17,11 @@ const form = ref({
 
 onMounted(() => {
   const { user } = useAuthStore();
-  //   useApi(`level/notulen-kegiatan/${user.role_id}`).then(({ data }) => {
-  //     if(data == 0){
-  //       navigateTo(`/not-authorized`);
-  //     }
-  //   });
-
-  console.log("notulenId", notulenId.value);
-  if (user.role_id !== 1) return navigateTo(`/not-authorized`);
+    useApi(`level/notulen-kegiatan/${user.role_id}`).then(({ data }) => {
+      if(data == 0){
+        navigateTo(`/not-authorized`);
+      }
+    });
   useApi("master/guru/all").then(({ data }) => {
     guru.value = data;
   });

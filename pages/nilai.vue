@@ -63,6 +63,17 @@ useApi("master/periode/all/0").then(({ data }) => {
 const role_id = ref();
 const status_action = ref();
 
+let headers = [
+  { title: "Nama", key: "name", sortable: false },
+  { title: "NISN", key: "nisn", sortable: false },
+  { title: "Absensi", key: "kehadiran", sortable: false },
+  { title: "Tugas", key: "tugas", sortable: false },
+  { title: "UTS", key: "uts", sortable: false },
+  { title: "UAS", key: "uas", sortable: false },
+  { title: "Total", key: "total", sortable: false },
+  { title: "Predikat", key: "predikat", sortable: false },
+];
+
 onMounted(() => {
   const { user } = useAuthStore();
   useApi(`level/nilai/${user.role_id}`).then(({ data }) => {
@@ -72,7 +83,7 @@ onMounted(() => {
   });
 
   role_id.value = user.role_id;
-
+  
   if (user.role_id == 1){
     status_action.value = true;
     useApi("master/guru/all").then(({ data }) => {
@@ -83,10 +94,21 @@ onMounted(() => {
     useApi("master/guru/all/" + user.id).then(({ data }) => {
       guru.value = data;
     });
+  } else if(user.role_id == 3){
+    status_action.value = false;
+    headers = [
+      { title: "Absensi", key: "kehadiran", sortable: false },
+      { title: "Tugas", key: "tugas", sortable: false },
+      { title: "UTS", key: "uts", sortable: false },
+      { title: "UAS", key: "uas", sortable: false },
+      { title: "Total", key: "total", sortable: false },
+      { title: "Predikat", key: "predikat", sortable: false },
+    ];
   } else {
     status_action.value = false;
   }
 });
+
 
 const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
@@ -122,16 +144,6 @@ const singleDataForm = ref({
   predikat: "",
 });
 
-const headers = [
-  { title: "Nama", key: "name", sortable: false },
-  { title: "NISN", key: "nisn", sortable: false },
-  { title: "Absensi", key: "kehadiran", sortable: false },
-  { title: "Tugas", key: "tugas", sortable: false },
-  { title: "UTS", key: "uts", sortable: false },
-  { title: "UAS", key: "uas", sortable: false },
-  { title: "Total", key: "total", sortable: false },
-  { title: "Predikat", key: "predikat", sortable: false },
-];
 
 
 

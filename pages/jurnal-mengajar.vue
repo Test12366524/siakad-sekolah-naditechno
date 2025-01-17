@@ -25,14 +25,23 @@ const getAllTeacher = async () => {
   });
 };
 
+const isAttendanceIn = ref(true);
+const role_id = ref(null);
+
 onMounted(() => {
   const { user } = useAuthStore();
-//   useApi(`level/jurnal-mengajar/${user.role_id}`).then(({ data }) => {
-//     if(data == 0){
-//       navigateTo(`/not-authorized`);
-//     }
-//   });
-  getAllTeacher();
+  role_id.value = user.role_id;
+  useApi(`level/jurnal-mengajar/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  });
+
+  if(user.role_id == 2){
+    form.value.user_id = user.id;
+  }else{
+    getAllTeacher();
+  }
 });
 </script>
 
@@ -43,8 +52,8 @@ onMounted(() => {
     width="1200"
     ref="dialogSave"
     path="jurnal-mengajar"
-    title="Tambah Jurnal Mengajar"
-    edit-title="Edit Jurnal Mengajar"
+    :title="role_id === 2 ? 'Mulai Mengajar' : 'Tambah Jurnal Mengajar'"
+    :edit-title="role_id === 2 ? 'Selesai Mengajar' : 'Edit Jurnal Mengajar'"
     :default-form="form"
     :request-form="form"
     :refresh-callback="tableRef.refresh"
@@ -71,7 +80,7 @@ onMounted(() => {
     </VCol>
     <VCol cols="12" md="9">
       <VRow>
-        <VCol cols="12" md="12">
+        <VCol cols="12" md="12" v-if="role_id === 1">
           <VAutocomplete
             v-model="formData.user_id"
             label="Guru"
@@ -92,19 +101,21 @@ onMounted(() => {
             type="date"
             :error-messages="validationErrors.tanggal"
             label="Tanggal"
+            :readonly="role_id === 2"
           />
         </VCol>
 
-        <VCol cols="12" md="6">
+        <VCol cols="12" md="12" v-if="role_id === 2 ? isAttendanceIn : true">
           <VTextField
             v-model="formData.jam_mulai"
             type="time"
             :error-messages="validationErrors.jam_mulai"
             label="Jam Mulai"
+            :readonly="role_id === 2"
           />
         </VCol>
 
-        <VCol cols="12" md="6">
+        <VCol cols="12" md="12" v-if="role_id === 2 ? !isAttendanceIn : true">
           <VTextField
             v-model="formData.jam_selesai"
             type="time"
@@ -140,6 +151,11 @@ onMounted(() => {
             color="primary"
             @click="
               () => {
+                if (role_id === 2) {
+                  isAttendanceIn = true;
+                  form.tanggal = formatFullDate(new Date()).localDateNow;
+                  form.jam_mulai = formatFullDate(new Date()).localTimeNow;
+                }
                 dialogSave.show();
               }
             "
@@ -198,9 +214,14 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.tanggal = new Date(payload.tanggal)
-                    .toISOString()
-                    .substring(0, 10);
+                  payload.tanggal = formatFullDate(payload.tanggal).simpleDate;
+                  if (role_id === 2) {
+                    isAttendanceIn = false;
+
+                    payload.jam_selesai = formatFullDate(
+                      new Date()
+                    ).localTimeNow;
+                  }
                   dialogSave.show(payload, false);
                 }
               "

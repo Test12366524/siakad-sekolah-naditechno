@@ -42,7 +42,6 @@ onMounted(() => {
   user_name.value = user.name;
   // Automatically set publish_by to user_id
   form.value.publish_by = user.id.toString();
-
   // Update list_to based on user's role
   if (user.role_id === 1) {
     status_action.value = user.role_id == 1;
@@ -56,7 +55,14 @@ onMounted(() => {
     list_to.value = [
       { id: "siswa", text: "siswa" },
     ];
-  }
+  } else if (user.role_id === 8) {
+    status_action.value = user.role_id == 8;
+    list_to.value = [
+      { id: "semua", text: "semua" },
+      { id: "guru", text: "guru" },
+      { id: "siswa", text: "siswa" },
+    ];
+  } 
 
   role_id.value = user.role_id;
 });
@@ -156,7 +162,7 @@ onMounted(() => {
   </SaveDialog>
 
   <VRow>
-    <VCol cols="12" v-if="role_id == 1 || role_id == 2">
+    <VCol cols="12" v-if="role_id == 1 || role_id == 2 || role_id == 8">
       <VCard>
         <VCardItem>
           <VRow>

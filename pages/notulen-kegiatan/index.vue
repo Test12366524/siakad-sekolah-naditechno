@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { VTextarea, VTextField } from 'vuetify/lib/components/index.mjs';
-
 const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
@@ -19,11 +18,11 @@ const form = ref({
 
 onMounted(() => {
   const { user } = useAuthStore();
-//   useApi(`level/notulen-kegiatan/${user.role_id}`).then(({ data }) => {
-//     if(data == 0){
-//       navigateTo(`/not-authorized`);
-//     }
-//   });
+  useApi(`level/notulen-kegiatan/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  }); 
 
 });
 </script>

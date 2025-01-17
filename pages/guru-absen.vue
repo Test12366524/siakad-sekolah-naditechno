@@ -26,7 +26,6 @@ const getAllTeacher = async () => {
 
 onMounted(() => {
   const roleId = Number(user.role_id);
-  console.log(roleId);
   if (roleId !== 1 && roleId !== 2) return navigateTo(`/not-authorized`);
   role_id.value = roleId;
   if (roleId === 2) {
