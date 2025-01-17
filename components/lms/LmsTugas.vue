@@ -10,6 +10,7 @@ const taskForSiswaDialog = ref();
 const tableRef = ref();
 const guru = ref();
 const mata_pelajaran = ref();
+const filter_mata_pelajaran = ref();
 
 const form = {
   mata_pelajaran_id: "",
@@ -46,6 +47,9 @@ if(user.role_id == 1){
   useApi("master/guru/all").then(({ data }) => {
     guru.value = data;
   });
+  useApi("master/mata-pelajaran/all").then(({ data }) => {
+    filter_mata_pelajaran.value = data;
+  });
 }else if(user.role_id == 2){
   useApi("master/guru/all/"+user.id).then(({ data }) => {
     guru.value = data;
@@ -80,6 +84,10 @@ const getGuruDetails = () => {
     if (data.items){
       form.guru_id = data.items[0].id;
       getMataPelajaranByClass(data.items[0].id)
+
+      useApi("master/mata-pelajaran/all/" + data.items[0].id).then(({ data }) => {
+        filter_mata_pelajaran.value = data;
+      });
     }  
   });
 };
@@ -351,7 +359,7 @@ const resetTime = (date: any) => {
                 label="Mata Pelajaran"
                 density="compact"
                 placeholder="Pilih Mata Pelajaran"
-                :items="mata_pelajaran"
+                :items="filter_mata_pelajaran"
                 item-title="text"
                 item-value="id"
                 required

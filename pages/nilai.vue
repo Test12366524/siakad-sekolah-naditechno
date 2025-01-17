@@ -198,14 +198,13 @@ const getPredikat = (item) => {
 };
 
 const handleInsertBulk = async () => {
-  console.log("handleInsertBulk", siswaByClass.value);
-
   const data = siswaByClass.value.map((item) => {
     return {
       kelas_id: form.value.kelas_id,
       guru_id: form.value.guru_id,
       mata_pelajaran_id: form.value.mata_pelajaran_id,
       semester_id: form.value.semester_id,
+      periode_id: form.value.periode_id,
       siswa_id: item.id,
       kehadiran: item.kehadiran,
       tugas: item.tugas,
@@ -402,12 +401,12 @@ const isDataNotValid = computed(() => {
         required
         clearable
         clear-icon="ri-close-line"
-        @update:model-value="
-          (kelas_id) => {
+        @update:model-value="(kelas_id) => {
+          form.kelas_id = kelas_id;
+          $nextTick(() => {
             getSiswaByClass(kelas_id);
-            form.kelas_id = kelas_id;
-          }
-        "
+          });
+        }"
       />
     </VCol>
     <VCol cols="12" md="3">
