@@ -6,7 +6,7 @@
     <div class="d-flex align-center text-base">
       &copy;
       {{ new Date().getFullYear() }}
-      PKU MUI Jakarta
+      naditechno.id
     </div>
     <!-- 👉 Footer: right content -->
     <span
