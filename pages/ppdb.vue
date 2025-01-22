@@ -39,7 +39,6 @@ const form = ref({
   nisn: "",
   keterangan: "",
   status: "",
-  nis: "",
   nis_number: "",
   kip: "",
   kks: "",
@@ -232,14 +231,6 @@ onMounted(() => {
         <VCardTitle class="mb-2"> Data Siswa </VCardTitle>
         <VCardText>
           <VRow>
-            <VCol cols="12" md="6">
-              <VTextField
-                v-model="formData.nis"
-                :error-messages="validationErrors.nis"
-                label="No Induk Siswa"
-                :readonly="isDetail"
-              />
-            </VCol>
             <VCol cols="12" md="6">
               <VTextField
                 v-model="formData.nisn"
@@ -651,6 +642,7 @@ onMounted(() => {
               <VBtn
                 color="primary"
                 @click="dialogSave.show()"
+                style="margin-right: 10px;"
               >
                 <VIcon
                   end
@@ -658,6 +650,7 @@ onMounted(() => {
                 />
                 Tambah Data
               </VBtn>
+              <ExportFileExcel path="ppdb/export-excel" />
             </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">
             </VCol>

@@ -230,82 +230,81 @@ const checkingData = (kelas_id: number, jadwal_id: number, semester_id: number, 
       <VCard>
         <VCardItem>
           <VRow>
-            <VCol cols="12" md="2">
-              <VBtn v-if="role_id === 1 || role_id === 6" @click="dialogSave.show()" color="primary">
+            <!-- Button and Export -->
+            <VCol cols="12" md="4">
+              <VBtn
+                v-if="role_id === 1 || role_id === 6"
+                @click="dialogSave.show()"
+                color="primary"
+                style="margin-right: 5px;"
+              >
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
+              <ExportFileExcel path="kelas-jadwal/export-excel" />
             </VCol>
-            <VCol cols="12" md="2">
-              <VAutocomplete
-                v-if="role_id != 3"
-                v-model="kelas_id"
-                label="Kelas"
-                density="compact"
-                placeholder="Pilih Kelas"
-                :items="kelas"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="2">
-              <VAutocomplete
-                v-model="guru_id"
-                label="Guru"
-                density="compact"
-                placeholder="Pilih Guru"
-                :items="guru"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="2">
-              <VAutocomplete
-                v-model="mata_pelajaran_id"
-                label="Mata Pelajaran"
-                density="compact"
-                placeholder="Pilih Mata Pelajaran"
-                :items="mata_pelajaran"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="2">
-              <VAutocomplete
-                v-model="semester_id"
-                density="compact"
-                label="Semester"
-                placeholder="Pilih Semester"
-                :items="filter_semester"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
-            </VCol>
-            <VCol cols="12" md="2">
-              <VAutocomplete
-                v-model="periode_id"
-                density="compact"
-                label="Tahun Ajaran"
-                placeholder="Pilih Tahun Ajaran"
-                :items="filter_periode"
-                item-title="text"
-                item-value="id"
-                required
-                clearable
-                clear-icon="ri-close-line"
-              />
+
+            <!-- Filters -->
+            <VCol cols="12" md="8">
+              <VRow>
+                <VCol cols="12" md="6" lg="3">
+                  <VAutocomplete
+                    v-if="role_id != 3"
+                    v-model="kelas_id"
+                    label="Kelas"
+                    density="compact"
+                    placeholder="Pilih Kelas"
+                    :items="kelas"
+                    item-title="text"
+                    item-value="id"
+                    required
+                    clearable
+                    clear-icon="ri-close-line"
+                  />
+                </VCol>
+                <VCol cols="12" md="6" lg="3">
+                  <VAutocomplete
+                    v-model="guru_id"
+                    label="Guru"
+                    density="compact"
+                    placeholder="Pilih Guru"
+                    :items="guru"
+                    item-title="text"
+                    item-value="id"
+                    required
+                    clearable
+                    clear-icon="ri-close-line"
+                  />
+                </VCol>
+                <VCol cols="12" md="6" lg="3">
+                  <VAutocomplete
+                    v-model="mata_pelajaran_id"
+                    label="Mata Pelajaran"
+                    density="compact"
+                    placeholder="Pilih Mata Pelajaran"
+                    :items="mata_pelajaran"
+                    item-title="text"
+                    item-value="id"
+                    required
+                    clearable
+                    clear-icon="ri-close-line"
+                  />
+                </VCol>
+                <VCol cols="12" md="6" lg="3">
+                  <VAutocomplete
+                    v-model="periode_id"
+                    density="compact"
+                    label="Tahun Ajaran"
+                    placeholder="Pilih Tahun Ajaran"
+                    :items="filter_periode"
+                    item-title="text"
+                    item-value="id"
+                    required
+                    clearable
+                    clear-icon="ri-close-line"
+                  />
+                </VCol>
+              </VRow>
             </VCol>
           </VRow>
         </VCardItem>

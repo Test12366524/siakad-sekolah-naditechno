@@ -236,6 +236,7 @@ onMounted(() => {
           <VRow>
             <VCol cols="12" md="6">
               <VBtn
+                style="margin-right: 10px;"
                 v-if="role_id === 1 || role_id === 6"
                 color="primary"
                 @click="
@@ -247,6 +248,7 @@ onMounted(() => {
                 <VIcon end icon="ri-add-fill" />
                 Tambah Data
               </VBtn>
+              <ExportFileExcel path="jadwal-mata-pelajaran/export-excel" />
             </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px"> </VCol>
             <VCol cols="12" md="2" style="margin-block-start: 5px">

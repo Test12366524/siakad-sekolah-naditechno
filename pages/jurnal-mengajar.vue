@@ -149,6 +149,7 @@ onMounted(() => {
         <VCardItem>
           <VBtn
             color="primary"
+            style="margin-right: 10px;"
             @click="
               () => {
                 if (role_id === 2) {
@@ -163,6 +164,7 @@ onMounted(() => {
             <VIcon end icon="ri-add-fill" />
             Tambah Data
           </VBtn>
+          <ExportFileExcel path="jurnal-mengajar/export-excel" />
         </VCardItem>
       </VCard>
     </VCol>

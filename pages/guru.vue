@@ -282,6 +282,7 @@ onMounted(() => {
                 @done="tableRef.refresh()"
                 path="master/guru/import-excel"
               ></ImportFileExcel>
+              <ExportFileExcel path="master/guru/export-excel" />
             </VCol>
           </VRow>
         </VCardItem>
