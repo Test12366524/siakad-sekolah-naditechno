@@ -157,7 +157,6 @@ onMounted(() => {
     }
   });
 });
-
 const openUrl = () => {
   window.open('https://apps.tunaskasihschool.sch.id/', '_blank');
 }
