@@ -196,12 +196,14 @@ const handleShowDialog = async (data, isDetail) => {
   
   if (payload.photo) previewPhoto.value = getFileUrl(payload.photo);
 
-  payload.entrance_date = new Date(payload.entrance_date)
-    .toISOString()
-    .substring(0, 10);
-  payload.birth_date = new Date(payload.birth_date)
-    .toISOString()
-    .substring(0, 10);
+  const birth_date = new Date(payload.birth_date);
+  birth_date.setDate(birth_date.getDate() + 1);
+  payload.birth_date = formatFullDate(birth_date).simpleDate;
+
+  const entrance_date = new Date(payload.entrance_date);
+  entrance_date.setDate(entrance_date.getDate() + 1);
+  payload.entrance_date = formatFullDate(entrance_date).simpleDate;
+
   form.value = payload;
   dialogSave.value.show(payload, isDetail);
   pageLoader.hide();

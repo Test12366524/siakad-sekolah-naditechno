@@ -121,9 +121,7 @@ onMounted(() => {
                 if (role_id === 2) {
                   isAttendanceIn = true;
                   form.tanggal = formatFullDate(new Date()).localDateNow;
-                  console.log(form.tanggal);
                   form.jam_masuk = formatFullDate(new Date()).localTimeNow;
-                  console.log(form.jam_masuk);
                 }
                 dialogSave.show();
               }
@@ -179,7 +177,10 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.tanggal = formatFullDate(payload.tanggal).simpleDate;
+                  const tanggal = new Date(payload.tanggal);
+                  tanggal.setDate(tanggal.getDate() + 1);
+                  payload.tanggal = formatFullDate(tanggal).simpleDate;
+
                   if (role_id === 2) {
                     isAttendanceIn = false;
 

@@ -7,6 +7,7 @@ const { confirmDialog } = useCommonStore();
 const dialogSave = ref();
 const tableRef = ref();
 const guru = ref();
+const kelas = ref();
 const mata_pelajaran = ref();
 const filter_mata_pelajaran = ref();
 
@@ -47,14 +48,23 @@ onMounted(() => {
     useApi("master/guru/all").then(({ data }) => {
       guru.value = data;
     });
+    useApi("master/kelas/all").then(({ data }) => {
+      kelas.value = data;
+    });
   } else if (user.role_id == 2){
     status_action.value = user.role_id == 2;
     useApi("master/guru/all/" + user.id).then(({ data }) => {
       guru.value = data;
     });
+    useApi("master/kelas/all").then(({ data }) => {
+      kelas.value = data;
+    });
   } else {
     useApi("master/guru/all").then(({ data }) => {
       guru.value = data;
+    });
+    useApi("master/kelas/all").then(({ data }) => {
+      kelas.value = data;
     });
   }
 
@@ -63,6 +73,7 @@ onMounted(() => {
 
 const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
+const kelas_id = ref<number | null>(null);
 </script>
 
 <template>
@@ -78,7 +89,7 @@ const guru_id = ref<number | null>(null);
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.guru_id"
         label="Guru"
@@ -99,7 +110,7 @@ const guru_id = ref<number | null>(null);
         "
       />
     </VCol>
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.mata_pelajaran_id"
         label="Mata Pelajaran"
@@ -107,6 +118,22 @@ const guru_id = ref<number | null>(null);
         :error-messages="validationErrors.mata_pelajaran_id"
         placeholder="Pilih Mata Pelajaran"
         :items="mata_pelajaran"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :readonly="isDetail"
+      />
+    </VCol>
+    <VCol cols="12" md="4">
+      <VAutocomplete
+        v-model="formData.kelas_id"
+        label="Kelas"
+        density="compact"
+        :error-messages="validationErrors.kelas_id"
+        placeholder="Pilih Kelas"
+        :items="kelas"
         item-title="text"
         item-value="id"
         required
@@ -206,6 +233,11 @@ const guru_id = ref<number | null>(null);
           {
             title: 'Mata Pelajaran',
             key: 'mata_pelajaran_name',
+            sortable: false,
+          },
+          {
+            title: 'Kelas',
+            key: 'kelas_name',
             sortable: false,
           },
           {

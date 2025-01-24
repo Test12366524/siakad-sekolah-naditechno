@@ -336,9 +336,13 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.birth_date = formatFullDate(
-                    payload.birth_date
-                  ).simpleDate;
+                  const birth_date = new Date(payload.birth_date);
+                  birth_date.setDate(birth_date.getDate() + 1);
+                  payload.birth_date = formatFullDate(birth_date).simpleDate;
+
+                  const joinDate = new Date(payload.join_date);
+                  joinDate.setDate(joinDate.getDate() + 1);
+                  payload.join_date = formatFullDate(joinDate).simpleDate;
                   if (payload.photo) previewPhoto = getFileUrl(payload.photo);
                   dialogSave.show(payload, true);
                 }
@@ -351,9 +355,15 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.birth_date = formatFullDate(
-                    payload.birth_date
-                  ).simpleDate;
+
+                  const birth_date = new Date(payload.birth_date);
+                  birth_date.setDate(birth_date.getDate() + 1);
+                  payload.birth_date = formatFullDate(birth_date).simpleDate;
+
+                  const joinDate = new Date(payload.join_date);
+                  joinDate.setDate(joinDate.getDate() + 1);
+                  payload.join_date = formatFullDate(joinDate).simpleDate;
+                  
                   if (payload.photo) previewPhoto = getFileUrl(payload.photo);
                   dialogSave.show(payload);
                 }

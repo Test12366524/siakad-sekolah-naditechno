@@ -216,7 +216,9 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.tanggal = formatFullDate(payload.tanggal).simpleDate;
+                  const tanggal = new Date(payload.tanggal);
+                  tanggal.setDate(tanggal.getDate() + 1);
+                  payload.tanggal = formatFullDate(tanggal).simpleDate;
                   if (role_id === 2) {
                     isAttendanceIn = false;
 

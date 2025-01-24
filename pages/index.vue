@@ -157,12 +157,25 @@ onMounted(() => {
     }
   });
 });
+
+const openUrl = () => {
+  window.open('https://apps.tunaskasihschool.sch.id/', '_blank');
+}
 </script>
 
 <template>
   <VRow>
     <VCol v-if="waliKelasData" cols="12">
       <DashboardWaliKelas />
+    </VCol>
+    <VCol v-if="role_id == 1 || role_id == 4 || role_id == 3 || role_id == 5" cols="12">
+      <VBtn
+        color="primary"
+        @click="openUrl"
+      >
+        <VIcon end icon="ri-add-fill" />
+        Link Pembayaran SPP
+      </VBtn>
     </VCol>
     <VCol cols="12" md="12">
       <DashboardAnnouncement />

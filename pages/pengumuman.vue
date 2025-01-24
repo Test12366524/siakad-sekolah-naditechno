@@ -29,6 +29,7 @@ const user_name = ref<string | null>(null);
 
 const role_id = ref();
 const status_action = ref();
+const roles = ref([]);
 
 onMounted(() => {
   const { user } = useAuthStore();
@@ -37,7 +38,10 @@ onMounted(() => {
       navigateTo(`/not-authorized`);
     }
   });
-
+  
+  useApi("level/all").then(({ data }) => {
+    roles.value = data;
+  });
   user_id.value = Number(user.id);
   user_name.value = user.name;
   // Automatically set publish_by to user_id
@@ -127,9 +131,9 @@ onMounted(() => {
         label="Ditujukan Kepada"
         :error-messages="validationErrors.to"
         placeholder="Pilih Ditujukan Kepada"
-        :items="list_to"
+        :items="roles"
         item-title="text"
-        item-value="text"
+        item-value="id"
         required
         clearable
         clear-icon="ri-close-line"
@@ -224,12 +228,14 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.from_date = new Date(payload.from_date)
-                    .toISOString()
-                    .substring(0, 10);
-                  payload.to_date = new Date(payload.to_date)
-                    .toISOString()
-                    .substring(0, 10);
+                  const from_date = new Date(payload.from_date);
+                  from_date.setDate(from_date.getDate() + 1);
+                  payload.from_date = formatFullDate(from_date).simpleDate;
+
+                  const to_date = new Date(payload.to_date);
+                  to_date.setDate(to_date.getDate() + 1);
+                  payload.to_date = formatFullDate(to_date).simpleDate;
+                  
                   dialogSave.show(payload, true);
                 }
               "
@@ -241,12 +247,13 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.from_date = new Date(payload.from_date)
-                    .toISOString()
-                    .substring(0, 10);
-                  payload.to_date = new Date(payload.to_date)
-                    .toISOString()
-                    .substring(0, 10);
+                  const from_date = new Date(payload.from_date);
+                  from_date.setDate(from_date.getDate() + 1);
+                  payload.from_date = formatFullDate(from_date).simpleDate;
+
+                  const to_date = new Date(payload.to_date);
+                  to_date.setDate(to_date.getDate() + 1);
+                  payload.to_date = formatFullDate(to_date).simpleDate;
                   dialogSave.show(payload);
                 }
               "
