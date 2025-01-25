@@ -4,6 +4,7 @@ import { ref } from "vue";
 import { VCol, VTextField } from "vuetify/lib/components/index.mjs";
 
 const { confirmDialog } = useCommonStore();
+const dialogImport = ref();
 
 const dialogSave = ref();
 const tableRef = ref();
@@ -59,6 +60,12 @@ const form = ref({
   nik_ibu: "",
   no_kk: "",
   asal_sekolah: "",
+});
+
+const formImport = ref({
+  jurusan_id: undefined,
+  kelas_id: undefined,
+  file: undefined,
 });
 
 const religions = ref([
@@ -593,12 +600,13 @@ const validateKtp = async (value: any, errors: any) => {
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
+                <LimitInput
                   v-model="formData.nik_ayah"
                   :error-messages="validationErrors.nik_ayah"
-                  label="NIK Ayah"
+                  label="NIK (Ayah)"
+                  :maxlength="16"
+                  :rules="[lengthValidator(formData.nik_ayah, 16)]"
                   :readonly="isDetail"
-                  type="number"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -618,21 +626,23 @@ const validateKtp = async (value: any, errors: any) => {
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
+                <LimitInput
                   v-model="formData.nik_ibu"
                   :error-messages="validationErrors.nik_ibu"
-                  label="NIK Ibu"
+                  label="NIK (Ibu)"
+                  :maxlength="16"
+                  :rules="[lengthValidator(formData.nik_ibu, 16)]"
                   :readonly="isDetail"
-                  type="number"
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
+                <LimitInput
                   v-model="formData.no_kk"
                   :error-messages="validationErrors.no_kk"
-                  label="No KK"
+                  label="No. KK"
+                  :maxlength="16"
+                  :rules="[lengthValidator(formData.no_kk, 16)]"
                   :readonly="isDetail"
-                  type="number"
                 />
               </VCol>
             </VRow>
@@ -677,6 +687,58 @@ const validateKtp = async (value: any, errors: any) => {
     </VRow>
   </SaveFileDialog>
 
+  <SaveFileDialog
+    v-if="tableRef"
+    v-slot="{ formData, validationErrors, isDetail }"
+    ref="dialogImport"
+    path="siswa/import-excel"
+    title="Import Siswa"
+    edit-title="Import Siswa"
+    detail-title="Detail Siswa"
+    :default-form="formImport"
+    :refresh-callback="tableRef.refresh"
+  >
+    <VRow>
+      <VCol cols="12" md="6">
+        <VAutocomplete
+          v-model="formData.jurusan_id"
+          label="Jurusan"
+          :error-messages="validationErrors.jurusan_id"
+          placeholder="Pilih Jurusan"
+          :items="jurusans"
+          item-title="text"
+          item-value="id"
+          required
+          clearable
+          clear-icon="ri-close-line"
+          :readonly="isDetail"
+        />
+      </VCol>
+      <VCol cols="12" md="6">
+        <VAutocomplete
+          v-model="formData.kelas_id"
+          label="Kelas"
+          :error-messages="validationErrors.kelas_id"
+          placeholder="Pilih Kelas"
+          :items="kelas"
+          item-title="text"
+          item-value="id"
+          required
+          clearable
+          clear-icon="ri-close-line"
+          :readonly="isDetail"
+        /> 
+      </VCol>
+      <VCol cols="12">
+        <FileInput
+          v-model="formData.file"
+          type="file"
+          accept=".xls, .xlsx"
+          label="Upload File"
+        />
+      </VCol>
+    </VRow>
+  </SaveFileDialog>
   <VRow>
     <VCol cols="12">
       <VCard>
@@ -697,10 +759,18 @@ const validateKtp = async (value: any, errors: any) => {
                 Tambah Data
               </VBtn>
 
-              <ImportFileExcel
-                @done="tableRef.refresh()"
-                path="siswa/import-excel"
-              ></ImportFileExcel>
+              <VBtn
+                v-if="role_id === 1 || role_id === 5"
+                color="primary"
+                @click="
+                  () => {
+                    dialogImport.show();
+                  }
+                "
+              >
+                <VIcon end icon="ri-add-fill" />
+                Import File
+              </VBtn>
               <ExportFileExcel path="siswa/export-excel" />
             </VCol>
 

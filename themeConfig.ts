@@ -5,13 +5,13 @@ import { breakpointsVuetifyV3 } from "@vueuse/core";
 import { VIcon } from "vuetify/components/VIcon";
 
 // ❗ Logo SVG must be imported with ?raw suffix
-import logo from "@images/logo.svg?raw";
+import logo from "@images/logo-smktunaskasih.svg?raw";
 
 import {
-    AppContentLayoutNav,
-    ContentWidth,
-    FooterType,
-    NavbarType,
+  AppContentLayoutNav,
+  ContentWidth,
+  FooterType,
+  NavbarType,
 } from "@layouts/enums";
 
 export const { themeConfig, layoutConfig } = defineThemeConfig({

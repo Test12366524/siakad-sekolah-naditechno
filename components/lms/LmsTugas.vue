@@ -127,8 +127,8 @@ const resetTime = (date: any) => {
     ref="taskForSiswaDialog"
     width="1200"
     path="lms-tugas"
-    title="Upload Tugas"
-    edit-title="Upload Tugas"
+    title="Upload Tugas / Materi"
+    edit-title="Upload Tugas Tugas / Materi"
     :refresh-callback="tableRef.refresh"
     :request-form="formUploadTugas"
     custom-button-text="Upload"
@@ -216,8 +216,8 @@ const resetTime = (date: any) => {
     ref="taskFromGuruDialog"
     width="1200"
     path="lms"
-    title="Tambah Tugas"
-    edit-title="Edit Tugas"
+    title="Tambah Tugas / Materi"
+    edit-title="Edit Tugas / Materi"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
@@ -362,10 +362,10 @@ const resetTime = (date: any) => {
                 @click="taskFromGuruDialog.show()"
               >
                 <VIcon end icon="ri-add-fill" />
-                Tambah Tugas
+                Tambah Tugas / Materi
               </VBtn>
             </VCol>
-            <VCol cols="12" md="3" style="margin-block-start: 5px">
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="guru_id"
                 label="Guru"
@@ -379,7 +379,7 @@ const resetTime = (date: any) => {
                 clear-icon="ri-close-line"
               />
             </VCol>
-            <VCol cols="12" md="3" style="margin-block-start: 5px">
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="mata_pelajaran_id"
                 label="Mata Pelajaran"
@@ -393,7 +393,7 @@ const resetTime = (date: any) => {
                 clear-icon="ri-close-line"
               />
             </VCol>
-            <VCol cols="12" md="3" style="margin-block-start: 5px">
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="kelas_id"
                 label="Kelas"
@@ -415,7 +415,7 @@ const resetTime = (date: any) => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Daftar Tugas"
+        title="Daftar Tugas / Materi"
         path="lms"
         :guru_id="guru_id"
         :mata_pelajaran_id="mata_pelajaran_id"

@@ -374,34 +374,41 @@ watch(
         <VCardText>
           <VRow>
             <VCol cols="12" md="6">
-              <VTextField
+              <LimitInput
                 v-model="formData.nisn"
                 :error-messages="validationErrors.nisn"
+                :maxlength="10"
+                :rules="[lengthValidator(formData.nisn, 10)]"
                 label="NISN"
                 :readonly="isDetail"
               />
             </VCol>
             <VCol cols="12" md="6">
-              <VTextField
+              <LimitInput
                 v-model="formData.kip"
                 :error-messages="validationErrors.kip"
+                :maxlength="16"
                 label="KIP"
                 :readonly="isDetail"
               />
             </VCol>
             <VCol cols="12" md="6">
-              <VTextField
-                v-model="formData.kks"
-                :error-messages="validationErrors.kks"
-                label="KKS"
-                :readonly="isDetail"
-              />
+              <LimitInput
+                  v-model="formData.kks"
+                  :error-messages="validationErrors.kks"
+                  :maxlength="16"
+                  :rules="[lengthValidator(formData.kks, 16)]"
+                  label="KKS"
+                  :readonly="isDetail"
+                />
             </VCol>
             <VCol cols="12" md="6">
-              <VTextField
+              <LimitInput
                 v-model="formData.nik"
                 :error-messages="validationErrors.nik"
                 label="NIK Siswa"
+                :maxlength="16"
+                :rules="[lengthValidator(formData.nik, 16)]"
                 :readonly="isDetail"
               />
             </VCol>
@@ -716,21 +723,23 @@ watch(
         <VCardText>
           <VRow>
             <VCol cols="12" md="6">
-              <VTextField
+              <LimitInput
                 v-model="formData.nik_ayah"
                 :error-messages="validationErrors.nik_ayah"
-                label="NIK Ayah"
+                label="NIK (Ayah)"
+                :maxlength="16"
+                :rules="[lengthValidator(formData.nik_ayah, 16)]"
                 :readonly="isDetail"
-                type="number"
               />
             </VCol>
             <VCol cols="12" md="6">
-              <VTextField
+              <LimitInput
                 v-model="formData.nik_ibu"
                 :error-messages="validationErrors.nik_ibu"
-                label="NIK Ibu"
+                label="NIK (Ibu)"
+                :maxlength="16"
+                :rules="[lengthValidator(formData.nik_ibu, 16)]"
                 :readonly="isDetail"
-                type="number"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -812,12 +821,13 @@ watch(
               />
             </VCol>
             <VCol cols="12" md="6">
-              <VTextField
+              <LimitInput
                 v-model="formData.no_kk"
                 :error-messages="validationErrors.no_kk"
-                label="No KK"
+                label="No. KK"
+                :maxlength="16"
+                :rules="[lengthValidator(formData.no_kk, 16)]"
                 :readonly="isDetail"
-                type="number"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -829,7 +839,7 @@ watch(
                 type="number"
               />
             </VCol>
-            <VCol cols="12" md="12">
+            <VCol cols="12" md="6">
               <VTextField
                 v-model="formData.alamat_ortu"
                 :error-messages="validationErrors.alamat_ortu"
