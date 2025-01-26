@@ -6,7 +6,7 @@
     <div class="d-flex align-center text-base">
       &copy;
       {{ new Date().getFullYear() }}
-      SMK TUNAS KASIH || naditechno.id
+      MASBETTET || naditechno.id
     </div>
     <!-- 👉 Footer: right content -->
     <span
