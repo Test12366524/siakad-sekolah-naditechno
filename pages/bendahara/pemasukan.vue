@@ -129,11 +129,13 @@ onMounted(() => {
                 dialogSave.show();
               }
             "
+            style="margin-right: 10px;"
             color="primary"
           >
             <VIcon end icon="ri-add-fill" />
             Tambah Data
           </VBtn>
+          <ExportFileExcel path="pemasukan/export-excel" />
         </VCardItem>
       </VCard>
     </VCol>

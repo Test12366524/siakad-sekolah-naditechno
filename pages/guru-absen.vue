@@ -26,7 +26,6 @@ const getAllTeacher = async () => {
 
 onMounted(() => {
   const roleId = Number(user.role_id);
-  console.log(roleId);
   if (roleId !== 1 && roleId !== 2) return navigateTo(`/not-authorized`);
   role_id.value = roleId;
   if (roleId === 2) {
@@ -116,14 +115,13 @@ onMounted(() => {
         <VCardItem>
           <VBtn
             color="primary"
+            style="margin-right: 10px;"
             @click="
               () => {
                 if (role_id === 2) {
                   isAttendanceIn = true;
                   form.tanggal = formatFullDate(new Date()).localDateNow;
-                  console.log(form.tanggal);
                   form.jam_masuk = formatFullDate(new Date()).localTimeNow;
-                  console.log(form.jam_masuk);
                 }
                 dialogSave.show();
               }
@@ -132,6 +130,7 @@ onMounted(() => {
             <VIcon end icon="ri-add-fill" />
             Tambah Data
           </VBtn>
+          <ExportFileExcel path="guru-absen/export-excel" />
         </VCardItem>
       </VCard>
     </VCol>
@@ -178,7 +177,10 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.tanggal = formatFullDate(payload.tanggal).simpleDate;
+                  const tanggal = new Date(payload.tanggal);
+                  tanggal.setDate(tanggal.getDate() + 1);
+                  payload.tanggal = formatFullDate(tanggal).simpleDate;
+
                   if (role_id === 2) {
                     isAttendanceIn = false;
 

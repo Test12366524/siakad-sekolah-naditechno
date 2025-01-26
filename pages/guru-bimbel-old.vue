@@ -1,30 +1,40 @@
 <script setup lang="ts">
 const { confirmDialog } = useCommonStore();
-const route = useRoute(); // Untuk membaca route saat ini
 
 const dialogSave = ref();
 
 const tableRef = ref();
 
-const guru = ref([]);
-const notulenId = computed(() => route.params.id);
-const url = "notulen-kegiatan-detail";
-
 const form = ref({
-  notulen_kegiatan_id: notulenId.value, // guruid
-  guru_id: "", // guruid
+  guru_id: null, // guruid
+  mata_pelajaran_id: null,
+  biaya: 0,
 });
+
+const teacherList = ref([]);
+const mataPelajaranList = ref([]);
+
+const getAllTeacher = async () => {
+  useApi("master/guru/all").then(({ data }) => {
+    teacherList.value = data;
+  });
+};
+
+const getAllMataPelajaran = async () => {
+  useApi("master/mata-pelajaran/all").then(({ data }) => {
+    mataPelajaranList.value = data;
+  });
+};
 
 onMounted(() => {
   const { user } = useAuthStore();
-    useApi(`level/notulen-kegiatan/${user.role_id}`).then(({ data }) => {
-      if(data == 0){
-        navigateTo(`/not-authorized`);
-      }
-    });
-  useApi("master/guru/all").then(({ data }) => {
-    guru.value = data;
+  useApi(`level/guru-bimbel/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
   });
+  getAllTeacher();
+  getAllMataPelajaran();
 });
 </script>
 
@@ -33,9 +43,9 @@ onMounted(() => {
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
-    :path="url"
-    title="Tambah Absen Notulen Kegiatan Guru"
-    edit-title="Edit Absen Notulen Kegiatan Guru"
+    path="guru-bimbel"
+    title="Tambah Guru Bimbel"
+    edit-title="Edit Guru Bimbel"
     :default-form="form"
     :request-form="form"
     :refresh-callback="tableRef.refresh"
@@ -47,12 +57,37 @@ onMounted(() => {
         label="Guru"
         :error-messages="validationErrors.guru_id"
         placeholder="Pilih Guru"
-        :items="guru"
+        :items="teacherList"
         item-title="text"
         item-value="id"
         required
         clearable
         clear-icon="ri-close-line"
+        :readonly="isDetail"
+      />
+    </VCol>
+    <VCol cols="12">
+      <VAutocomplete
+        v-model="formData.mata_pelajaran_id"
+        label="Mata Pelajaran"
+        :error-messages="validationErrors.mata_pelajaran_id"
+        placeholder="Pilih Mata Pelajaran"
+        :items="mataPelajaranList"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+        :readonly="isDetail"
+      />
+    </VCol>
+
+    <VCol cols="12">
+      <CurrencyInput
+        v-model="formData.biaya"
+        :error-messages="validationErrors.biaya"
+        :readonly="isDetail"
+        label="Biaya"
       />
     </VCol>
   </SaveDialog>
@@ -76,27 +111,26 @@ onMounted(() => {
       </VCard>
     </VCol>
 
-    <VCol cols="12" v-if="notulenId">
+    <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Notulen Kegiatan"
-        :path="url"
-        :notulen_kegiatan_id="notulenId"
+        title="Data Guru Bimbel"
+        path="guru-bimbel"
         :with-actions="true"
         :headers="[
           {
-            title: 'Tanggal',
-            key: 'created_at',
-            sortable: false,
-          },
-          {
-            title: 'Judul',
-            key: 'kegiatan_title',
-            sortable: false,
-          },
-          {
             title: 'Guru',
             key: 'guru_name',
+            sortable: false,
+          },
+          {
+            title: 'Mata Pelajaran',
+            key: 'mata_pelajaran_name',
+            sortable: false,
+          },
+          {
+            title: 'Biaya',
+            key: 'biaya',
             sortable: false,
           },
         ]"
@@ -120,8 +154,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Notulen Kegiatan',
-                  message: `Anda yakin ingin menghapus Notulen Kegiatan ${
+                  title: 'Hapus Surat Masuk',
+                  message: `Anda yakin ingin menghapus Surat Masuk ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

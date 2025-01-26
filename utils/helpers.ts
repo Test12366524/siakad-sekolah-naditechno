@@ -57,7 +57,7 @@ export const openFileHandler = (file) => {
   const fileUrl =
     typeof file !== "string"
       ? URL.createObjectURL(file)
-      : `${config.public.apiContentBaseURL}assets/public/${file}`;
+      : `${config.public.apiContentBaseURL}/media/${file}`;
 
   window.open(fileUrl, "_blank");
 };

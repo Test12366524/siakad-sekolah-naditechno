@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import LimitInput from "@/components/LimitInput.vue";
 import { ref } from "vue";
 import { VCol, VTextField } from "vuetify/lib/components/index.mjs";
 
 const { confirmDialog } = useCommonStore();
+const dialogImport = ref();
 
 const dialogSave = ref();
 const dialogImport = ref();
@@ -202,15 +204,27 @@ const handleShowDialog = async (data, isDetail) => {
   
   if (payload.photo) previewPhoto.value = getFileUrl(payload.photo);
 
-  payload.entrance_date = new Date(payload.entrance_date)
-    .toISOString()
-    .substring(0, 10);
-  payload.birth_date = new Date(payload.birth_date)
-    .toISOString()
-    .substring(0, 10);
+  const birth_date = new Date(payload.birth_date);
+  birth_date.setDate(birth_date.getDate() + 1);
+  payload.birth_date = formatFullDate(birth_date).simpleDate;
+
+  const entrance_date = new Date(payload.entrance_date);
+  entrance_date.setDate(entrance_date.getDate() + 1);
+  payload.entrance_date = formatFullDate(entrance_date).simpleDate;
+
   form.value = payload;
   dialogSave.value.show(payload, isDetail);
   pageLoader.hide();
+};
+
+const validateKtp = async (value: any, errors: any) => {
+  // const { data } = await useApi(`siswa/validate_ktp/${value.ktp}/${route.params?.id ?? ""}`);
+
+  // errors.ktp = "";
+
+  // if (data.alreadyExists) errors.ktp = "Data sudah pernah ditambahkan";
+
+  return true;
 };
 </script>
 
@@ -263,34 +277,41 @@ const handleShowDialog = async (data, isDetail) => {
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
+                <LimitInput
                   v-model="formData.nisn"
                   :error-messages="validationErrors.nisn"
                   label="NISN"
+                  :maxlength="10"
+                  :rules="[lengthValidator(formData.nisn, 10)]"
                   :readonly="isDetail"
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
+                <LimitInput
                   v-model="formData.kip"
                   :error-messages="validationErrors.kip"
+                  :maxlength="16"
                   label="KIP"
                   :readonly="isDetail"
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
+                <LimitInput
                   v-model="formData.kks"
                   :error-messages="validationErrors.kks"
+                  :maxlength="16"
+                  :rules="[lengthValidator(formData.kks, 16)]"
                   label="KKS"
                   :readonly="isDetail"
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
+                <LimitInput
                   v-model="formData.nik"
                   :error-messages="validationErrors.nik"
                   label="NIK Siswa"
+                  :maxlength="16"
+                  :rules="[lengthValidator(formData.nik, 16)]"
                   :readonly="isDetail"
                 />
               </VCol>
@@ -580,12 +601,13 @@ const handleShowDialog = async (data, isDetail) => {
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
+                <LimitInput
                   v-model="formData.nik_ayah"
                   :error-messages="validationErrors.nik_ayah"
-                  label="NIK Ayah"
+                  label="NIK (Ayah)"
+                  :maxlength="16"
+                  :rules="[lengthValidator(formData.nik_ayah, 16)]"
                   :readonly="isDetail"
-                  type="number"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -605,21 +627,23 @@ const handleShowDialog = async (data, isDetail) => {
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
+                <LimitInput
                   v-model="formData.nik_ibu"
                   :error-messages="validationErrors.nik_ibu"
-                  label="NIK Ibu"
+                  label="NIK (Ibu)"
+                  :maxlength="16"
+                  :rules="[lengthValidator(formData.nik_ibu, 16)]"
                   :readonly="isDetail"
-                  type="number"
                 />
               </VCol>
               <VCol cols="12" md="6">
-                <VTextField
+                <LimitInput
                   v-model="formData.no_kk"
                   :error-messages="validationErrors.no_kk"
-                  label="No KK"
+                  label="No. KK"
+                  :maxlength="16"
+                  :rules="[lengthValidator(formData.no_kk, 16)]"
                   :readonly="isDetail"
-                  type="number"
                 />
               </VCol>
             </VRow>
@@ -748,6 +772,7 @@ const handleShowDialog = async (data, isDetail) => {
                 <VIcon end icon="ri-add-fill" />
                 Import File
               </VBtn>
+              <ExportFileExcel path="siswa/export-excel" />
             </VCol>
 
             <VCol cols="12" md="2" style="margin-block-start: 5px">

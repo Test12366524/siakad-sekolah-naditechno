@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { VTextarea, VTextField } from 'vuetify/lib/components/index.mjs';
-
 const { confirmDialog } = useCommonStore();
 
 const dialogSave = ref();
@@ -19,11 +18,11 @@ const form = ref({
 
 onMounted(() => {
   const { user } = useAuthStore();
-//   useApi(`level/notulen-kegiatan/${user.role_id}`).then(({ data }) => {
-//     if(data == 0){
-//       navigateTo(`/not-authorized`);
-//     }
-//   });
+  useApi(`level/notulen-kegiatan/${user.role_id}`).then(({ data }) => {
+    if(data == 0){
+      navigateTo(`/not-authorized`);
+    }
+  }); 
 
 });
 </script>
@@ -66,21 +65,21 @@ onMounted(() => {
         label="Catatan"
       />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="12">
         <FileInput
             v-model="formData.file"
             label="Upload File"
             showPreview
         />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="12">
         <FileInput
             v-model="formData.gambar_1"
             label="Upload Gambar 1"
             showPreview
         />
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="12">
         <FileInput
             v-model="formData.gambar_2"
             label="Upload Gambar 2"
@@ -151,6 +150,9 @@ onMounted(() => {
               @click="
                 () => {
                   const payload = { ...item };
+                  const tanggal = new Date(payload.tanggal);
+                  tanggal.setDate(tanggal.getDate() + 1);
+                  payload.tanggal = formatFullDate(tanggal).simpleDate;
                   dialogSave.show(payload, false);
                 }
               "

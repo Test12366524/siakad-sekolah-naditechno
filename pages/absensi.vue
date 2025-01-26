@@ -129,6 +129,49 @@ useApi("master/mata-pelajaran/all").then(({ data }) => {
 const role_id = ref(null);
 const status_action = ref();
 
+let header_data = [
+    {
+      title: 'Kelas',
+      key: 'wali_kelas_desc',
+      sortable: false,
+    },
+    {
+      title: 'Mata Pelajaran',
+      key: 'mata_pelajaran_name',
+      sortable: false,
+    },
+    {
+      title: 'Guru',
+      key: 'guru_name',
+      sortable: false,
+    },
+    {
+      title: 'Jadwal',
+      key: 'hari_desc',
+      sortable: false,
+    },
+    {
+      title: 'Pertemuan Ke',
+      key: 'pertemuan_ke',
+      sortable: false,
+    },
+    {
+      title: 'NISN',
+      key: 'siswa_nisn',
+      sortable: false,
+    },
+    {
+      title: 'Nama',
+      key: 'siswa_name',
+      sortable: false,
+    },
+    {
+      title: 'Kehadiran',
+      key: 'kehadiran',
+      sortable: false,
+    },
+  ];
+
 onMounted(() => {
   const { user } = useAuthStore();
   useApi(`level/absensi/${user.role_id}`).then(({ data }) => {
@@ -163,6 +206,46 @@ onMounted(() => {
         jadwal_mata_pelajaran.value = data;
       });
     });
+  } else if(user.role_id == 3){
+    header_data = [
+      {
+        title: 'Kelas',
+        key: 'wali_kelas_desc',
+        sortable: false,
+      },
+      {
+        title: 'Mata Pelajaran',
+        key: 'mata_pelajaran_name',
+        sortable: false,
+      },
+      {
+        title: 'Guru',
+        key: 'guru_name',
+        sortable: false,
+      },
+      {
+        title: 'Jadwal',
+        key: 'hari_desc',
+        sortable: false,
+      },
+      {
+        title: 'Pertemuan Ke',
+        key: 'pertemuan_ke',
+        sortable: false,
+      },
+      {
+        title: 'Kehadiran',
+        key: 'kehadiran',
+        sortable: false,
+      },
+    ];
+    useApi("master/guru/all").then(({ data }) => {
+      guru.value = data;
+    });
+    useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
+      jadwal_mata_pelajaran.value = data;
+    });
+    status_action.value = false;
   } else {
     useApi("master/guru/all").then(({ data }) => {
       guru.value = data;
@@ -624,53 +707,7 @@ const isDataNotValid = computed(() => {
         :kelas_id="kelas_id"
         :guru_id="guru_id"
         :mata_pelajaran_id="mata_pelajaran_id"
-        :headers="[
-          {
-            title: 'Kelas',
-            key: 'wali_kelas_desc',
-            sortable: false,
-          },
-          {
-            title: 'Mata Pelajaran',
-            key: 'mata_pelajaran_name',
-            sortable: false,
-          },
-          {
-            title: 'Guru',
-            key: 'guru_name',
-            sortable: false,
-          },
-          {
-            title: 'Jadwal',
-            key: 'hari_desc',
-            sortable: false,
-          },
-          // {
-          //   title: 'Jam',
-          //   key: 'jam_desc',
-          //   sortable: false,
-          // },
-          {
-            title: 'Pertemuan Ke',
-            key: 'pertemuan_ke',
-            sortable: false,
-          },
-          {
-            title: 'NISN',
-            key: 'siswa_nisn',
-            sortable: false,
-          },
-          {
-            title: 'Nama',
-            key: 'siswa_name',
-            sortable: false,
-          },
-          {
-            title: 'Kehadiran',
-            key: 'kehadiran',
-            sortable: false,
-          },
-        ]"
+        :headers="header_data"
       >
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">

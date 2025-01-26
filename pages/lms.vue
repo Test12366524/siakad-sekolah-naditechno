@@ -12,7 +12,7 @@ const activeTab = computed({
 
 // tabs
 const tabs = [
-  { title: "Tugas", icon: "ri-task-line", tab: "tugas" },
+  { title: "Tugas / Materi", icon: "ri-task-line", tab: "tugas" },
   { title: "Jawaban", icon: "ri-question-answer-line", tab: "jawaban" },
 ];
 

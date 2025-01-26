@@ -10,6 +10,7 @@ const taskForSiswaDialog = ref();
 const tableRef = ref();
 const guru = ref();
 const mata_pelajaran = ref();
+const kelas = ref();
 const filter_mata_pelajaran = ref();
 
 const form = {
@@ -50,13 +51,22 @@ if(user.role_id == 1){
   useApi("master/mata-pelajaran/all").then(({ data }) => {
     filter_mata_pelajaran.value = data;
   });
+  useApi("master/kelas/all").then(({ data }) => {
+    kelas.value = data;
+  });
 }else if(user.role_id == 2){
   useApi("master/guru/all/"+user.id).then(({ data }) => {
     guru.value = data;
   });
+  useApi("master/kelas/all").then(({ data }) => {
+    kelas.value = data;
+  });
 }else{
   useApi("master/guru/all").then(({ data }) => {
     guru.value = data;
+  });
+  useApi("master/kelas/all").then(({ data }) => {
+    kelas.value = data;
   });
 }
 
@@ -100,6 +110,7 @@ onMounted(() => {
 
 const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
+const kelas_id = ref<number | null>(null);
 
 const resetTime = (date: any) => {
   const d = new Date(date);
@@ -116,8 +127,8 @@ const resetTime = (date: any) => {
     ref="taskForSiswaDialog"
     width="1200"
     path="lms-tugas"
-    title="Upload Tugas"
-    edit-title="Upload Tugas"
+    title="Upload Tugas / Materi"
+    edit-title="Upload Tugas Tugas / Materi"
     :refresh-callback="tableRef.refresh"
     :request-form="formUploadTugas"
     custom-button-text="Upload"
@@ -205,12 +216,12 @@ const resetTime = (date: any) => {
     ref="taskFromGuruDialog"
     width="1200"
     path="lms"
-    title="Tambah Tugas"
-    edit-title="Edit Tugas"
+    title="Tambah Tugas / Materi"
+    edit-title="Edit Tugas / Materi"
     :default-form="form"
     :refresh-callback="tableRef.refresh"
   >
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.guru_id"
         label="Guru"
@@ -231,7 +242,7 @@ const resetTime = (date: any) => {
         "
       />
     </VCol>
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
       <VAutocomplete
         v-model="formData.mata_pelajaran_id"
         label="Mata Pelajaran"
@@ -246,7 +257,22 @@ const resetTime = (date: any) => {
         clear-icon="ri-close-line"
       />
     </VCol>
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="4">
+      <VAutocomplete
+        v-model="formData.kelas_id"
+        label="Kelas"
+        density="compact"
+        :error-messages="validationErrors.kelas_id"
+        placeholder="Pilih Kelas"
+        :items="kelas"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+      />
+    </VCol>
+    <VCol cols="12" md="12">
       <VTextField
         v-model="formData.title"
         :error-messages="validationErrors.title"
@@ -254,7 +280,7 @@ const resetTime = (date: any) => {
       />
     </VCol>
 
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="12">
       <VTextField
         v-model="formData.subtitle"
         :error-messages="validationErrors.subtitle"
@@ -336,10 +362,10 @@ const resetTime = (date: any) => {
                 @click="taskFromGuruDialog.show()"
               >
                 <VIcon end icon="ri-add-fill" />
-                Tambah Tugas
+                Tambah Tugas / Materi
               </VBtn>
             </VCol>
-            <VCol cols="12" md="3" style="margin-block-start: 5px">
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="guru_id"
                 label="Guru"
@@ -353,12 +379,26 @@ const resetTime = (date: any) => {
                 clear-icon="ri-close-line"
               />
             </VCol>
-            <VCol cols="12" md="3" style="margin-block-start: 5px">
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
               <VAutocomplete
                 v-model="mata_pelajaran_id"
                 label="Mata Pelajaran"
                 density="compact"
                 placeholder="Pilih Mata Pelajaran"
+                :items="filter_mata_pelajaran"
+                item-title="text"
+                item-value="id"
+                required
+                clearable
+                clear-icon="ri-close-line"
+              />
+            </VCol>
+            <VCol cols="12" md="2" style="margin-block-start: 5px">
+              <VAutocomplete
+                v-model="kelas_id"
+                label="Kelas"
+                density="compact"
+                placeholder="Pilih Kelas"
                 :items="filter_mata_pelajaran"
                 item-title="text"
                 item-value="id"
@@ -375,7 +415,7 @@ const resetTime = (date: any) => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Daftar Tugas"
+        title="Daftar Tugas / Materi"
         path="lms"
         :guru_id="guru_id"
         :mata_pelajaran_id="mata_pelajaran_id"
@@ -389,6 +429,11 @@ const resetTime = (date: any) => {
           {
             title: 'Mata Pelajaran',
             key: 'mata_pelajaran_name',
+            sortable: false,
+          },
+          {
+            title: 'Kelas',
+            key: 'kelas_name',
             sortable: false,
           },
           {
@@ -416,12 +461,13 @@ const resetTime = (date: any) => {
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.start_date = new Date(payload.start_date)
-                    .toISOString()
-                    .substring(0, 10);
-                  payload.until_date = new Date(payload.until_date)
-                    .toISOString()
-                    .substring(0, 10);
+                  const start_date = new Date(payload.start_date);
+                  start_date.setDate(start_date.getDate() + 1);
+                  payload.start_date = formatFullDate(start_date).simpleDate;
+
+                  const until_date = new Date(payload.until_date);
+                  until_date.setDate(until_date.getDate() + 1);
+                  payload.until_date = formatFullDate(until_date).simpleDate;
                   taskFromGuruDialog.show(payload);
                 }
               "

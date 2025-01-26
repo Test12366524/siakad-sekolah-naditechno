@@ -94,6 +94,7 @@ onMounted(() => {
         <VCardItem>
           <VBtn
             color="primary"
+            style="margin-right: 10px;"
             @click="
               () => {
                 dialogSave.show();
@@ -103,6 +104,7 @@ onMounted(() => {
             <VIcon end icon="ri-add-fill" />
             Tambah Data
           </VBtn>
+          <ExportFileExcel path="score-pelanggaran/export-excel" />
         </VCardItem>
       </VCard>
     </VCol>

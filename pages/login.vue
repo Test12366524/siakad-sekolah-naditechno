@@ -95,7 +95,7 @@ const onSubmit = () => {
         <VCardText class="text-center">
           <img :src="imgLogo" style="width: 30%" />
         </VCardText>
-        <VCardText style="margin-top: -30px;">
+        <VCardText style="margin-top: -20px;">
           <h4 class="text-h4 mb-1 text-center">MASBETTET</h4>
           <p class="mb-0 text-center">Silahkan login menggunakan akun anda</p>
         </VCardText>
