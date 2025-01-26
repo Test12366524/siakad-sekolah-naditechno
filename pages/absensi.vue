@@ -190,6 +190,14 @@ onMounted(() => {
     useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
       jadwal_mata_pelajaran.value = data;
     });
+  }else if (user.role_id == 11) {
+    status_action.value = true;
+    useApi("master/guru/all").then(({ data }) => {
+      guru.value = data;
+    });
+    useApi("jadwal-mata-pelajaran/all").then(({ data }) => {
+      jadwal_mata_pelajaran.value = data;
+    });
   } else if (user.role_id == 2) {
     status_action.value = true;
     useApi("master/guru/byUserID/" + user_id.value).then(({ data }) => {
@@ -633,7 +641,7 @@ const isDataNotValid = computed(() => {
           <VRow>
             <VCol cols="12" md="6" class="d-flex gap-4">
               <VBtn
-                v-if="role_id == 1 || role_id == 2"
+                v-if="role_id == 1 || role_id == 2 || role_id == 11"
                 color="primary"
                 @click="handleShowBulkDialog"
               >
@@ -704,7 +712,7 @@ const isDataNotValid = computed(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              v-if="role_id == 1 || role_id == 2"
+              v-if="role_id == 1 || role_id == 2 || role_id == 11"
               size="small"
               title="Detail"
               @click="
@@ -720,7 +728,7 @@ const isDataNotValid = computed(() => {
               <VIcon icon="ri-pencil-line" />
             </IconBtn>
             <IconBtn
-              v-if="role_id == 1 || role_id == 2"
+              v-if="role_id == 1 || role_id == 2 || role_id == 11"
               size="small"
               @click="
                 confirmDialog.show({

@@ -7,6 +7,7 @@ const { confirmDialog } = useCommonStore();
 const dialogImport = ref();
 
 const dialogSave = ref();
+const dialogImport = ref();
 const tableRef = ref();
 const kelas = ref();
 const semester = ref();

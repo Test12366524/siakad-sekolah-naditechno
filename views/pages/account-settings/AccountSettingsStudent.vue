@@ -163,10 +163,11 @@ useApi("master/angkatan/all").then(({ data }) => {
   angkatans.value = data;
 });
 
-const getDetails = (userId) => {
+const getDetails = (userId: any) => {
   useApi(`siswa/user/${userId}`).then(async ({ data }) => {
     const payload = { ...data };
 
+    await getProvinceList();
     payload.province_id = payload.province_id.toString();
     payload.city_id = payload.city_id.toString();
     await getCityList(payload.province_id);
@@ -202,6 +203,7 @@ const updateData = () => {
 };
 
 onMounted(async () => {
+  getDetails(user.id);
   await getProvinceList();
   getDetails(user.id);
 });
