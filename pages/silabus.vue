@@ -74,6 +74,27 @@ onMounted(() => {
 const mata_pelajaran_id = ref<number | null>(null);
 const guru_id = ref<number | null>(null);
 const kelas_id = ref<number | null>(null);
+
+// const uploadFile = async (file) => {
+//   if (!file) return;
+
+//   console.log('File yang diupload:', file);
+
+//   const formDataUpload = new FormData();
+//   formDataUpload.append('file', file); // Perhatikan nama 'file' ini!
+
+//   try {
+//     const response = await axios.post('http://localhost/file-upload-service/', formDataUpload, {
+//       headers: {
+//         'Content-Type': 'multipart/form-data', // Wajib!
+//       }
+//     });
+
+//     console.log('File berhasil diupload:', response.data);
+//   } catch (error) {
+//     console.error('Gagal mengupload file:', error);
+//   }
+// };
 </script>
 
 <template>

@@ -5,9 +5,12 @@ import svgLoader from "vite-svg-loader";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  devServer: {
+    port: 4000
+  },
   app: {
     head: {
-      title: "MASBETTET",
+      title: "SMK Tunas Kasih",
       link: [
         {
           rel: "icon",
@@ -42,6 +45,7 @@ export default defineNuxtConfig({
       apiBaseURL: process.env.NUXT_PUBLIC_API_BASE_URL || "/api",
       apiContentBaseURL: process.env.NUXT_PUBLIC_CONTENT_API_BASE_URL,
       websiteURL: process.env.NUXT_PUBLIC_WEBSITE_BASE_URL,
+      fileUploadUrl: process.env.FILE_UPLOAD_SERVICE_URL
     },
   },
   components: {

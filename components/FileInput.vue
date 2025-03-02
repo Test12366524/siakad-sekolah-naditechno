@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import axios from 'axios';
 import { defineEmits, defineProps, ref, watchEffect } from "vue";
+
+const config = useRuntimeConfig();
+const url = config.public.fileUploadUrl
 
 // Define props
 const props = defineProps({
@@ -25,13 +29,31 @@ const emit = defineEmits([
 const files = ref<File[]>([]);
 
 // Handle file change event
-function onFileChange() {
-  const previewImageUrl = URL.createObjectURL(files.value[0]);
+async function onFileChange() {
+  let previewImageUrl = null;
+  let file = null;
   if (!props.multiple) {
-    emit("update:modelValue", files.value[0]);
+
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', files.value[0]); // Perhatikan nama 'file' ini!
+    try {
+      
+      const response = await axios.post(url + '/', formDataUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Wajib!
+        }
+      });
+
+      console.log('File berhasil diupload:', response.data);
+      previewImageUrl = url + '/' + response.data;
+      file = response.data;
+    } catch (error) {
+      console.error('Gagal mengupload file:', error);
+    }
+    emit("update:modelValue", file);
     emit("change", {
       previewImageUrl,
-      ...files.value[0],
+      file,
     });
   } else {
     emit("update:modelValue", files.value);

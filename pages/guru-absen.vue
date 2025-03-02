@@ -130,7 +130,7 @@ onMounted(() => {
             <VIcon end icon="ri-add-fill" />
             Tambah Data
           </VBtn>
-          <ExportFileExcel path="guru-absen/export-excel" />
+          <ExportFileExcel path="absen-guru/export-excel" />
         </VCardItem>
       </VCard>
     </VCol>

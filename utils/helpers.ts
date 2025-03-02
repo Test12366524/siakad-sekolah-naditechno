@@ -57,7 +57,7 @@ export const openFileHandler = (file) => {
   const fileUrl =
     typeof file !== "string"
       ? URL.createObjectURL(file)
-      : `${config.public.apiContentBaseURL}/media/${file}`;
+      : `${config.public.fileUploadUrl}/${file}`;
 
   window.open(fileUrl, "_blank");
 };
@@ -65,7 +65,7 @@ export const openFileHandler = (file) => {
 export const getFileUrl = (fileName) => {
   const config = useRuntimeConfig();
 
-  return `${config.public.apiContentBaseURL}assets/public/${fileName}`;
+  return `${config.public.fileUploadUrl}/${fileName}`;
 };
 
 export const extractNeededData = (rawData, template) => {

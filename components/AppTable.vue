@@ -192,6 +192,9 @@ defineExpose({
       <template #item.created_at="{ item }">
         {{ formatFullDate(item.created_at)?.dateOnly }}
       </template>
+      <template #item.tahun_bulan="{ item }">
+        {{ formatFullDate(item.tahun_bulan)?.dateOnly }}
+      </template>
       <template #item.updated_at="{ item }">
         {{ formatFullDate(item.updated_at)?.dateOnly }}
       </template>
@@ -207,6 +210,9 @@ defineExpose({
       </template>
       <template #item.biaya="{ item }">
         {{ formatRupiah(item.biaya) }}
+      </template>
+      <template #item.tagihan="{ item }">
+        {{ formatRupiah(item.tagihan) }}
       </template>
       <template #item.nilai="{ item }">
         {{ !item.nilai && item.nilai !== 0 ? "-" : item.nilai }}

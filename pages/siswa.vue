@@ -202,7 +202,8 @@ const handleShowDialog = async (data, isDetail) => {
 
   
   if (payload.photo) previewPhoto.value = getFileUrl(payload.photo);
-
+  console.log(payload.photo);
+  
   const birth_date = new Date(payload.birth_date);
   birth_date.setDate(birth_date.getDate() + 1);
   payload.birth_date = formatFullDate(birth_date).simpleDate;

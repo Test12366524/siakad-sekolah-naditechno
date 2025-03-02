@@ -119,6 +119,7 @@ const siswaByClass = ref([]);
 
 const pagination = reactive({
   totalItem: 1,
+  itemsPerPage: 100, // Default ke 10
   pageTotal: 1,
   page: 1,
 });
@@ -155,9 +156,10 @@ const getMataKuliahByClass = (guru_id: number) => {
 
 
 const getSiswaByClass = (classId) => {
+  params.limit = 100;
   const getParams = {
     ...params,
-    kelas_id: form.kelas_id || classId,
+    kelas_id: form.value.kelas_id || classId,
   };
 
   useApi(`siswa${objectToParams(getParams)}`).then(({ data }) => {
@@ -183,6 +185,12 @@ const getSiswaByClass = (classId) => {
     });
   });
 };
+
+watch(() => pagination.itemsPerPage, () => {
+  params.limit = pagination.itemsPerPage;
+  getSiswaByClass(form.value.kelas_id); // Ambil ulang data berdasarkan itemsPerPage baru
+});
+
 
 const getTotal = (item) => {
   if (!item) return 0;
@@ -507,7 +515,7 @@ const isDataNotValid = computed(() => {
         ref="siswaTableRef"
         :headers="headers"
         :items="siswaByClass"
-        :items-per-page="10"
+        :items-per-page="pagination.itemsPerPage"
         :page-count="pagination.pageTotal"
         class="text-no-wrap"
       >
@@ -565,6 +573,15 @@ const isDataNotValid = computed(() => {
               Total Data: <b>{{ pagination.totalItem }}</b>
             </div>
             <div class="d-flex gap-x-2 align-center me-2">
+              <VSelect
+                v-model="pagination.itemsPerPage"
+                :items="[10, 50, 100, 500, 1000, 5000]"
+                label="Tampilkan"
+                dense
+                variant="outlined"
+                class="w-32"
+                hide-details
+              />
               <VBtn
                 class="flip-in-rtl"
                 icon="ri-arrow-left-s-line"

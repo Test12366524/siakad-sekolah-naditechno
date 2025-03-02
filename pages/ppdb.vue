@@ -902,7 +902,7 @@ watch(
               <FileInput
                 v-if="!isDetail"
                 v-model="formData.dokumen_kk"
-                label="Dokumen"
+                label="Dokumen KK"
               />
             </VCol>
             <VCol cols="12" md="6">

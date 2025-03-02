@@ -43,16 +43,19 @@ const save = async () => {
         ? `${props.path}/${formData.value[props.itemKey || "id"]}`
         : (props.path as string);
 
-    if (payload.image && typeof payload.image === "string")
-      payload.image = null;
+    // if (payload.image && typeof payload.image === "string")
+    //   payload.image = null;
 
-    if (payload.cover && typeof payload.cover === "string")
-      payload.cover = null;
-    if (payload.photo && typeof payload.photo === "string")
-      payload.photo = null;
+    // if (payload.cover && typeof payload.cover === "string")
+    //   payload.cover = null;
+
+    //   if (payload.photo && typeof payload.photo === "string")
+    //   payload.photo = null;
+
     if (props.requestForm)
       payload = extractNeededData(payload, props.requestForm);
 
+    console.log(payload);
     const { errors, success } = await useApi(url, {
       withNotif: true,
       method: apiMethod.value,
