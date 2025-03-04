@@ -86,10 +86,28 @@ const keluar = async (item: any) => {
       />
     </VCol>
     <VCol cols="12">
+      <VTextField
+        v-model="formData.asal_instansi"
+        label="Asal Instansi"
+      />
+    </VCol>
+    <VCol cols="12">
+      <VTextField
+        v-model="formData.jabatan"
+        label="Jabatan"
+      />
+    </VCol>
+    <VCol cols="12">
+      <VTextField
+        v-model="formData.nomor_surat_tugas"
+        label="Nomor Surat Tugas"
+      />
+    </VCol>
+    <VCol cols="12">
       <VTextarea
         v-model="formData.tujuan"
         :error-messages="validationErrors.tujuan"
-        label="Tujuan"
+        label="Tujuan Kedatangan"
       />
     </VCol>
 
@@ -102,6 +120,9 @@ const keluar = async (item: any) => {
       >
         <VRadio label="Orang Tua" value="Orang Tua" />
         <VRadio label="Alumni" value="Alumni" />
+        <VRadio label="Dinas" value="Dinas" />
+        <VRadio label="Ormit" value="Ormit" />
+        <VRadio label="Komite" value="Komite" />
         <VRadio label="Pihak Eksternal" value="Pihak Eksternal" />
         <VRadio label="Dll" value="Dll" />
       </VRadioGroup>

@@ -201,6 +201,12 @@ defineExpose({
       <template #item.until_date="{ item }">
         {{ formatFullDate(item.until_date)?.dateOnly }}
       </template>
+      <template #item.waktu_masuk="{ item }">
+        {{ formatFullDate(item.waktu_masuk)?.dateOnly }}
+      </template>
+      <template #item.waktu_keluar="{ item }">
+        {{ formatFullDate(item.waktu_keluar)?.dateOnly }}
+      </template>
       <template #item.nominal="{ item }">
         {{ formatRupiah(item.nominal) }}
       </template>

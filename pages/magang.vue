@@ -9,12 +9,14 @@ const tableRef = ref();
 
 const form = ref({
   siswa_id: null, // guruid
+  guru_id: null, // guruid
   tanggal: "",
-  score: 0,
+  perusahaan: "",
   catatan: "",
 });
 
 const studentList = ref([]);
+const teacherList = ref([]);
 
 const getAllStudent = async () => {
   useApi("siswa/all").then(({ data }) => {
@@ -22,9 +24,14 @@ const getAllStudent = async () => {
   });
 };
 
+const getAllTeacher = async () => {
+  useApi("master/guru/all").then(({ data }) => {
+    teacherList.value = data;
+  });
+};
+
 const role_id = ref();
 const actions = ref();
-
 onMounted(() => {
   const { user } = useAuthStore();
   role_id.value = user.role_id;
@@ -37,12 +44,13 @@ onMounted(() => {
   }else{
     actions.value = false;
   }
-  //   useApi(`level/score-pelanggaran/${user.role_id}`).then(({ data }) => {
+//   useApi(`level/magang/${user.role_id}`).then(({ data }) => {
 //     if(data == 0){
 //       navigateTo(`/not-authorized`);
 //     }
 //   });
   getAllStudent();
+  getAllTeacher();
 });
 </script>
 
@@ -51,9 +59,9 @@ onMounted(() => {
     v-if="tableRef"
     v-slot="{ formData, validationErrors, isEditing }"
     ref="dialogSave"
-    path="score-pelanggaran"
-    title="Tambah Score Pelanggaran Siswa"
-    edit-title="Edit Score Pelanggaran Siswa"
+    path="magang"
+    title="Tambah Magang Siswa"
+    edit-title="Edit Magang Siswa"
     :default-form="form"
     :request-form="form"
     :refresh-callback="tableRef.refresh"
@@ -75,6 +83,21 @@ onMounted(() => {
     </VCol>
 
     <VCol cols="12">
+      <VAutocomplete
+        v-model="formData.guru_id"
+        label="Guru"
+        :error-messages="validationErrors.guru_id"
+        placeholder="Pilih Guru"
+        :items="teacherList"
+        item-title="text"
+        item-value="id"
+        required
+        clearable
+        clear-icon="ri-close-line"
+      />
+    </VCol>
+
+    <VCol cols="12">
       <VTextField
         v-model="formData.tanggal"
         type="date"
@@ -85,10 +108,9 @@ onMounted(() => {
 
     <VCol cols="12">
       <VTextField
-        v-model="formData.score"
-        type="number"
-        :error-messages="validationErrors.score"
-        label="Score"
+        v-model="formData.perusahaan"
+        :error-messages="validationErrors.perusahaan"
+        label="Perusahaan"
       />
     </VCol>
 
@@ -107,17 +129,16 @@ onMounted(() => {
         <VCardItem>
           <VBtn
             color="primary"
-            style="margin-right: 10px;"
             @click="
               () => {
                 dialogSave.show();
               }
             "
+            style="margin-right: 10px;"
           >
             <VIcon end icon="ri-add-fill" />
             Tambah Data
           </VBtn>
-          <ExportFileExcel path="score-pelanggaran/export-excel" />
         </VCardItem>
       </VCard>
     </VCol>
@@ -125,8 +146,8 @@ onMounted(() => {
     <VCol cols="12">
       <AppTable
         ref="tableRef"
-        title="Data Score Pelanggaran Siswa"
-        path="score-pelanggaran"
+        title="Data Magang Siswa"
+        path="magang"
         :with-actions="actions"
         :headers="[
           {
@@ -135,13 +156,18 @@ onMounted(() => {
             sortable: false,
           },
           {
+            title: 'Guru',
+            key: 'guru_name',
+            sortable: false,
+          },
+          {
             title: 'Tanggal',
             key: 'tanggal',
             sortable: false,
           },
           {
-            title: 'Score',
-            key: 'score',
+            title: 'Perusahaan',
+            key: 'perusahaan',
             sortable: false,
           },
           {
@@ -154,14 +180,25 @@ onMounted(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1" v-if="role_id == 1 || role_id == 2 || role_id == 12">
             <IconBtn
+              title="Catatan Harian"
+              size="small"
+              @click="
+                () => {
+                  navigateTo(`/magang-harian?id=${item.id}`);
+                }
+              "
+            >
+              <VIcon icon="ri-file-list-2-line" />
+            </IconBtn>
+            <IconBtn
               label="Edit"
               size="small"
               @click="
                 () => {
                   const payload = { ...item };
-                  payload.tanggal = new Date(payload.tanggal)
-                    .toISOString()
-                    .substring(0, 10);
+                  const tanggal = new Date(payload.tanggal);
+                  tanggal.setDate(tanggal.getDate() + 1);
+                  payload.tanggal = formatFullDate(tanggal).simpleDate;
                   dialogSave.show(payload, false);
                 }
               "
@@ -173,8 +210,8 @@ onMounted(() => {
               size="small"
               @click="
                 confirmDialog.show({
-                  title: 'Hapus Score Pelanggaran',
-                  message: `Anda yakin ingin menghapus Score Pelanggaran ${
+                  title: 'Hapus Magang',
+                  message: `Anda yakin ingin menghapus Magang ${
                     (item as any).name
                   }?`,
                   onConfirm: () => remove((item as any).id),

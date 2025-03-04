@@ -85,7 +85,7 @@ onMounted(() => {
         <template #actions="{ item, remove }">
           <div class="d-flex gap-1">
             <IconBtn
-              v-if="item.nilai < 0"
+              v-if="item.nilai == null"
               label="Kerjakan Ujian"
               size="small"
               title="Kerjakan Ujian"

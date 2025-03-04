@@ -22,8 +22,20 @@ const getAllStudent = async () => {
   });
 };
 
+const role_id = ref();
+const actions = ref();
 onMounted(() => {
   const { user } = useAuthStore();
+  role_id.value = user.role_id;
+  if(user.role_id == 1){
+    actions.value = true;
+  }else if(user.role_id == 2){
+    actions.value = true;
+  }else if(user.role_id == 12){
+    actions.value = true;
+  }else{
+    actions.value = false;
+  }
 //   useApi(`level/score-prestasi/${user.role_id}`).then(({ data }) => {
 //     if(data == 0){
 //       navigateTo(`/not-authorized`);
@@ -89,7 +101,7 @@ onMounted(() => {
   </SaveDialog>
 
   <VRow>
-    <VCol cols="12">
+    <VCol cols="12" v-if="role_id == 1 || role_id == 2 || role_id == 12">
       <VCard>
         <VCardItem>
           <VBtn
@@ -114,7 +126,7 @@ onMounted(() => {
         ref="tableRef"
         title="Data Score Prestasi Siswa"
         path="score-prestasi"
-        :with-actions="true"
+        :with-actions="actions"
         :headers="[
           {
             title: 'Siswa',
@@ -139,7 +151,7 @@ onMounted(() => {
         ]"
       >
         <template #actions="{ item, remove }">
-          <div class="d-flex gap-1">
+          <div class="d-flex gap-1" v-if="role_id == 1 || role_id == 2 || role_id == 12">
             <IconBtn
               label="Edit"
               size="small"
