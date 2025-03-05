@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: "SMK Tunas Kasih",
+      title: "Siakad Sekolah",
       link: [
         {
           rel: "icon",

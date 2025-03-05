@@ -11,8 +11,8 @@ import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
 const { pageLoader } = useCommonStore();
 const { login } = useAuthStore();
 
-import img from "@images/background-login-smk.jpg";
-import imgLogo from "@images/logo-smk-tunaskasih.png";
+import img from "@images/bg-login-sekolah.png";
+import imgLogo from "@images/siakad-sekolah-logo.png";
 
 const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationLight,
@@ -96,7 +96,7 @@ const onSubmit = () => {
           <img :src="imgLogo" style="width: 30%" />
         </VCardText>
         <VCardText style="margin-top: -20px;">
-          <h4 class="text-h4 mb-1 text-center">SMK Tunas Kasih</h4>
+          <h4 class="text-h4 mb-1 text-center">SIAKAD Sekolah</h4>
           <p class="mb-0 text-center">Silahkan login menggunakan akun anda</p>
         </VCardText>
 
